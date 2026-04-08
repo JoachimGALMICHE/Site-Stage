@@ -4,110 +4,128 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Éclairage — Actualités & Analyses</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: "Times New Roman", Times, serif; background: #fff; color: #000; font-size: 16px; }
+  :root {
+    --bg: #F5F0E8;
+    --bg2: #EDE7D9;
+    --bg3: #E4DDD0;
+    --violet: #3B1F5E;
+    --violet2: #2A1445;
+    --violet-mid: #6B4A9B;
+    --violet-light: #C4B0DC;
+    --text: #2A1445;
+    --text2: #5A4070;
+    --text3: #8B7AA0;
+    --border: #C4B0DC;
+    --border2: #9B88B8;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: 'Source Sans 3', sans-serif; background: var(--bg); color: var(--text); font-size: 16px; }
 
-  /* NAV */
-  #topbar { background: #000; color: #fff; padding: 4px 12px; font-family: monospace; font-size: 12px; display: flex; justify-content: space-between; }
-  header { border-bottom: 4px solid #000; padding: 16px 12px 8px; }
-  header h1 { font-size: 64px; font-family: "Times New Roman", serif; letter-spacing: -2px; line-height: 1; }
-  header p.tagline { font-family: monospace; font-size: 12px; border-top: 1px solid #000; margin-top: 4px; padding-top: 4px; }
+  /* TOPBAR */
+  #topbar { background: var(--violet2); color: var(--violet-light); padding: 5px 16px; font-size: 12px; display: flex; justify-content: space-between; align-items: center; letter-spacing: 0.03em; }
+  #topbar a { color: var(--violet-light); text-decoration: none; }
+  #topbar a:hover { color: #fff; }
+
+  /* HEADER */
+  header { background: var(--bg); border-bottom: 2px solid var(--violet); padding: 20px 16px 12px; }
+  header h1 { font-family: 'Playfair Display', serif; font-size: 64px; letter-spacing: -2px; line-height: 1; color: var(--violet2); }
+  header p.tagline { font-size: 13px; color: var(--text3); margin-top: 4px; border-top: 1px solid var(--border); padding-top: 6px; }
 
   /* SEARCH */
-  #searchbar { border-bottom: 2px solid #000; padding: 6px 12px; display: flex; gap: 0; }
-  #searchbar input { flex: 1; border: 2px solid #000; padding: 4px 8px; font-family: monospace; font-size: 13px; outline: none; }
-  #searchbar button { border: 2px solid #000; border-left: none; background: #000; color: #fff; padding: 4px 14px; font-family: monospace; font-size: 13px; cursor: pointer; }
+  #searchbar { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 8px 16px; display: flex; gap: 0; }
+  #searchbar input { flex:1; border: 1.5px solid var(--border2); border-right: none; padding: 6px 12px; font-family: 'Source Sans 3', sans-serif; font-size: 13px; background: var(--bg); color: var(--text); outline: none; border-radius: 4px 0 0 4px; }
+  #searchbar input:focus { border-color: var(--violet-mid); }
+  #searchbar button { border: 1.5px solid var(--violet); background: var(--violet); color: #fff; padding: 6px 18px; font-family: 'Source Sans 3', sans-serif; font-size: 13px; cursor: pointer; border-radius: 0 4px 4px 0; letter-spacing: 0.05em; }
+  #searchbar button:hover { background: var(--violet2); }
 
-  /* CATEGORIES NAV */
-  nav#cats { border-bottom: 2px solid #000; overflow-x: auto; white-space: nowrap; padding: 0 12px; }
-  nav#cats a { display: inline-block; padding: 6px 10px; font-family: monospace; font-size: 12px; text-decoration: none; color: #000; border-right: 1px solid #000; text-transform: uppercase; }
-  nav#cats a:hover { background: #000; color: #fff; }
-  nav#cats a:first-child { border-left: none; }
+  /* NAV CATÉGORIES */
+  nav#cats { background: var(--bg2); border-bottom: 2px solid var(--violet); overflow-x: auto; white-space: nowrap; padding: 0 16px; }
+  nav#cats a { display: inline-block; padding: 8px 12px; font-size: 12px; text-decoration: none; color: var(--text2); border-right: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; transition: background 0.15s, color 0.15s; }
+  nav#cats a:hover, nav#cats a.active { background: var(--violet); color: #fff; }
 
-  /* MAIN LAYOUT */
-  main { max-width: 1200px; margin: 0 auto; padding: 0 12px; }
+  /* MAIN */
+  main { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
 
-  /* HERO — importance 1 */
-  #hero { border-bottom: 3px solid #000; padding: 20px 0; display: grid; grid-template-columns: 2fr 1fr; gap: 0; }
-  #hero-text { padding-right: 20px; border-right: 2px solid #000; }
-  #hero-text .cat-tag { font-family: monospace; font-size: 11px; text-transform: uppercase; background: #000; color: #fff; display: inline-block; padding: 2px 6px; margin-bottom: 8px; }
-  #hero-text h2 { font-size: 42px; line-height: 1.05; font-family: "Times New Roman", serif; margin-bottom: 10px; }
-  #hero-text .excerpt { font-size: 16px; line-height: 1.5; color: #333; margin-bottom: 8px; }
-  #hero-text .meta { font-family: monospace; font-size: 11px; color: #555; }
-  #hero-text .meta a { color: #000; }
-  #hero-img { padding-left: 20px; display: flex; flex-direction: column; justify-content: flex-start; }
-  #hero-img .placeholder-img { background: #ccc; border: 2px solid #000; width: 100%; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; font-family: monospace; font-size: 11px; color: #555; }
+  /* HERO — IMPORTANCE 1 */
+  #hero { border-bottom: 2px solid var(--border); padding: 28px 0; display: grid; grid-template-columns: 2fr 1fr; gap: 0; }
+  #hero-text { padding-right: 28px; border-right: 1.5px solid var(--border); }
+  .cat-tag { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; background: var(--violet); color: #fff; display: inline-block; padding: 3px 8px; margin-bottom: 10px; border-radius: 2px; }
+  .cat-tag.light { background: transparent; border: 1.5px solid var(--violet-mid); color: var(--violet-mid); }
+  #hero-text h2 { font-family: 'Playfair Display', serif; font-size: 40px; line-height: 1.1; color: var(--violet2); margin-bottom: 12px; }
+  #hero-text .excerpt { font-size: 17px; line-height: 1.6; color: var(--text2); margin-bottom: 10px; }
+  #hero-text .meta { font-size: 12px; color: var(--text3); }
+  #hero-text .meta a { color: var(--violet-mid); text-decoration: none; }
+  #hero-img { padding-left: 28px; }
+  #hero-img .placeholder-img { background: var(--bg3); border: 1.5px solid var(--border); width: 100%; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--text3); border-radius: 4px; }
 
-  /* IMPORTANCE 2 + 3 + 4 */
-  #tier234 { display: grid; grid-template-columns: 1fr 1fr 240px; gap: 0; border-bottom: 3px solid #000; }
+  /* TIER 2-3-4 */
+  #tier234 { display: grid; grid-template-columns: 1fr 1fr 240px; border-bottom: 2px solid var(--border); }
 
-  /* Importance 2 */
-  .imp2 { border-right: 2px solid #000; padding: 16px 16px 16px 0; }
-  .imp2 .cat-tag { font-family: monospace; font-size: 11px; text-transform: uppercase; background: #555; color: #fff; display: inline-block; padding: 2px 6px; margin-bottom: 6px; }
-  .imp2 h3 { font-size: 24px; line-height: 1.1; margin-bottom: 6px; }
-  .imp2 .excerpt { font-size: 14px; line-height: 1.4; color: #333; }
-  .imp2 .meta { font-family: monospace; font-size: 11px; color: #555; margin-top: 6px; }
-  .imp2 .placeholder-img { background: #ddd; border: 1px solid #000; width: 100%; height: 120px; display: flex; align-items: center; justify-content: center; font-family: monospace; font-size: 10px; color: #666; margin-bottom: 8px; }
+  .imp2 { border-right: 1.5px solid var(--border); padding: 20px 20px 20px 0; }
+  .imp2 .placeholder-img { background: var(--bg3); border: 1px solid var(--border); width: 100%; height: 130px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text3); margin-bottom: 10px; border-radius: 3px; }
+  .imp2 h3 { font-family: 'Playfair Display', serif; font-size: 22px; line-height: 1.15; color: var(--violet2); margin-bottom: 6px; }
+  .imp2 .excerpt { font-size: 13px; line-height: 1.5; color: var(--text2); }
+  .imp2 .meta { font-size: 11px; color: var(--text3); margin-top: 8px; }
 
-  /* Importance 3 */
-  .imp3 { border-right: 2px solid #000; padding: 16px; }
-  .imp3 .cat-tag { font-family: monospace; font-size: 11px; text-transform: uppercase; border: 1px solid #000; display: inline-block; padding: 2px 6px; margin-bottom: 6px; }
-  .imp3 h3 { font-size: 20px; line-height: 1.1; margin-bottom: 6px; }
-  .imp3 .excerpt { font-size: 13px; line-height: 1.4; color: #444; }
-  .imp3 .meta { font-family: monospace; font-size: 11px; color: #555; margin-top: 6px; }
-  .imp3 .placeholder-img { background: #eee; border: 1px solid #000; width: 100%; height: 90px; display: flex; align-items: center; justify-content: center; font-family: monospace; font-size: 10px; color: #888; margin-bottom: 8px; }
+  .imp3 { border-right: 1.5px solid var(--border); padding: 20px; }
+  .imp3 .placeholder-img { background: var(--bg3); border: 1px solid var(--border); width: 100%; height: 100px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text3); margin-bottom: 10px; border-radius: 3px; }
+  .imp3 h3 { font-family: 'Playfair Display', serif; font-size: 18px; line-height: 1.2; color: var(--violet2); margin-bottom: 6px; }
+  .imp3 .excerpt { font-size: 13px; line-height: 1.4; color: var(--text2); }
+  .imp3 .meta { font-size: 11px; color: var(--text3); margin-top: 8px; }
 
-  /* Importance 4 — liste */
-  .imp4-list { padding: 16px 0 16px 16px; }
-  .imp4-list h4 { font-family: monospace; font-size: 12px; text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 4px; margin-bottom: 10px; }
-  .imp4-item { border-bottom: 1px solid #ccc; padding: 8px 0; }
+  .imp4-list { padding: 20px 0 20px 20px; }
+  .imp4-list h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--violet-mid); border-bottom: 1.5px solid var(--border); padding-bottom: 6px; margin-bottom: 12px; font-weight: 600; }
+  .imp4-item { border-bottom: 1px solid var(--bg3); padding: 8px 0; }
   .imp4-item:last-child { border-bottom: none; }
-  .imp4-item .cat-tag { font-family: monospace; font-size: 10px; text-transform: uppercase; color: #555; }
+  .imp4-item .cat-small { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--violet-mid); font-weight: 600; }
   .imp4-item h5 { font-size: 13px; line-height: 1.3; margin-top: 2px; }
-  .imp4-item h5 a { color: #000; text-decoration: none; }
-  .imp4-item h5 a:hover { text-decoration: underline; }
-  .imp4-item .meta { font-family: monospace; font-size: 10px; color: #888; }
-
-  /* GRILLE ARTICLES */
-  #grid-section { padding: 20px 0; }
-  #grid-section h2.section-title { font-family: monospace; font-size: 13px; text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 4px; margin-bottom: 16px; }
-  .article-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
-  .article-card { border: 1px solid #000; border-collapse: collapse; margin: -1px; padding: 12px; }
-  .article-card .cat-tag { font-family: monospace; font-size: 10px; text-transform: uppercase; border: 1px solid #000; display: inline-block; padding: 1px 5px; margin-bottom: 6px; }
-  .article-card h3 { font-size: 16px; line-height: 1.2; margin-bottom: 6px; }
-  .article-card h3 a { color: #000; text-decoration: none; }
-  .article-card h3 a:hover { text-decoration: underline; }
-  .article-card .author { font-family: monospace; font-size: 11px; color: #555; }
-  .article-card .placeholder-img { background: #f0f0f0; border: 1px solid #ccc; width: 100%; height: 80px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-family: monospace; font-size: 10px; color: #aaa; }
+  .imp4-item h5 a { color: var(--text); text-decoration: none; }
+  .imp4-item h5 a:hover { color: var(--violet-mid); }
+  .imp4-item .meta { font-size: 10px; color: var(--text3); margin-top: 2px; }
 
   /* NEWSLETTER */
-  #newsletter { border-top: 3px solid #000; border-bottom: 3px solid #000; padding: 16px 0; margin: 20px 0; display: flex; align-items: center; gap: 16px; background: #f5f5f5; }
-  #newsletter p { font-family: monospace; font-size: 13px; }
-  #newsletter strong { font-family: "Times New Roman", serif; font-size: 20px; display: block; }
+  #newsletter { background: var(--violet2); border-radius: 6px; padding: 20px 24px; margin: 28px 0; display: flex; align-items: center; gap: 24px; }
+  #newsletter .nl-text strong { font-family: 'Playfair Display', serif; font-size: 20px; color: #fff; display: block; margin-bottom: 4px; }
+  #newsletter .nl-text p { font-size: 13px; color: var(--violet-light); }
   #newsletter form { display: flex; gap: 0; flex: 1; }
-  #newsletter input[type="email"] { flex: 1; border: 2px solid #000; padding: 6px 10px; font-family: monospace; font-size: 13px; outline: none; }
-  #newsletter button { border: 2px solid #000; border-left: none; background: #000; color: #fff; padding: 6px 16px; font-family: monospace; font-size: 13px; cursor: pointer; }
+  #newsletter input[type="email"] { flex: 1; border: 1.5px solid var(--violet-mid); border-right: none; padding: 8px 12px; font-family: 'Source Sans 3', sans-serif; font-size: 13px; background: var(--bg); color: var(--text); outline: none; border-radius: 4px 0 0 4px; }
+  #newsletter button { border: 1.5px solid var(--violet-light); background: var(--violet-mid); color: #fff; padding: 8px 18px; font-family: 'Source Sans 3', sans-serif; font-size: 13px; cursor: pointer; border-radius: 0 4px 4px 0; letter-spacing: 0.04em; }
+  #newsletter button:hover { background: var(--violet-light); color: var(--violet2); }
+
+  /* GRILLE */
+  #grid-section { padding: 20px 0 32px; }
+  #grid-section h2.section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--violet-mid); border-bottom: 2px solid var(--border); padding-bottom: 6px; margin-bottom: 20px; font-weight: 600; }
+  .article-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  .article-card { background: var(--bg); padding: 16px; }
+  .article-card .placeholder-img { background: var(--bg3); border: 1px solid var(--bg3); width: 100%; height: 90px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text3); margin-bottom: 10px; border-radius: 3px; }
+  .article-card h3 { font-family: 'Playfair Display', serif; font-size: 16px; line-height: 1.25; margin-bottom: 6px; color: var(--violet2); }
+  .article-card h3 a { color: inherit; text-decoration: none; }
+  .article-card h3 a:hover { color: var(--violet-mid); }
+  .article-card .author { font-size: 11px; color: var(--text3); }
 
   /* FOOTER */
-  footer { border-top: 4px solid #000; padding: 16px 12px; font-family: monospace; font-size: 11px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-  footer h4 { font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 4px; margin-bottom: 8px; }
+  footer { background: var(--violet2); color: var(--violet-light); padding: 28px 16px 16px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-top: 0; }
+  footer h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #fff; border-bottom: 1px solid var(--violet-mid); padding-bottom: 6px; margin-bottom: 10px; }
   footer ul { list-style: none; }
-  footer ul li { margin-bottom: 4px; }
-  footer ul li a { color: #000; text-decoration: none; }
-  footer ul li a:hover { text-decoration: underline; }
-  footer .copy { border-top: 1px solid #000; margin-top: 4px; padding-top: 8px; font-size: 10px; color: #555; }
+  footer ul li { margin-bottom: 5px; }
+  footer ul li a { color: var(--violet-light); text-decoration: none; font-size: 13px; }
+  footer ul li a:hover { color: #fff; }
+  footer p { font-size: 13px; line-height: 1.5; color: var(--violet-light); }
+  footer .copy { border-top: 1px solid var(--violet-mid); margin-top: 12px; padding-top: 10px; font-size: 11px; color: var(--text3); }
 
-  /* RESPONSIVE */
   @media(max-width: 900px) {
     #hero { grid-template-columns: 1fr; }
-    #hero-text { border-right: none; border-bottom: 2px solid #000; padding-right: 0; padding-bottom: 16px; }
+    #hero-text { border-right: none; border-bottom: 1.5px solid var(--border); padding-right: 0; padding-bottom: 20px; }
     #hero-img { padding-left: 0; padding-top: 16px; }
     #tier234 { grid-template-columns: 1fr; }
-    .imp2, .imp3 { border-right: none; border-bottom: 2px solid #000; }
+    .imp2, .imp3 { border-right: none; border-bottom: 1.5px solid var(--border); padding: 16px 0; }
     .imp4-list { padding-left: 0; }
     .article-grid { grid-template-columns: 1fr 1fr; }
     footer { grid-template-columns: 1fr; }
+    #newsletter { flex-direction: column; }
   }
   @media(max-width: 600px) {
     header h1 { font-size: 40px; }
@@ -117,106 +135,99 @@
 </head>
 <body>
 
-<!-- TOPBAR -->
 <div id="topbar">
-  <span>Mercredi 1 avril 2026</span>
-  <span><a href="connexion.html" style="color:#fff; text-decoration:none;">Connexion</a> | <a href="#newsletter" style="color:#fff; text-decoration:none;">S'abonner</a></span>
+  <span>Mercredi 8 avril 2026</span>
+  <span>
+    <a href="connexion.html">Connexion</a> &nbsp;|&nbsp;
+    <a href="#newsletter">S'abonner</a>
+  </span>
 </div>
 
-<!-- HEADER -->
 <header>
   <h1>ÉCLAIRAGE</h1>
   <p class="tagline">Analyses &amp; actualités indépendantes — par des experts, pour tout le monde</p>
 </header>
 
-<!-- SEARCH -->
 <div id="searchbar">
   <input type="text" placeholder="Rechercher un article, un auteur, une thématique...">
   <button>CHERCHER</button>
 </div>
 
-<!-- CATEGORIES NAV -->
 <nav id="cats">
-  <a href="categorie.html">Toutes</a>
-  <a href="categorie.html">Politique</a>
-  <a href="categorie.html">Société</a>
-  <a href="categorie.html">Science</a>
-  <a href="categorie.html">Environnement</a>
-  <a href="categorie.html">Économie</a>
-  <a href="categorie.html">Culture</a>
-  <a href="categorie.html">International</a>
-  <a href="categorie.html">Entreprise</a>
-  <a href="categorie.html">Éducation &amp; Jeunesse</a>
-  <a href="categorie.html">Histoire</a>
+  <a href="index.html">Accueil</a>
+  <a href="categorie.html?cat=Politique">Politique</a>
+  <a href="categorie.html?cat=Société">Société</a>
+  <a href="categorie.html?cat=Science">Science</a>
+  <a href="categorie.html?cat=Environnement">Environnement</a>
+  <a href="categorie.html?cat=Économie">Économie</a>
+  <a href="categorie.html?cat=Culture">Culture</a>
+  <a href="categorie.html?cat=International">International</a>
+  <a href="categorie.html?cat=Entreprise">Entreprise</a>
+  <a href="categorie.html?cat=Éducation">Éducation &amp; Jeunesse</a>
+  <a href="categorie.html?cat=Histoire">Histoire</a>
 </nav>
 
 <main>
 
-  <!-- HERO — IMPORTANCE 1 -->
   <section id="hero">
     <div id="hero-text">
       <span class="cat-tag">Politique</span>
       <h2>La réforme des retraites fragilise le dialogue social en France</h2>
-      <p class="excerpt">Les syndicats annoncent une mobilisation nationale après l'échec des négociations au ministère du Travail. Décryptage des enjeux politiques et économiques d'une crise qui s'installe dans la durée.</p>
-      <p class="meta">Par <a href="#">Marie Dupont</a>, Professeure de sciences politiques — <time>31 mars 2026</time> · 8 min de lecture</p>
+      <p class="excerpt">Les syndicats annoncent une mobilisation nationale après l'échec des négociations au ministère du Travail. Décryptage des enjeux d'une crise qui s'installe dans la durée.</p>
+      <p class="meta">Par <a href="#">Marie Dupont</a>, Université de Lyon — <time>31 mars 2026</time> — 8 min de lecture</p>
     </div>
     <div id="hero-img">
       <div class="placeholder-img">[IMAGE PRINCIPALE]</div>
     </div>
   </section>
 
-  <!-- IMPORTANCE 2 + 3 + LISTE 4 -->
   <section id="tier234">
 
-    <!-- IMPORTANCE 2 -->
     <div class="imp2">
       <div class="placeholder-img">[IMAGE]</div>
-      <span class="cat-tag">Science</span>
-      <h3>Un vaccin contre la maladie d'Alzheimer entre en phase III d'essai clinique</h3>
-      <p class="excerpt">Des résultats préliminaires encourageants laissent espérer un traitement préventif d'ici 2030, selon une équipe internationale de chercheurs.</p>
-      <p class="meta">Par <a href="#">Pr. Jean Lefebvre</a> — <time>31 mars 2026</time></p>
+      <span class="cat-tag light">Science</span>
+      <h3>Un vaccin contre Alzheimer entre en phase III d'essai clinique</h3>
+      <p class="excerpt">Des résultats préliminaires encourageants laissent espérer un traitement préventif d'ici 2030.</p>
+      <p class="meta">Pr. Jean Lefebvre — 31 mars 2026</p>
     </div>
 
-    <!-- IMPORTANCE 3 -->
     <div class="imp3">
       <div class="placeholder-img">[IMAGE]</div>
-      <span class="cat-tag">Environnement</span>
+      <span class="cat-tag light">Environnement</span>
       <h3>Sécheresse : l'Espagne perd 40 % de ses réserves d'eau potable en un an</h3>
-      <p class="excerpt">La crise hydrique s'intensifie sur le pourtour méditerranéen, avec des conséquences directes sur l'agriculture et l'alimentation en eau des grandes villes.</p>
-      <p class="meta">Par <a href="#">Carla Ramos</a> — <time>30 mars 2026</time></p>
+      <p class="excerpt">La crise hydrique s'intensifie sur le pourtour méditerranéen, avec des conséquences directes sur l'agriculture.</p>
+      <p class="meta">Carla Ramos — 30 mars 2026</p>
     </div>
 
-    <!-- LISTE IMPORTANCE 4 -->
     <div class="imp4-list">
       <h4>À lire aussi</h4>
-
       <div class="imp4-item">
-        <span class="cat-tag">Économie</span>
+        <span class="cat-small">Économie</span>
         <h5><a href="article.html">La BCE maintient ses taux face à une inflation persistante</a></h5>
         <p class="meta">28 mars 2026</p>
       </div>
       <div class="imp4-item">
-        <span class="cat-tag">Société</span>
-        <h5><a href="article.html">Logement : les jeunes de moins de 30 ans de plus en plus exclus des grandes villes</a></h5>
+        <span class="cat-small">Société</span>
+        <h5><a href="article.html">Logement : les jeunes de moins de 30 ans exclus des grandes villes</a></h5>
         <p class="meta">28 mars 2026</p>
       </div>
       <div class="imp4-item">
-        <span class="cat-tag">Histoire</span>
+        <span class="cat-small">Histoire</span>
         <h5><a href="article.html">80 ans après, Nuremberg résonne encore dans le droit international</a></h5>
         <p class="meta">27 mars 2026</p>
       </div>
       <div class="imp4-item">
-        <span class="cat-tag">Culture</span>
-        <h5><a href="article.html">Intelligence artificielle et création littéraire : la frontière s'efface</a></h5>
+        <span class="cat-small">Culture</span>
+        <h5><a href="article.html">IA et création littéraire : la frontière s'efface</a></h5>
         <p class="meta">26 mars 2026</p>
       </div>
       <div class="imp4-item">
-        <span class="cat-tag">International</span>
-        <h5><a href="article.html">Sommet du G20 : les pays du Sud réclament une réforme du FMI</a></h5>
+        <span class="cat-small">International</span>
+        <h5><a href="article.html">Sommet G20 : les pays du Sud réclament une réforme du FMI</a></h5>
         <p class="meta">25 mars 2026</p>
       </div>
       <div class="imp4-item">
-        <span class="cat-tag">Éducation</span>
+        <span class="cat-small">Éducation</span>
         <h5><a href="article.html">École inclusive : les promesses non tenues de la loi de 2005</a></h5>
         <p class="meta">24 mars 2026</p>
       </div>
@@ -224,85 +235,75 @@
 
   </section>
 
-  <!-- NEWSLETTER -->
   <div id="newsletter">
-    <div>
+    <div class="nl-text">
       <strong>La lettre d'Éclairage</strong>
       <p>Chaque semaine, les analyses qui comptent, directement dans votre boîte mail.</p>
     </div>
     <form>
       <input type="email" placeholder="votre@email.com">
-      <button type="submit">S'ABONNER</button>
+      <button type="button">S'ABONNER</button>
     </form>
   </div>
 
-  <!-- GRILLE D'ARTICLES RÉCENTS -->
   <section id="grid-section">
     <h2 class="section-title">Articles récents</h2>
     <div class="article-grid">
-
       <div class="article-card">
         <div class="placeholder-img">[IMG]</div>
-        <span class="cat-tag">Entreprise</span>
+        <span class="cat-tag light">Entreprise</span>
         <h3><a href="article.html">Les PME françaises face à la hausse du coût de l'énergie industrielle</a></h3>
-        <p class="author">Par Thomas Martin — 30 mars 2026</p>
+        <p class="author">Thomas Martin — 30 mars 2026</p>
       </div>
-
       <div class="article-card">
         <div class="placeholder-img">[IMG]</div>
-        <span class="cat-tag">Éducation &amp; Jeunesse</span>
+        <span class="cat-tag light">Éducation &amp; Jeunesse</span>
         <h3><a href="article.html">Décrochage scolaire : que nous disent vraiment les chiffres officiels ?</a></h3>
-        <p class="author">Par Sophie Leclerc — 29 mars 2026</p>
+        <p class="author">Sophie Leclerc — 29 mars 2026</p>
       </div>
-
       <div class="article-card">
         <div class="placeholder-img">[IMG]</div>
-        <span class="cat-tag">International</span>
+        <span class="cat-tag light">International</span>
         <h3><a href="article.html">Taïwan et la Chine : un statu quo de plus en plus fragile</a></h3>
-        <p class="author">Par Paul Chen — 29 mars 2026</p>
+        <p class="author">Paul Chen — 29 mars 2026</p>
       </div>
-
       <div class="article-card">
         <div class="placeholder-img">[IMG]</div>
-        <span class="cat-tag">Société</span>
+        <span class="cat-tag light">Société</span>
         <h3><a href="article.html">Santé mentale au travail : la France à la traîne des pays nordiques</a></h3>
-        <p class="author">Par Claire Bernard — 28 mars 2026</p>
+        <p class="author">Claire Bernard — 28 mars 2026</p>
       </div>
-
       <div class="article-card">
         <div class="placeholder-img">[IMG]</div>
-        <span class="cat-tag">Science</span>
+        <span class="cat-tag light">Science</span>
         <h3><a href="article.html">CRISPR : les promesses et les limites de l'édition génétique en 2026</a></h3>
-        <p class="author">Par Dr. Alice Morin — 27 mars 2026</p>
+        <p class="author">Dr. Alice Morin — 27 mars 2026</p>
       </div>
-
       <div class="article-card">
         <div class="placeholder-img">[IMG]</div>
-        <span class="cat-tag">Culture</span>
+        <span class="cat-tag light">Culture</span>
         <h3><a href="article.html">Le retour des librairies indépendantes face à Amazon</a></h3>
-        <p class="author">Par Julien Fabre — 26 mars 2026</p>
+        <p class="author">Julien Fabre — 26 mars 2026</p>
       </div>
-
     </div>
   </section>
 
 </main>
 
-<!-- FOOTER -->
 <footer>
   <div>
     <h4>Rubriques</h4>
     <ul>
-      <li><a href="categorie.html">Politique</a></li>
-      <li><a href="categorie.html">Société</a></li>
-      <li><a href="categorie.html">Science</a></li>
-      <li><a href="categorie.html">Environnement</a></li>
-      <li><a href="categorie.html">Économie</a></li>
-      <li><a href="categorie.html">Culture</a></li>
-      <li><a href="categorie.html">International</a></li>
-      <li><a href="categorie.html">Entreprise</a></li>
-      <li><a href="categorie.html">Histoire</a></li>
-      <li><a href="categorie.html">Éducation &amp; Jeunesse</a></li>
+      <li><a href="categorie.html?cat=Politique">Politique</a></li>
+      <li><a href="categorie.html?cat=Société">Société</a></li>
+      <li><a href="categorie.html?cat=Science">Science</a></li>
+      <li><a href="categorie.html?cat=Environnement">Environnement</a></li>
+      <li><a href="categorie.html?cat=Économie">Économie</a></li>
+      <li><a href="categorie.html?cat=Culture">Culture</a></li>
+      <li><a href="categorie.html?cat=International">International</a></li>
+      <li><a href="categorie.html?cat=Entreprise">Entreprise</a></li>
+      <li><a href="categorie.html?cat=Histoire">Histoire</a></li>
+      <li><a href="categorie.html?cat=Éducation">Éducation &amp; Jeunesse</a></li>
     </ul>
   </div>
   <div>

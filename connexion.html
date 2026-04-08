@@ -4,56 +4,78 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Connexion — Éclairage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: "Times New Roman", Times, serif; background: #fff; color: #000; font-size: 16px; min-height: 100vh; }
-  #topbar { background: #000; color: #fff; padding: 4px 12px; font-family: monospace; font-size: 12px; display: flex; justify-content: space-between; }
-  header { border-bottom: 4px solid #000; padding: 12px; }
-  header a { font-size: 36px; font-family: "Times New Roman", serif; text-decoration: none; color: #000; letter-spacing: -1px; }
-
-  .login-wrap { max-width: 420px; margin: 48px auto; padding: 0 12px; }
-  .login-box { border: 3px solid #000; padding: 32px; }
-  .login-box h1 { font-size: 28px; margin-bottom: 4px; }
-  .login-box p.sub { font-family: monospace; font-size: 12px; color: #555; margin-bottom: 24px; border-bottom: 1px solid #ccc; padding-bottom: 16px; }
-
-  label { display: block; font-family: monospace; font-size: 12px; text-transform: uppercase; margin-bottom: 4px; margin-top: 16px; }
-  input[type="email"], input[type="password"], input[type="text"] {
-    display: block; width: 100%; border: 2px solid #000; padding: 8px 10px;
-    font-family: monospace; font-size: 14px; outline: none;
+  :root {
+    --bg: #F5F0E8; --bg2: #EDE7D9; --bg3: #E4DDD0;
+    --violet: #3B1F5E; --violet2: #2A1445; --violet-mid: #6B4A9B;
+    --violet-light: #C4B0DC; --text: #2A1445; --text2: #5A4070;
+    --text3: #8B7AA0; --border: #C4B0DC; --border2: #9B88B8;
   }
-  input:focus { border-color: #000; background: #f9f9f9; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: 'Source Sans 3', sans-serif; background: var(--bg); color: var(--text); font-size: 16px; min-height: 100vh; }
 
-  .checkbox-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-family: monospace; font-size: 12px; }
-  input[type="checkbox"] { width: 16px; height: 16px; border: 2px solid #000; cursor: pointer; }
+  #topbar { background: var(--violet2); color: var(--violet-light); padding: 5px 16px; font-size: 12px; display: flex; justify-content: space-between; }
+  #topbar a { color: var(--violet-light); text-decoration: none; }
+  #topbar a:hover { color: #fff; }
 
-  .btn-primary { display: block; width: 100%; margin-top: 24px; background: #000; color: #fff; border: 2px solid #000; padding: 10px; font-family: monospace; font-size: 14px; text-transform: uppercase; cursor: pointer; letter-spacing: 1px; }
-  .btn-primary:hover { background: #333; }
+  header { background: var(--bg); border-bottom: 2px solid var(--violet); padding: 20px 16px 12px; }
+  header a { font-family: 'Playfair Display', serif; font-size: 56px; letter-spacing: -2px; line-height: 1; color: var(--violet2); text-decoration: none; }
 
-  .divider { border: none; border-top: 1px solid #ccc; margin: 20px 0; }
-
-  .login-box p.switch { font-family: monospace; font-size: 12px; text-align: center; }
-  .login-box p.switch a { color: #000; }
-
-  .forgotten { font-family: monospace; font-size: 11px; text-align: right; margin-top: 4px; }
-  .forgotten a { color: #555; }
+  .login-wrap { max-width: 440px; margin: 52px auto; padding: 0 16px; }
+  .login-box { background: var(--bg2); border: 1.5px solid var(--border); border-radius: 8px; padding: 36px 32px; }
+  .login-box h1 { font-family: 'Playfair Display', serif; font-size: 30px; color: var(--violet2); margin-bottom: 4px; }
+  .login-box p.sub { font-size: 13px; color: var(--text3); margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px; line-height: 1.5; }
 
   /* TABS */
-  .tabs { display: flex; border-bottom: 2px solid #000; margin-bottom: 24px; }
-  .tabs button { flex: 1; background: none; border: none; border-bottom: 4px solid transparent; padding: 10px; font-family: monospace; font-size: 13px; text-transform: uppercase; cursor: pointer; margin-bottom: -2px; }
-  .tabs button.active { border-bottom: 4px solid #000; font-weight: bold; }
+  .tabs { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 24px; }
+  .tabs button { flex: 1; background: none; border: none; border-bottom: 3px solid transparent; padding: 10px; font-family: 'Source Sans 3', sans-serif; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; cursor: pointer; margin-bottom: -2px; color: var(--text3); transition: color 0.15s, border-color 0.15s; }
+  .tabs button.active { border-bottom: 3px solid var(--violet); color: var(--violet); }
+  .tabs button:hover { color: var(--violet-mid); }
 
   .form-section { display: none; }
   .form-section.active { display: block; }
 
-  footer { border-top: 2px solid #000; padding: 12px; font-family: monospace; font-size: 11px; color: #555; text-align: center; margin-top: 48px; }
-  footer a { color: #000; }
+  label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; color: var(--text2); margin-bottom: 5px; margin-top: 18px; }
+  label:first-of-type { margin-top: 0; }
+  input[type="email"], input[type="password"], input[type="text"] {
+    display: block; width: 100%;
+    border: 1.5px solid var(--border2);
+    padding: 9px 12px;
+    font-family: 'Source Sans 3', sans-serif; font-size: 14px;
+    background: var(--bg); color: var(--text);
+    outline: none; border-radius: 5px;
+    transition: border-color 0.15s;
+  }
+  input:focus { border-color: var(--violet-mid); }
+
+  .checkbox-row { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 13px; color: var(--text2); }
+  input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--violet); }
+
+  .btn-primary { display: block; width: 100%; margin-top: 24px; background: var(--violet); color: #fff; border: none; padding: 11px; font-family: 'Source Sans 3', sans-serif; font-size: 14px; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; border-radius: 5px; font-weight: 600; transition: background 0.15s; }
+  .btn-primary:hover { background: var(--violet2); }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+  .login-box p.switch { font-size: 13px; text-align: center; color: var(--text3); }
+  .login-box p.switch a { color: var(--violet-mid); text-decoration: none; }
+  .login-box p.switch a:hover { text-decoration: underline; }
+
+  .forgotten { font-size: 12px; text-align: right; margin-top: 5px; }
+  .forgotten a { color: var(--text3); text-decoration: none; }
+  .forgotten a:hover { color: var(--violet-mid); }
+
+  footer { background: var(--violet2); padding: 16px; font-size: 13px; color: var(--violet-light); text-align: center; margin-top: 52px; }
+  footer a { color: var(--violet-light); text-decoration: none; }
+  footer a:hover { color: #fff; }
 </style>
 </head>
 <body>
 
 <div id="topbar">
-  <span>Mercredi 1 avril 2026</span>
-  <span><a href="index.html" style="color:#fff; text-decoration:none;">Retour au site</a></span>
+  <span>Mercredi 8 avril 2026</span>
+  <span><a href="index.html">← Retour au site</a></span>
 </div>
 
 <header>
@@ -81,11 +103,10 @@
 
       <div class="checkbox-row">
         <input type="checkbox" id="remember">
-        <label for="remember" style="margin: 0; text-transform: none;">Se souvenir de moi</label>
+        <label for="remember" style="margin:0; text-transform:none; font-weight:400;">Se souvenir de moi</label>
       </div>
 
       <button class="btn-primary">Se connecter</button>
-
       <hr class="divider">
       <p class="switch">Pas encore de compte ? <a href="#" onclick="switchTabByName('inscription')">Créer un compte</a></p>
     </div>
@@ -109,16 +130,14 @@
 
       <div class="checkbox-row">
         <input type="checkbox" id="newsletter">
-        <label for="newsletter" style="margin:0; text-transform:none;">Recevoir la newsletter hebdomadaire</label>
+        <label for="newsletter" style="margin:0; text-transform:none; font-weight:400;">Recevoir la newsletter hebdomadaire</label>
       </div>
-
       <div class="checkbox-row">
         <input type="checkbox" id="cgu">
-        <label for="cgu" style="margin:0; text-transform:none;">J'accepte les <a href="#">conditions d'utilisation</a></label>
+        <label for="cgu" style="margin:0; text-transform:none; font-weight:400;">J'accepte les <a href="#" style="color:var(--violet-mid);">conditions d'utilisation</a></label>
       </div>
 
       <button class="btn-primary">Créer mon compte</button>
-
       <hr class="divider">
       <p class="switch">Déjà un compte ? <a href="#" onclick="switchTabByName('connexion')">Se connecter</a></p>
     </div>
@@ -137,8 +156,8 @@ function switchTab(id, btn) {
   btn.classList.add('active');
 }
 function switchTabByName(id) {
-  var btn = id === 'connexion' ? document.querySelectorAll('.tabs button')[0] : document.querySelectorAll('.tabs button')[1];
-  switchTab(id, btn);
+  var btns = document.querySelectorAll('.tabs button');
+  switchTab(id, id === 'connexion' ? btns[0] : btns[1]);
 }
 </script>
 </body>

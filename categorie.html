@@ -3,59 +3,74 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Politique — Éclairage</title>
+<title id="page-title">Catégorie — Éclairage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: "Times New Roman", Times, serif; background: #fff; color: #000; font-size: 16px; }
-  #topbar { background: #000; color: #fff; padding: 4px 12px; font-family: monospace; font-size: 12px; display: flex; justify-content: space-between; }
-  header { border-bottom: 4px solid #000; padding: 12px; }
-  header a { font-size: 36px; font-family: "Times New Roman", serif; text-decoration: none; color: #000; letter-spacing: -1px; }
-  nav#cats { border-bottom: 2px solid #000; overflow-x: auto; white-space: nowrap; padding: 0 12px; }
-  nav#cats a { display: inline-block; padding: 6px 10px; font-family: monospace; font-size: 12px; text-decoration: none; color: #000; border-right: 1px solid #000; text-transform: uppercase; }
-  nav#cats a:hover, nav#cats a.active { background: #000; color: #fff; }
+  :root {
+    --bg: #F5F0E8; --bg2: #EDE7D9; --bg3: #E4DDD0;
+    --violet: #3B1F5E; --violet2: #2A1445; --violet-mid: #6B4A9B;
+    --violet-light: #C4B0DC; --text: #2A1445; --text2: #5A4070;
+    --text3: #8B7AA0; --border: #C4B0DC; --border2: #9B88B8;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: 'Source Sans 3', sans-serif; background: var(--bg); color: var(--text); font-size: 16px; }
 
-  main { max-width: 1100px; margin: 0 auto; padding: 24px 12px; }
-  .cat-header { border-bottom: 4px solid #000; margin-bottom: 24px; padding-bottom: 10px; display: flex; align-items: baseline; gap: 16px; }
-  .cat-header h1 { font-size: 40px; }
-  .cat-header p { font-family: monospace; font-size: 12px; color: #555; }
+  #topbar { background: var(--violet2); color: var(--violet-light); padding: 5px 16px; font-size: 12px; display: flex; justify-content: space-between; }
+  #topbar a { color: var(--violet-light); text-decoration: none; }
+  #topbar a:hover { color: #fff; }
 
-  /* FILTERS */
-  .filters { font-family: monospace; font-size: 12px; margin-bottom: 16px; display: flex; gap: 0; border: 2px solid #000; display: inline-flex; }
-  .filters span { padding: 4px 12px; border-right: 1px solid #000; cursor: pointer; }
-  .filters span:hover, .filters span.active { background: #000; color: #fff; }
+  header { background: var(--bg); border-bottom: 2px solid var(--violet); padding: 20px 16px 12px; }
+  header a { font-family: 'Playfair Display', serif; font-size: 56px; letter-spacing: -2px; line-height: 1; color: var(--violet2); text-decoration: none; }
+
+  nav#cats { background: var(--bg2); border-bottom: 2px solid var(--violet); overflow-x: auto; white-space: nowrap; padding: 0 16px; }
+  nav#cats a { display: inline-block; padding: 8px 12px; font-size: 12px; text-decoration: none; color: var(--text2); border-right: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; transition: background 0.15s, color 0.15s; }
+  nav#cats a:hover, nav#cats a.active { background: var(--violet); color: #fff; }
+
+  main { max-width: 1100px; margin: 0 auto; padding: 28px 16px; }
+
+  .cat-header { border-bottom: 2px solid var(--violet); margin-bottom: 24px; padding-bottom: 12px; display: flex; align-items: baseline; gap: 16px; }
+  .cat-header h1 { font-family: 'Playfair Display', serif; font-size: 42px; color: var(--violet2); }
+  .cat-header p { font-size: 13px; color: var(--text3); }
+
+  .filters { font-size: 12px; margin-bottom: 20px; display: inline-flex; border: 1.5px solid var(--border2); border-radius: 4px; overflow: hidden; }
+  .filters span { padding: 6px 14px; cursor: pointer; color: var(--text2); border-right: 1px solid var(--border); transition: background 0.15s, color 0.15s; font-weight: 600; letter-spacing: 0.04em; }
   .filters span:last-child { border-right: none; }
+  .filters span:hover, .filters span.active { background: var(--violet); color: #fff; }
 
-  /* ARTICLE LIST */
   .article-list { }
-  .article-row { display: grid; grid-template-columns: 120px 1fr; gap: 16px; border-bottom: 1px solid #000; padding: 16px 0; align-items: start; }
-  .article-row .placeholder-img { background: #e0e0e0; border: 1px solid #000; width: 120px; height: 80px; display: flex; align-items: center; justify-content: center; font-family: monospace; font-size: 10px; color: #888; flex-shrink: 0; }
-  .article-row .cat-tag { font-family: monospace; font-size: 10px; text-transform: uppercase; background: #000; color: #fff; display: inline-block; padding: 1px 5px; margin-bottom: 4px; }
-  .article-row h2 { font-size: 20px; line-height: 1.1; margin-bottom: 4px; }
-  .article-row h2 a { color: #000; text-decoration: none; }
-  .article-row h2 a:hover { text-decoration: underline; }
-  .article-row .excerpt { font-size: 13px; color: #444; line-height: 1.4; margin-bottom: 4px; }
-  .article-row .meta { font-family: monospace; font-size: 11px; color: #777; }
+  .article-row { display: grid; grid-template-columns: 130px 1fr; gap: 20px; border-bottom: 1px solid var(--border); padding: 20px 0; align-items: start; }
+  .article-row .placeholder-img { background: var(--bg3); border: 1px solid var(--border); width: 130px; height: 88px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text3); border-radius: 3px; flex-shrink: 0; }
+  .cat-tag { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; background: var(--violet); color: #fff; display: inline-block; padding: 2px 7px; margin-bottom: 6px; border-radius: 2px; }
+  .article-row h2 { font-family: 'Playfair Display', serif; font-size: 21px; line-height: 1.15; margin-bottom: 5px; color: var(--violet2); }
+  .article-row h2 a { color: inherit; text-decoration: none; }
+  .article-row h2 a:hover { color: var(--violet-mid); }
+  .article-row .excerpt { font-size: 14px; color: var(--text2); line-height: 1.5; margin-bottom: 6px; }
+  .article-row .meta { font-size: 12px; color: var(--text3); }
 
-  /* PAGINATION */
-  .pagination { margin-top: 24px; font-family: monospace; font-size: 13px; display: flex; gap: 0; border: 2px solid #000; display: inline-flex; }
-  .pagination a { display: inline-block; padding: 6px 14px; text-decoration: none; color: #000; border-right: 1px solid #000; }
-  .pagination a:hover, .pagination a.active { background: #000; color: #fff; }
+  .pagination { margin-top: 28px; display: inline-flex; border: 1.5px solid var(--border2); border-radius: 4px; overflow: hidden; }
+  .pagination a { display: inline-block; padding: 7px 16px; text-decoration: none; color: var(--text2); border-right: 1px solid var(--border); font-size: 13px; font-weight: 600; transition: background 0.15s, color 0.15s; }
   .pagination a:last-child { border-right: none; }
+  .pagination a:hover, .pagination a.active { background: var(--violet); color: #fff; }
 
-  footer { border-top: 4px solid #000; padding: 12px; font-family: monospace; font-size: 11px; color: #555; margin-top: 32px; }
-  footer a { color: #000; }
+  footer { background: var(--violet2); color: var(--violet-light); padding: 28px 16px 16px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-top: 32px; }
+  footer h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #fff; border-bottom: 1px solid var(--violet-mid); padding-bottom: 6px; margin-bottom: 10px; }
+  footer a { color: var(--violet-light); text-decoration: none; font-size: 13px; }
+  footer a:hover { color: #fff; }
+  footer .copy { border-top: 1px solid var(--violet-mid); margin-top: 12px; padding-top: 10px; font-size: 11px; color: var(--text3); }
 
   @media(max-width: 600px) {
     .article-row { grid-template-columns: 1fr; }
     .article-row .placeholder-img { width: 100%; height: 120px; }
+    footer { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
 
 <div id="topbar">
-  <span>Mercredi 1 avril 2026</span>
-  <span><a href="connexion.html" style="color:#fff; text-decoration:none;">Connexion</a></span>
+  <span>Mercredi 8 avril 2026</span>
+  <span><a href="connexion.html">Connexion</a></span>
 </div>
 
 <header>
@@ -64,22 +79,22 @@
 
 <nav id="cats">
   <a href="index.html">Accueil</a>
-  <a href="categorie.html" class="active">Politique</a>
-  <a href="categorie.html">Société</a>
-  <a href="categorie.html">Science</a>
-  <a href="categorie.html">Environnement</a>
-  <a href="categorie.html">Économie</a>
-  <a href="categorie.html">Culture</a>
-  <a href="categorie.html">International</a>
-  <a href="categorie.html">Entreprise</a>
-  <a href="categorie.html">Éducation &amp; Jeunesse</a>
-  <a href="categorie.html">Histoire</a>
+  <a href="categorie.html?cat=Politique">Politique</a>
+  <a href="categorie.html?cat=Société">Société</a>
+  <a href="categorie.html?cat=Science">Science</a>
+  <a href="categorie.html?cat=Environnement">Environnement</a>
+  <a href="categorie.html?cat=Économie">Économie</a>
+  <a href="categorie.html?cat=Culture">Culture</a>
+  <a href="categorie.html?cat=International">International</a>
+  <a href="categorie.html?cat=Entreprise">Entreprise</a>
+  <a href="categorie.html?cat=Éducation">Éducation &amp; Jeunesse</a>
+  <a href="categorie.html?cat=Histoire">Histoire</a>
 </nav>
 
 <main>
   <div class="cat-header">
-    <h1>Politique</h1>
-    <p>47 articles</p>
+    <h1 id="cat-title">Catégorie</h1>
+    <p id="cat-count"></p>
   </div>
 
   <div class="filters">
@@ -89,72 +104,138 @@
     <span>Ce mois</span>
   </div>
 
-  <div class="article-list">
-
-    <div class="article-row">
-      <div class="placeholder-img">[IMG]</div>
-      <div>
-        <span class="cat-tag">Politique</span>
-        <h2><a href="article.html">La réforme des retraites fragilise le dialogue social en France</a></h2>
-        <p class="excerpt">Les syndicats annoncent une mobilisation nationale après l'échec des négociations. Décryptage des enjeux d'une crise qui s'installe dans la durée.</p>
-        <p class="meta">Marie Dupont — 31 mars 2026 — 8 min</p>
-      </div>
-    </div>
-
-    <div class="article-row">
-      <div class="placeholder-img">[IMG]</div>
-      <div>
-        <span class="cat-tag">Politique</span>
-        <h2><a href="article.html">Après les législatives, la recomposition politique s'accélère</a></h2>
-        <p class="excerpt">L'émergence de nouveaux partis et alliances recompose profondément le paysage politique français depuis les élections de l'automne 2025.</p>
-        <p class="meta">Antoine Garnier — 28 mars 2026 — 6 min</p>
-      </div>
-    </div>
-
-    <div class="article-row">
-      <div class="placeholder-img">[IMG]</div>
-      <div>
-        <span class="cat-tag">Politique</span>
-        <h2><a href="article.html">Décentralisation : les régions veulent plus de pouvoir fiscal</a></h2>
-        <p class="excerpt">Un rapport sénatorial préconise de transférer une partie de la fiscalité nationale aux régions. Ce que cela changerait concrètement.</p>
-        <p class="meta">Isabelle Fontaine — 25 mars 2026 — 5 min</p>
-      </div>
-    </div>
-
-    <div class="article-row">
-      <div class="placeholder-img">[IMG]</div>
-      <div>
-        <span class="cat-tag">Politique</span>
-        <h2><a href="article.html">Le Parlement européen face à la montée des partis nationalistes</a></h2>
-        <p class="excerpt">Analyse des dynamiques politiques à Bruxelles un an après les élections européennes de 2025 et leur impact sur la législation communautaire.</p>
-        <p class="meta">Nicolas Petrov — 22 mars 2026 — 10 min</p>
-      </div>
-    </div>
-
-    <div class="article-row">
-      <div class="placeholder-img">[IMG]</div>
-      <div>
-        <span class="cat-tag">Politique</span>
-        <h2><a href="article.html">Réforme constitutionnelle : les limites du pouvoir exécutif en question</a></h2>
-        <p class="excerpt">Un projet d'amendement constitutionnel relance le débat sur l'équilibre des pouvoirs entre exécutif et législatif sous la Ve République.</p>
-        <p class="meta">Lucie Marchand — 19 mars 2026 — 7 min</p>
-      </div>
-    </div>
-
+  <div class="article-list" id="article-list">
+    <!-- Rempli dynamiquement par JS -->
   </div>
 
   <div class="pagination">
     <a href="#" class="active">1</a>
     <a href="#">2</a>
     <a href="#">3</a>
-    <a href="#">4</a>
     <a href="#">→ Suivant</a>
   </div>
 </main>
 
 <footer>
-  <a href="index.html">ÉCLAIRAGE</a> — <a href="#">À propos</a> — <a href="#">Contact</a> — <a href="connexion.html">Connexion</a> — © 2026 Tous droits réservés
+  <div>
+    <h4>Rubriques</h4>
+    <p><a href="categorie.html?cat=Politique">Politique</a></p>
+    <p style="margin-top:4px"><a href="categorie.html?cat=Société">Société</a></p>
+    <p style="margin-top:4px"><a href="categorie.html?cat=Science">Science</a></p>
+    <p style="margin-top:4px"><a href="categorie.html?cat=Environnement">Environnement</a></p>
+    <p style="margin-top:4px"><a href="categorie.html?cat=Économie">Économie</a></p>
+    <p style="margin-top:4px"><a href="categorie.html?cat=Culture">Culture</a></p>
+  </div>
+  <div>
+    <h4>Le site</h4>
+    <p><a href="#">À propos</a></p>
+    <p style="margin-top:4px"><a href="#">Nous contacter</a></p>
+    <p style="margin-top:4px"><a href="connexion.html">Connexion</a></p>
+  </div>
+  <div>
+    <h4>Éclairage</h4>
+    <p style="font-size:13px; line-height:1.5; color:var(--violet-light);">Analyses indépendantes par des experts académiques et professionnels.</p>
+    <p class="copy">© 2026 Éclairage — Tous droits réservés</p>
+  </div>
 </footer>
 
+<script>
+// Données fictives par catégorie
+const DATA = {
+  "Politique": [
+    { titre: "La réforme des retraites fragilise le dialogue social en France", extrait: "Les syndicats annoncent une mobilisation nationale après l'échec des négociations.", auteur: "Marie Dupont", date: "31 mars 2026", duree: "8 min" },
+    { titre: "Après les législatives, la recomposition politique s'accélère", extrait: "L'émergence de nouveaux partis recompose profondément le paysage politique français.", auteur: "Antoine Garnier", date: "28 mars 2026", duree: "6 min" },
+    { titre: "Décentralisation : les régions veulent plus de pouvoir fiscal", extrait: "Un rapport sénatorial préconise de transférer une partie de la fiscalité nationale aux régions.", auteur: "Isabelle Fontaine", date: "25 mars 2026", duree: "5 min" },
+    { titre: "Le Parlement européen face à la montée des partis nationalistes", extrait: "Analyse des dynamiques politiques à Bruxelles un an après les élections européennes.", auteur: "Nicolas Petrov", date: "22 mars 2026", duree: "10 min" },
+    { titre: "Réforme constitutionnelle : les limites du pouvoir exécutif en question", extrait: "Un projet d'amendement relance le débat sur l'équilibre des pouvoirs sous la Ve République.", auteur: "Lucie Marchand", date: "19 mars 2026", duree: "7 min" },
+  ],
+  "Société": [
+    { titre: "Logement : les jeunes de moins de 30 ans exclus des grandes villes", extrait: "La hausse des loyers et la rareté des biens accessibles repoussent les jeunes actifs vers la périphérie.", auteur: "Camille Renard", date: "28 mars 2026", duree: "6 min" },
+    { titre: "Santé mentale au travail : la France à la traîne des pays nordiques", extrait: "Malgré les plans gouvernementaux, le burn-out reste sous-diagnostiqué et peu pris en charge.", auteur: "Claire Bernard", date: "26 mars 2026", duree: "5 min" },
+    { titre: "Le vieillissement de la population redessine la carte des services publics", extrait: "Les régions rurales font face à une pénurie croissante de médecins et de structures d'accueil.", auteur: "François Duval", date: "23 mars 2026", duree: "8 min" },
+  ],
+  "Science": [
+    { titre: "Un vaccin contre Alzheimer entre en phase III d'essai clinique", extrait: "Des résultats préliminaires encourageants laissent espérer un traitement préventif d'ici 2030.", auteur: "Pr. Jean Lefebvre", date: "31 mars 2026", duree: "9 min" },
+    { titre: "CRISPR : les promesses et les limites de l'édition génétique en 2026", extrait: "La technique révolutionnaire se heurte à des obstacles éthiques et techniques encore non résolus.", auteur: "Dr. Alice Morin", date: "27 mars 2026", duree: "7 min" },
+    { titre: "Le CERN annonce une nouvelle particule candidate au-delà du boson de Higgs", extrait: "Une anomalie dans les données du LHC suscite l'enthousiasme de la communauté de physique des particules.", auteur: "Hugo Marceau", date: "20 mars 2026", duree: "6 min" },
+  ],
+  "Environnement": [
+    { titre: "Sécheresse : l'Espagne perd 40 % de ses réserves d'eau potable en un an", extrait: "La crise hydrique s'intensifie sur le pourtour méditerranéen avec des effets directs sur l'agriculture.", auteur: "Carla Ramos", date: "30 mars 2026", duree: "7 min" },
+    { titre: "Biodiversité marine : un tiers des récifs coralliens menacés de disparition d'ici 2040", extrait: "Le réchauffement des océans accélère le blanchissement des coraux à un rythme sans précédent.", auteur: "Marine Bel", date: "25 mars 2026", duree: "8 min" },
+  ],
+  "Économie": [
+    { titre: "La BCE maintient ses taux face à une inflation persistante", extrait: "Les gouverneurs de la BCE ont voté à l'unanimité pour le maintien des taux directeurs lors de la réunion de mars.", auteur: "Pierre Vidal", date: "28 mars 2026", duree: "5 min" },
+    { titre: "Les PME françaises face à la hausse du coût de l'énergie industrielle", extrait: "Malgré les aides publiques, de nombreuses petites entreprises envisagent de délocaliser une partie de leur production.", auteur: "Thomas Martin", date: "30 mars 2026", duree: "6 min" },
+  ],
+  "Culture": [
+    { titre: "Le retour des librairies indépendantes face à Amazon", extrait: "Portées par un mouvement de consommation locale, les librairies de quartier résistent mieux qu'attendu.", auteur: "Julien Fabre", date: "26 mars 2026", duree: "5 min" },
+    { titre: "IA et création littéraire : la frontière s'efface", extrait: "Les outils génératifs s'invitent dans l'écriture romanesque, soulevant des questions sur l'originalité et le droit d'auteur.", auteur: "Nadia Korel", date: "24 mars 2026", duree: "7 min" },
+  ],
+  "International": [
+    { titre: "Taïwan et la Chine : un statu quo de plus en plus fragile", extrait: "Les manœuvres militaires chinoises dans le détroit s'intensifient, testant la réponse diplomatique des États-Unis.", auteur: "Paul Chen", date: "29 mars 2026", duree: "9 min" },
+    { titre: "Sommet G20 : les pays du Sud réclament une réforme du FMI", extrait: "Les économies émergentes dénoncent des règles de vote jugées archaïques et favorables aux puissances occidentales.", auteur: "Amara Diop", date: "25 mars 2026", duree: "8 min" },
+  ],
+  "Entreprise": [
+    { titre: "Les PME françaises face à la hausse du coût de l'énergie industrielle", extrait: "Malgré les aides publiques, de nombreuses petites entreprises envisagent de délocaliser.", auteur: "Thomas Martin", date: "30 mars 2026", duree: "6 min" },
+    { titre: "Startups françaises : le difficile accès aux grands marchés européens", extrait: "Les jeunes pousses hexagonales peinent à s'imposer face aux acteurs allemands et nordiques.", auteur: "Éléonore Baudin", date: "22 mars 2026", duree: "5 min" },
+  ],
+  "Éducation": [
+    { titre: "Décrochage scolaire : que nous disent vraiment les chiffres officiels ?", extrait: "Les statistiques gouvernementales minimisent l'ampleur réelle du phénomène selon plusieurs chercheurs en éducation.", auteur: "Sophie Leclerc", date: "29 mars 2026", duree: "6 min" },
+    { titre: "École inclusive : les promesses non tenues de la loi de 2005", extrait: "Vingt ans après, les enfants en situation de handicap se heurtent encore à de nombreux obstacles dans le système scolaire.", auteur: "Rémi Laporte", date: "24 mars 2026", duree: "7 min" },
+  ],
+  "Histoire": [
+    { titre: "80 ans après, Nuremberg résonne encore dans le droit international", extrait: "Les principes établis lors du procès de Nuremberg continuent d'influencer la justice pénale internationale contemporaine.", auteur: "Prof. Hélène Bauer", date: "27 mars 2026", duree: "10 min" },
+    { titre: "La Commune de Paris de 1871, matrice oubliée de la République sociale", extrait: "Historiens et politologues revisitent cet épisode fondateur à la lumière des débats actuels sur la démocratie directe.", auteur: "Laurent Giry", date: "20 mars 2026", duree: "9 min" },
+  ],
+};
+
+function getParam(name) {
+  return new URLSearchParams(window.location.search).get(name);
+}
+
+function init() {
+  const cat = getParam('cat') || 'Politique';
+  const displayCat = cat === 'Éducation' ? 'Éducation & Jeunesse' : cat;
+
+  // Titre page
+  document.title = displayCat + ' — Éclairage';
+  document.getElementById('page-title').textContent = displayCat + ' — Éclairage';
+  document.getElementById('cat-title').textContent = displayCat;
+
+  // Marquer lien actif dans nav
+  document.querySelectorAll('nav#cats a').forEach(a => {
+    a.classList.remove('active');
+    const href = a.getAttribute('href');
+    if (href && href.includes('cat=' + cat)) a.classList.add('active');
+  });
+
+  // Articles
+  const articles = DATA[cat] || DATA['Politique'];
+  document.getElementById('cat-count').textContent = articles.length + ' articles';
+
+  const list = document.getElementById('article-list');
+  list.innerHTML = articles.map(art => `
+    <div class="article-row">
+      <div class="placeholder-img">[IMG]</div>
+      <div>
+        <span class="cat-tag">${displayCat}</span>
+        <h2><a href="article.html">${art.titre}</a></h2>
+        <p class="excerpt">${art.extrait}</p>
+        <p class="meta">${art.auteur} — ${art.date} — ${art.duree} de lecture</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Filtres (cosmétique)
+document.querySelectorAll('.filters span').forEach(s => {
+  s.addEventListener('click', function() {
+    document.querySelectorAll('.filters span').forEach(x => x.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+init();
+</script>
 </body>
 </html>

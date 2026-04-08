@@ -4,50 +4,70 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Article — Éclairage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: "Times New Roman", Times, serif; background: #fff; color: #000; font-size: 16px; }
-  #topbar { background: #000; color: #fff; padding: 4px 12px; font-family: monospace; font-size: 12px; display: flex; justify-content: space-between; }
-  header { border-bottom: 4px solid #000; padding: 12px; }
-  header a { font-size: 36px; font-family: "Times New Roman", serif; text-decoration: none; color: #000; letter-spacing: -1px; }
-  nav#cats { border-bottom: 2px solid #000; overflow-x: auto; white-space: nowrap; padding: 0 12px; }
-  nav#cats a { display: inline-block; padding: 6px 10px; font-family: monospace; font-size: 12px; text-decoration: none; color: #000; border-right: 1px solid #000; text-transform: uppercase; }
-  nav#cats a:hover { background: #000; color: #fff; }
+  :root {
+    --bg: #F5F0E8; --bg2: #EDE7D9; --bg3: #E4DDD0;
+    --violet: #3B1F5E; --violet2: #2A1445; --violet-mid: #6B4A9B;
+    --violet-light: #C4B0DC; --text: #2A1445; --text2: #5A4070;
+    --text3: #8B7AA0; --border: #C4B0DC; --border2: #9B88B8;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: 'Source Sans 3', sans-serif; background: var(--bg); color: var(--text); font-size: 16px; }
 
-  main { max-width: 900px; margin: 0 auto; padding: 24px 12px; display: grid; grid-template-columns: 1fr 280px; gap: 32px; }
-  article { }
-  .breadcrumb { font-family: monospace; font-size: 11px; margin-bottom: 12px; }
-  .breadcrumb a { color: #000; }
-  .cat-tag { font-family: monospace; font-size: 11px; text-transform: uppercase; background: #000; color: #fff; display: inline-block; padding: 2px 6px; margin-bottom: 12px; }
-  article h1 { font-size: 36px; line-height: 1.05; margin-bottom: 12px; }
-  .standfirst { font-size: 18px; line-height: 1.5; color: #333; border-left: 4px solid #000; padding-left: 12px; margin-bottom: 16px; }
-  .meta { font-family: monospace; font-size: 12px; color: #555; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; padding: 8px 0; margin-bottom: 16px; }
-  .meta .author-name { color: #000; font-weight: bold; }
-  .placeholder-img { background: #ddd; border: 2px solid #000; width: 100%; height: 280px; display: flex; align-items: center; justify-content: center; font-family: monospace; font-size: 12px; color: #666; margin-bottom: 8px; }
-  figcaption { font-family: monospace; font-size: 10px; color: #666; margin-bottom: 16px; border-bottom: 1px solid #ccc; padding-bottom: 8px; }
-  article p { font-size: 17px; line-height: 1.7; margin-bottom: 16px; }
-  article h2 { font-size: 22px; margin: 24px 0 10px; border-top: 2px solid #000; padding-top: 8px; }
-  blockquote { border-left: 4px solid #000; padding-left: 12px; margin: 16px 0; font-size: 18px; font-style: italic; line-height: 1.5; }
-  .tags { margin-top: 24px; border-top: 2px solid #000; padding-top: 12px; font-family: monospace; font-size: 11px; }
-  .tags span { border: 1px solid #000; padding: 2px 8px; margin-right: 4px; margin-bottom: 4px; display: inline-block; }
+  #topbar { background: var(--violet2); color: var(--violet-light); padding: 5px 16px; font-size: 12px; display: flex; justify-content: space-between; }
+  #topbar a { color: var(--violet-light); text-decoration: none; }
+  #topbar a:hover { color: #fff; }
+
+  header { background: var(--bg); border-bottom: 2px solid var(--violet); padding: 20px 16px 12px; }
+  header a { font-family: 'Playfair Display', serif; font-size: 56px; letter-spacing: -2px; line-height: 1; color: var(--violet2); text-decoration: none; }
+
+  nav#cats { background: var(--bg2); border-bottom: 2px solid var(--violet); overflow-x: auto; white-space: nowrap; padding: 0 16px; }
+  nav#cats a { display: inline-block; padding: 8px 12px; font-size: 12px; text-decoration: none; color: var(--text2); border-right: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; transition: background 0.15s, color 0.15s; }
+  nav#cats a:hover, nav#cats a.active { background: var(--violet); color: #fff; }
+
+  main { max-width: 900px; margin: 0 auto; padding: 28px 16px; display: grid; grid-template-columns: 1fr 280px; gap: 36px; }
+
+  /* ARTICLE */
+  .breadcrumb { font-size: 12px; color: var(--text3); margin-bottom: 14px; }
+  .breadcrumb a { color: var(--violet-mid); text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .cat-tag { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; background: var(--violet); color: #fff; display: inline-block; padding: 3px 8px; margin-bottom: 12px; border-radius: 2px; }
+  article h1 { font-family: 'Playfair Display', serif; font-size: 36px; line-height: 1.1; color: var(--violet2); margin-bottom: 14px; }
+  .standfirst { font-size: 18px; line-height: 1.6; color: var(--text2); border-left: 3px solid var(--violet-mid); padding-left: 14px; margin-bottom: 18px; }
+  .meta { font-size: 13px; color: var(--text3); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 9px 0; margin-bottom: 18px; }
+  .meta .author-name { color: var(--violet-mid); font-weight: 600; }
+  .placeholder-img { background: var(--bg3); border: 1.5px solid var(--border); width: 100%; height: 280px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--text3); margin-bottom: 8px; border-radius: 4px; }
+  figcaption { font-size: 11px; color: var(--text3); margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+  article p { font-size: 17px; line-height: 1.75; color: var(--text); margin-bottom: 18px; }
+  article h2 { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--violet2); margin: 28px 0 12px; border-top: 1.5px solid var(--border); padding-top: 10px; }
+  blockquote { border-left: 3px solid var(--violet-mid); padding-left: 16px; margin: 20px 0; font-size: 19px; font-style: italic; line-height: 1.55; color: var(--violet2); }
+  .tags { margin-top: 28px; border-top: 2px solid var(--border); padding-top: 14px; font-size: 12px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .tags strong { color: var(--text3); margin-right: 4px; }
+  .tags span { border: 1.5px solid var(--border2); color: var(--violet-mid); padding: 3px 10px; border-radius: 3px; }
 
   /* SIDEBAR */
-  aside { }
-  .sidebar-block { border: 2px solid #000; padding: 12px; margin-bottom: 16px; }
-  .sidebar-block h3 { font-family: monospace; font-size: 12px; text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 4px; margin-bottom: 10px; }
-  .related-item { border-bottom: 1px solid #ccc; padding: 8px 0; }
+  .sidebar-block { border: 1.5px solid var(--border); border-radius: 6px; padding: 14px; margin-bottom: 18px; background: var(--bg2); }
+  .sidebar-block h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--violet-mid); border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 12px; font-weight: 600; }
+  .related-item { border-bottom: 1px solid var(--bg3); padding: 9px 0; }
   .related-item:last-child { border-bottom: none; }
-  .related-item .cat { font-family: monospace; font-size: 10px; text-transform: uppercase; color: #555; }
-  .related-item h4 { font-size: 14px; line-height: 1.2; margin-top: 2px; }
-  .related-item h4 a { color: #000; text-decoration: none; }
-  .related-item h4 a:hover { text-decoration: underline; }
-  .author-card { font-family: monospace; font-size: 12px; }
-  .author-card .author-avatar { background: #000; color: #fff; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 8px; }
-  .author-card strong { font-size: 13px; display: block; margin-bottom: 4px; }
-  .author-card p { color: #444; font-size: 11px; line-height: 1.4; }
+  .related-item .cat { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--violet-mid); font-weight: 600; }
+  .related-item h4 { font-size: 14px; line-height: 1.3; margin-top: 2px; }
+  .related-item h4 a { color: var(--text); text-decoration: none; }
+  .related-item h4 a:hover { color: var(--violet-mid); }
+  .author-card { font-size: 13px; }
+  .author-avatar { background: var(--violet); color: #fff; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; margin-bottom: 10px; }
+  .author-card strong { font-size: 14px; display: block; margin-bottom: 4px; color: var(--violet2); }
+  .author-card p { color: var(--text2); font-size: 12px; line-height: 1.5; }
+  .nl-input { width: 100%; border: 1.5px solid var(--border2); padding: 7px 10px; font-family: 'Source Sans 3', sans-serif; font-size: 13px; background: var(--bg); color: var(--text); outline: none; border-radius: 4px; margin-bottom: 8px; }
+  .nl-input:focus { border-color: var(--violet-mid); }
+  .nl-btn { width: 100%; background: var(--violet); color: #fff; border: none; padding: 8px; font-family: 'Source Sans 3', sans-serif; font-size: 13px; cursor: pointer; border-radius: 4px; letter-spacing: 0.04em; }
+  .nl-btn:hover { background: var(--violet2); }
 
-  footer { border-top: 4px solid #000; padding: 12px; font-family: monospace; font-size: 11px; color: #555; }
-  footer a { color: #000; }
+  footer { background: var(--violet2); color: var(--violet-light); padding: 20px 16px; font-size: 13px; text-align: center; }
+  footer a { color: var(--violet-light); text-decoration: none; }
+  footer a:hover { color: #fff; }
 
   @media(max-width: 800px) {
     main { grid-template-columns: 1fr; }
@@ -57,8 +77,8 @@
 <body>
 
 <div id="topbar">
-  <span>Mercredi 1 avril 2026</span>
-  <span><a href="connexion.html" style="color:#fff; text-decoration:none;">Connexion</a></span>
+  <span>Mercredi 8 avril 2026</span>
+  <span><a href="connexion.html">Connexion</a></span>
 </div>
 
 <header>
@@ -67,21 +87,23 @@
 
 <nav id="cats">
   <a href="index.html">Accueil</a>
-  <a href="categorie.html">Politique</a>
-  <a href="categorie.html">Société</a>
-  <a href="categorie.html">Science</a>
-  <a href="categorie.html">Environnement</a>
-  <a href="categorie.html">Économie</a>
-  <a href="categorie.html">Culture</a>
-  <a href="categorie.html">International</a>
-  <a href="categorie.html">Entreprise</a>
-  <a href="categorie.html">Éducation &amp; Jeunesse</a>
-  <a href="categorie.html">Histoire</a>
+  <a href="categorie.html?cat=Politique" class="active">Politique</a>
+  <a href="categorie.html?cat=Société">Société</a>
+  <a href="categorie.html?cat=Science">Science</a>
+  <a href="categorie.html?cat=Environnement">Environnement</a>
+  <a href="categorie.html?cat=Économie">Économie</a>
+  <a href="categorie.html?cat=Culture">Culture</a>
+  <a href="categorie.html?cat=International">International</a>
+  <a href="categorie.html?cat=Entreprise">Entreprise</a>
+  <a href="categorie.html?cat=Éducation">Éducation &amp; Jeunesse</a>
+  <a href="categorie.html?cat=Histoire">Histoire</a>
 </nav>
 
 <main>
   <article>
-    <p class="breadcrumb"><a href="index.html">Accueil</a> &gt; <a href="categorie.html">Politique</a> &gt; Article</p>
+    <p class="breadcrumb">
+      <a href="index.html">Accueil</a> › <a href="categorie.html?cat=Politique">Politique</a> › Article
+    </p>
     <span class="cat-tag">Politique</span>
     <h1>La réforme des retraites fragilise le dialogue social en France</h1>
     <p class="standfirst">Les syndicats annoncent une mobilisation nationale après l'échec des négociations au ministère du Travail. Décryptage des enjeux politiques et économiques d'une crise qui s'installe dans la durée.</p>
@@ -94,21 +116,15 @@
     </figure>
 
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-
     <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 
     <h2>Un bras de fer historique</h2>
-
     <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
-
     <blockquote>« Nous ne pouvons pas accepter une réforme qui pénalise les travailleurs les plus fragiles sans aucune contrepartie. »</blockquote>
-
     <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
 
     <h2>Les conséquences économiques</h2>
-
     <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident.</p>
-
     <p>Similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.</p>
 
     <div class="tags">
@@ -135,27 +151,27 @@
       <h3>À lire aussi</h3>
       <div class="related-item">
         <span class="cat">Économie</span>
-        <h4><a href="#">La BCE maintient ses taux face à l'inflation persistante</a></h4>
+        <h4><a href="article.html">La BCE maintient ses taux face à l'inflation persistante</a></h4>
       </div>
       <div class="related-item">
         <span class="cat">Société</span>
-        <h4><a href="#">Les jeunes de moins de 30 ans exclus des grandes villes</a></h4>
+        <h4><a href="article.html">Les jeunes de moins de 30 ans exclus des grandes villes</a></h4>
       </div>
       <div class="related-item">
         <span class="cat">Politique</span>
-        <h4><a href="#">Après les législatives, la recomposition politique s'accélère</a></h4>
+        <h4><a href="article.html">Après les législatives, la recomposition politique s'accélère</a></h4>
       </div>
       <div class="related-item">
         <span class="cat">International</span>
-        <h4><a href="#">Les réformes sociales en Europe : un bilan comparatif</a></h4>
+        <h4><a href="article.html">Les réformes sociales en Europe : un bilan comparatif</a></h4>
       </div>
     </div>
 
     <div class="sidebar-block">
       <h3>Newsletter</h3>
-      <p style="font-family:monospace; font-size:12px; margin-bottom:8px;">Recevez nos analyses chaque semaine.</p>
-      <input type="email" placeholder="email@exemple.com" style="width:100%; border:2px solid #000; padding:5px 8px; font-family:monospace; font-size:12px; margin-bottom:6px; outline:none;">
-      <button style="width:100%; background:#000; color:#fff; border:none; padding:6px; font-family:monospace; font-size:12px; cursor:pointer;">S'ABONNER</button>
+      <p style="font-size:12px; color:var(--text2); margin-bottom:10px;">Recevez nos analyses chaque semaine.</p>
+      <input type="email" placeholder="email@exemple.com" class="nl-input">
+      <button class="nl-btn">S'ABONNER</button>
     </div>
   </aside>
 </main>
