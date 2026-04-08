@@ -5,323 +5,287 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Éclairage — Actualités & Analyses</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #F5F0E8;
-    --bg2: #EDE7D9;
-    --bg3: #E4DDD0;
-    --violet: #3B1F5E;
-    --violet2: #2A1445;
-    --violet-mid: #6B4A9B;
-    --violet-light: #C4B0DC;
-    --text: #2A1445;
-    --text2: #5A4070;
-    --text3: #8B7AA0;
-    --border: #C4B0DC;
-    --border2: #9B88B8;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family: 'Source Sans 3', sans-serif; background: var(--bg); color: var(--text); font-size: 16px; }
+:root {
+  --beige:    #F7F3EC;
+  --beige2:   #EEE8DC;
+  --beige3:   #E3DBCF;
+  --violet:   #1E0F3C;
+  --violet2:  #2D1A55;
+  --violet-m: #5B3E8F;
+  --violet-l: #A38DC4;
+  --violet-xl:#D6C9E8;
+  --text:     #1E0F3C;
+  --text2:    #4A3468;
+  --text3:    #9B8AB0;
+  --line:     #DDD5E8;
+  --line2:    #C5B5D8;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:16px;}
+body{font-family:'DM Sans',sans-serif;background:var(--beige);color:var(--text);-webkit-font-smoothing:antialiased;}
+a{color:inherit;text-decoration:none;}
 
-  /* TOPBAR */
-  #topbar { background: var(--violet2); color: var(--violet-light); padding: 5px 16px; font-size: 12px; display: flex; justify-content: space-between; align-items: center; letter-spacing: 0.03em; }
-  #topbar a { color: var(--violet-light); text-decoration: none; }
-  #topbar a:hover { color: #fff; }
+/* TOPBAR */
+#topbar{background:var(--violet);color:var(--violet-l);padding:6px 40px;font-size:11px;letter-spacing:.07em;display:flex;justify-content:space-between;align-items:center;}
+#topbar a{color:var(--violet-xl);transition:color .2s;}
+#topbar a:hover{color:#fff;}
+.t-sep{opacity:.3;margin:0 10px;}
 
-  /* HEADER */
-  header { background: var(--bg); border-bottom: 2px solid var(--violet); padding: 20px 16px 12px; }
-  header h1 { font-family: 'Playfair Display', serif; font-size: 64px; letter-spacing: -2px; line-height: 1; color: var(--violet2); }
-  header p.tagline { font-size: 13px; color: var(--text3); margin-top: 4px; border-top: 1px solid var(--border); padding-top: 6px; }
+/* HEADER */
+header{padding:32px 40px 0;border-bottom:1px solid var(--line2);}
+.header-top{display:flex;align-items:flex-end;justify-content:space-between;padding-bottom:18px;}
+.site-name{font-family:'Cormorant Garamond',serif;font-size:74px;font-weight:300;letter-spacing:-3px;line-height:1;color:var(--violet);}
+.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px;}
+.tagline{font-size:11px;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;}
+.search-wrap{display:flex;border:1px solid var(--line2);border-radius:2px;overflow:hidden;}
+.search-wrap input{border:none;padding:7px 14px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--beige);color:var(--text);outline:none;width:220px;}
+.search-wrap input::placeholder{color:var(--text3);}
+.search-wrap button{background:var(--violet);color:#fff;border:none;padding:7px 14px;font-size:13px;cursor:pointer;transition:background .2s;}
+.search-wrap button:hover{background:var(--violet2);}
 
-  /* SEARCH */
-  #searchbar { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 8px 16px; display: flex; gap: 0; }
-  #searchbar input { flex:1; border: 1.5px solid var(--border2); border-right: none; padding: 6px 12px; font-family: 'Source Sans 3', sans-serif; font-size: 13px; background: var(--bg); color: var(--text); outline: none; border-radius: 4px 0 0 4px; }
-  #searchbar input:focus { border-color: var(--violet-mid); }
-  #searchbar button { border: 1.5px solid var(--violet); background: var(--violet); color: #fff; padding: 6px 18px; font-family: 'Source Sans 3', sans-serif; font-size: 13px; cursor: pointer; border-radius: 0 4px 4px 0; letter-spacing: 0.05em; }
-  #searchbar button:hover { background: var(--violet2); }
+/* NAV */
+nav#cats{overflow-x:auto;white-space:nowrap;scrollbar-width:none;}
+nav#cats::-webkit-scrollbar{display:none;}
+nav#cats a{display:inline-block;padding:13px 16px;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);border-bottom:2px solid transparent;transition:color .2s,border-color .2s;}
+nav#cats a:first-child{padding-left:0;}
+nav#cats a:hover{color:var(--violet);border-bottom-color:var(--line2);}
+nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet);}
 
-  /* NAV CATÉGORIES */
-  nav#cats { background: var(--bg2); border-bottom: 2px solid var(--violet); overflow-x: auto; white-space: nowrap; padding: 0 16px; }
-  nav#cats a { display: inline-block; padding: 8px 12px; font-size: 12px; text-decoration: none; color: var(--text2); border-right: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; transition: background 0.15s, color 0.15s; }
-  nav#cats a:hover, nav#cats a.active { background: var(--violet); color: #fff; }
+/* MAIN */
+main{max-width:1160px;margin:0 auto;padding:0 40px;}
 
-  /* MAIN */
-  main { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+/* HERO */
+#hero{display:grid;grid-template-columns:1fr 400px;gap:60px;padding:52px 0 44px;border-bottom:1px solid var(--line);}
+.hero-cat{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--violet-m);margin-bottom:18px;display:flex;align-items:center;gap:12px;}
+.hero-cat::after{content:'';flex:1;height:1px;background:var(--line);}
+#hero h2{font-family:'Cormorant Garamond',serif;font-size:54px;font-weight:300;line-height:1.07;color:var(--violet);margin-bottom:20px;letter-spacing:-.5px;}
+.hero-excr{font-size:16px;line-height:1.72;color:var(--text2);margin-bottom:22px;font-weight:300;}
+.hero-meta{font-size:12px;color:var(--text3);}
+.hero-meta b{color:var(--violet-m);font-weight:500;}
+.img-box{background:var(--beige3);border-radius:3px;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:11px;letter-spacing:.04em;overflow:hidden;}
+.r43{aspect-ratio:4/3;}
+.r32{aspect-ratio:3/2;}
+.r169{aspect-ratio:16/9;}
 
-  /* HERO — IMPORTANCE 1 */
-  #hero { border-bottom: 2px solid var(--border); padding: 28px 0; display: grid; grid-template-columns: 2fr 1fr; gap: 0; }
-  #hero-text { padding-right: 28px; border-right: 1.5px solid var(--border); }
-  .cat-tag { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; background: var(--violet); color: #fff; display: inline-block; padding: 3px 8px; margin-bottom: 10px; border-radius: 2px; }
-  .cat-tag.light { background: transparent; border: 1.5px solid var(--violet-mid); color: var(--violet-mid); }
-  #hero-text h2 { font-family: 'Playfair Display', serif; font-size: 40px; line-height: 1.1; color: var(--violet2); margin-bottom: 12px; }
-  #hero-text .excerpt { font-size: 17px; line-height: 1.6; color: var(--text2); margin-bottom: 10px; }
-  #hero-text .meta { font-size: 12px; color: var(--text3); }
-  #hero-text .meta a { color: var(--violet-mid); text-decoration: none; }
-  #hero-img { padding-left: 28px; }
-  #hero-img .placeholder-img { background: var(--bg3); border: 1.5px solid var(--border); width: 100%; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--text3); border-radius: 4px; }
+/* TIER 2-3-4 */
+#tier234{display:grid;grid-template-columns:1fr 1fr 250px;border-bottom:1px solid var(--line);}
+.br{border-right:1px solid var(--line);}
+.imp2{padding:36px 32px 36px 0;}
+.imp3{padding:36px 32px;}
+.rub-pill{display:inline-block;font-size:10px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--violet-m);background:var(--violet-xl);padding:3px 8px;border-radius:2px;margin-bottom:12px;}
+.imp2 h3,.imp3 h3{font-family:'Cormorant Garamond',serif;font-weight:400;line-height:1.18;color:var(--violet);margin-bottom:8px;}
+.imp2 h3{font-size:26px;}
+.imp3 h3{font-size:22px;}
+.excr-sm{font-size:13px;line-height:1.62;color:var(--text2);font-weight:300;}
+.s-meta{font-size:11px;color:var(--text3);margin-top:10px;}
 
-  /* TIER 2-3-4 */
-  #tier234 { display: grid; grid-template-columns: 1fr 1fr 240px; border-bottom: 2px solid var(--border); }
+/* IMP4 */
+.imp4{padding:36px 0 36px 26px;}
+.imp4-head{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:0;}
+.imp4-item{padding:13px 0;border-bottom:1px solid var(--line);}
+.imp4-item:last-child{border-bottom:none;}
+.imp4-rub{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--violet-m);margin-bottom:4px;}
+.imp4-item h5{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;line-height:1.3;color:var(--violet);}
+.imp4-item h5 a:hover{color:var(--violet-m);}
+.imp4-d{font-size:11px;color:var(--text3);margin-top:3px;}
 
-  .imp2 { border-right: 1.5px solid var(--border); padding: 20px 20px 20px 0; }
-  .imp2 .placeholder-img { background: var(--bg3); border: 1px solid var(--border); width: 100%; height: 130px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text3); margin-bottom: 10px; border-radius: 3px; }
-  .imp2 h3 { font-family: 'Playfair Display', serif; font-size: 22px; line-height: 1.15; color: var(--violet2); margin-bottom: 6px; }
-  .imp2 .excerpt { font-size: 13px; line-height: 1.5; color: var(--text2); }
-  .imp2 .meta { font-size: 11px; color: var(--text3); margin-top: 8px; }
+/* NEWSLETTER */
+#newsletter{margin:52px 0;border:1px solid var(--line2);border-radius:4px;padding:44px 52px;display:grid;grid-template-columns:1fr auto;gap:52px;align-items:center;background:linear-gradient(120deg,var(--beige2) 0%,var(--beige) 100%);}
+.nl-title{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:var(--violet);margin-bottom:6px;letter-spacing:-.3px;}
+.nl-sub{font-size:13px;color:var(--text3);font-weight:300;}
+.nl-form{display:flex;min-width:300px;}
+.nl-form input{flex:1;border:1px solid var(--line2);border-right:none;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--beige);color:var(--text);outline:none;border-radius:2px 0 0 2px;transition:border-color .2s;}
+.nl-form input:focus{border-color:var(--violet-m);}
+.nl-form button{background:var(--violet);color:#fff;border:1px solid var(--violet);padding:10px 22px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;border-radius:0 2px 2px 0;transition:background .2s;}
+.nl-form button:hover{background:var(--violet2);}
 
-  .imp3 { border-right: 1.5px solid var(--border); padding: 20px; }
-  .imp3 .placeholder-img { background: var(--bg3); border: 1px solid var(--border); width: 100%; height: 100px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text3); margin-bottom: 10px; border-radius: 3px; }
-  .imp3 h3 { font-family: 'Playfair Display', serif; font-size: 18px; line-height: 1.2; color: var(--violet2); margin-bottom: 6px; }
-  .imp3 .excerpt { font-size: 13px; line-height: 1.4; color: var(--text2); }
-  .imp3 .meta { font-size: 11px; color: var(--text3); margin-top: 8px; }
+/* GRILLE */
+#recent{padding-bottom:64px;}
+.sec-label{font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);display:flex;align-items:center;gap:14px;margin-bottom:32px;padding-top:8px;}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--line);}
+.a-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:40px 32px;}
+.a-card .img-box{margin-bottom:14px;}
+.a-rub{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--violet-m);margin-bottom:7px;display:block;}
+.a-card h3{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;line-height:1.27;color:var(--violet);margin-bottom:8px;}
+.a-card h3 a:hover{color:var(--violet-m);}
+.a-auth{font-size:12px;color:var(--text3);font-weight:300;}
 
-  .imp4-list { padding: 20px 0 20px 20px; }
-  .imp4-list h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--violet-mid); border-bottom: 1.5px solid var(--border); padding-bottom: 6px; margin-bottom: 12px; font-weight: 600; }
-  .imp4-item { border-bottom: 1px solid var(--bg3); padding: 8px 0; }
-  .imp4-item:last-child { border-bottom: none; }
-  .imp4-item .cat-small { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--violet-mid); font-weight: 600; }
-  .imp4-item h5 { font-size: 13px; line-height: 1.3; margin-top: 2px; }
-  .imp4-item h5 a { color: var(--text); text-decoration: none; }
-  .imp4-item h5 a:hover { color: var(--violet-mid); }
-  .imp4-item .meta { font-size: 10px; color: var(--text3); margin-top: 2px; }
+/* FOOTER */
+footer{background:var(--violet);color:var(--violet-l);padding:52px 40px 28px;}
+.f-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;padding-bottom:36px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:20px;}
+.f-brand-name{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;color:#fff;letter-spacing:-1px;margin-bottom:10px;}
+.f-brand p{font-size:13px;line-height:1.65;font-weight:300;}
+footer h4{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:14px;}
+footer ul{list-style:none;}
+footer li{margin-bottom:8px;}
+footer li a{font-size:13px;font-weight:300;color:var(--violet-l);transition:color .2s;}
+footer li a:hover{color:#fff;}
+.f-copy{font-size:11px;color:rgba(255,255,255,.25);letter-spacing:.04em;}
 
-  /* NEWSLETTER */
-  #newsletter { background: var(--violet2); border-radius: 6px; padding: 20px 24px; margin: 28px 0; display: flex; align-items: center; gap: 24px; }
-  #newsletter .nl-text strong { font-family: 'Playfair Display', serif; font-size: 20px; color: #fff; display: block; margin-bottom: 4px; }
-  #newsletter .nl-text p { font-size: 13px; color: var(--violet-light); }
-  #newsletter form { display: flex; gap: 0; flex: 1; }
-  #newsletter input[type="email"] { flex: 1; border: 1.5px solid var(--violet-mid); border-right: none; padding: 8px 12px; font-family: 'Source Sans 3', sans-serif; font-size: 13px; background: var(--bg); color: var(--text); outline: none; border-radius: 4px 0 0 4px; }
-  #newsletter button { border: 1.5px solid var(--violet-light); background: var(--violet-mid); color: #fff; padding: 8px 18px; font-family: 'Source Sans 3', sans-serif; font-size: 13px; cursor: pointer; border-radius: 0 4px 4px 0; letter-spacing: 0.04em; }
-  #newsletter button:hover { background: var(--violet-light); color: var(--violet2); }
-
-  /* GRILLE */
-  #grid-section { padding: 20px 0 32px; }
-  #grid-section h2.section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--violet-mid); border-bottom: 2px solid var(--border); padding-bottom: 6px; margin-bottom: 20px; font-weight: 600; }
-  .article-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
-  .article-card { background: var(--bg); padding: 16px; }
-  .article-card .placeholder-img { background: var(--bg3); border: 1px solid var(--bg3); width: 100%; height: 90px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text3); margin-bottom: 10px; border-radius: 3px; }
-  .article-card h3 { font-family: 'Playfair Display', serif; font-size: 16px; line-height: 1.25; margin-bottom: 6px; color: var(--violet2); }
-  .article-card h3 a { color: inherit; text-decoration: none; }
-  .article-card h3 a:hover { color: var(--violet-mid); }
-  .article-card .author { font-size: 11px; color: var(--text3); }
-
-  /* FOOTER */
-  footer { background: var(--violet2); color: var(--violet-light); padding: 28px 16px 16px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-top: 0; }
-  footer h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #fff; border-bottom: 1px solid var(--violet-mid); padding-bottom: 6px; margin-bottom: 10px; }
-  footer ul { list-style: none; }
-  footer ul li { margin-bottom: 5px; }
-  footer ul li a { color: var(--violet-light); text-decoration: none; font-size: 13px; }
-  footer ul li a:hover { color: #fff; }
-  footer p { font-size: 13px; line-height: 1.5; color: var(--violet-light); }
-  footer .copy { border-top: 1px solid var(--violet-mid); margin-top: 12px; padding-top: 10px; font-size: 11px; color: var(--text3); }
-
-  @media(max-width: 900px) {
-    #hero { grid-template-columns: 1fr; }
-    #hero-text { border-right: none; border-bottom: 1.5px solid var(--border); padding-right: 0; padding-bottom: 20px; }
-    #hero-img { padding-left: 0; padding-top: 16px; }
-    #tier234 { grid-template-columns: 1fr; }
-    .imp2, .imp3 { border-right: none; border-bottom: 1.5px solid var(--border); padding: 16px 0; }
-    .imp4-list { padding-left: 0; }
-    .article-grid { grid-template-columns: 1fr 1fr; }
-    footer { grid-template-columns: 1fr; }
-    #newsletter { flex-direction: column; }
-  }
-  @media(max-width: 600px) {
-    header h1 { font-size: 40px; }
-    .article-grid { grid-template-columns: 1fr; }
-  }
+/* RESPONSIVE */
+@media(max-width:1024px){
+  #hero{grid-template-columns:1fr;gap:28px;}
+  #hero h2{font-size:40px;}
+  #tier234{grid-template-columns:1fr 1fr;}
+  .imp4{grid-column:1/-1;border-top:1px solid var(--line);padding:28px 0 0;border-right:none;}
+  .f-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:700px){
+  header,main,footer{padding-left:20px;padding-right:20px;}
+  #topbar{padding:6px 20px;}
+  .site-name{font-size:44px;}
+  .header-top{flex-direction:column;align-items:flex-start;gap:14px;}
+  #tier234{grid-template-columns:1fr;}
+  .br{border-right:none;border-bottom:1px solid var(--line);}
+  .imp3{padding:28px 0;}
+  .a-grid{grid-template-columns:1fr;}
+  #newsletter{grid-template-columns:1fr;gap:20px;padding:28px 22px;}
+  .nl-form{min-width:unset;}
+  .f-grid{grid-template-columns:1fr;}
+}
 </style>
 </head>
 <body>
 
 <div id="topbar">
   <span>Mercredi 8 avril 2026</span>
-  <span>
-    <a href="connexion.html">Connexion</a> &nbsp;|&nbsp;
-    <a href="#newsletter">S'abonner</a>
-  </span>
+  <span><a href="connexion.html">Connexion</a><span class="t-sep">|</span><a href="#newsletter">Newsletter</a></span>
 </div>
 
 <header>
-  <h1>ÉCLAIRAGE</h1>
-  <p class="tagline">Analyses &amp; actualités indépendantes — par des experts, pour tout le monde</p>
+  <div class="header-top">
+    <div>
+      <div class="site-name">Éclairage</div>
+      <p class="tagline">Analyses &amp; actualités indépendantes — par des experts, pour tous</p>
+    </div>
+    <div class="header-right">
+      <div class="search-wrap">
+        <input type="text" placeholder="Rechercher un article…">
+        <button>→</button>
+      </div>
+    </div>
+  </div>
+  <nav id="cats">
+    <a href="index.html" class="active">Accueil</a>
+    <a href="categorie.html?cat=Politique">Politique</a>
+    <a href="categorie.html?cat=Société">Société</a>
+    <a href="categorie.html?cat=Science">Science</a>
+    <a href="categorie.html?cat=Environnement">Environnement</a>
+    <a href="categorie.html?cat=Économie">Économie</a>
+    <a href="categorie.html?cat=Culture">Culture</a>
+    <a href="categorie.html?cat=International">International</a>
+    <a href="categorie.html?cat=Entreprise">Entreprise</a>
+    <a href="categorie.html?cat=Éducation">Éducation &amp; Jeunesse</a>
+    <a href="categorie.html?cat=Histoire">Histoire</a>
+  </nav>
 </header>
-
-<div id="searchbar">
-  <input type="text" placeholder="Rechercher un article, un auteur, une thématique...">
-  <button>CHERCHER</button>
-</div>
-
-<nav id="cats">
-  <a href="index.html">Accueil</a>
-  <a href="categorie.html?cat=Politique">Politique</a>
-  <a href="categorie.html?cat=Société">Société</a>
-  <a href="categorie.html?cat=Science">Science</a>
-  <a href="categorie.html?cat=Environnement">Environnement</a>
-  <a href="categorie.html?cat=Économie">Économie</a>
-  <a href="categorie.html?cat=Culture">Culture</a>
-  <a href="categorie.html?cat=International">International</a>
-  <a href="categorie.html?cat=Entreprise">Entreprise</a>
-  <a href="categorie.html?cat=Éducation">Éducation &amp; Jeunesse</a>
-  <a href="categorie.html?cat=Histoire">Histoire</a>
-</nav>
 
 <main>
 
   <section id="hero">
-    <div id="hero-text">
-      <span class="cat-tag">Politique</span>
+    <div>
+      <p class="hero-cat">Politique</p>
       <h2>La réforme des retraites fragilise le dialogue social en France</h2>
-      <p class="excerpt">Les syndicats annoncent une mobilisation nationale après l'échec des négociations au ministère du Travail. Décryptage des enjeux d'une crise qui s'installe dans la durée.</p>
-      <p class="meta">Par <a href="#">Marie Dupont</a>, Université de Lyon — <time>31 mars 2026</time> — 8 min de lecture</p>
+      <p class="hero-excr">Les syndicats annoncent une mobilisation nationale après l'échec des négociations au ministère du Travail. Décryptage des enjeux d'une crise qui s'installe dans la durée.</p>
+      <p class="hero-meta"><b>Marie Dupont</b> — Université de Lyon &nbsp;·&nbsp; 31 mars 2026 &nbsp;·&nbsp; 8 min</p>
     </div>
-    <div id="hero-img">
-      <div class="placeholder-img">[IMAGE PRINCIPALE]</div>
-    </div>
+    <div class="img-box r43">[Photo]</div>
   </section>
 
   <section id="tier234">
 
-    <div class="imp2">
-      <div class="placeholder-img">[IMAGE]</div>
-      <span class="cat-tag light">Science</span>
+    <div class="imp2 br">
+      <div class="img-box r32" style="margin-bottom:16px">[Photo]</div>
+      <span class="rub-pill">Science</span>
       <h3>Un vaccin contre Alzheimer entre en phase III d'essai clinique</h3>
-      <p class="excerpt">Des résultats préliminaires encourageants laissent espérer un traitement préventif d'ici 2030.</p>
-      <p class="meta">Pr. Jean Lefebvre — 31 mars 2026</p>
+      <p class="excr-sm">Des résultats préliminaires laissent espérer un traitement préventif d'ici 2030, selon une équipe internationale.</p>
+      <p class="s-meta">Pr. Jean Lefebvre · 31 mars 2026</p>
     </div>
 
-    <div class="imp3">
-      <div class="placeholder-img">[IMAGE]</div>
-      <span class="cat-tag light">Environnement</span>
-      <h3>Sécheresse : l'Espagne perd 40 % de ses réserves d'eau potable en un an</h3>
-      <p class="excerpt">La crise hydrique s'intensifie sur le pourtour méditerranéen, avec des conséquences directes sur l'agriculture.</p>
-      <p class="meta">Carla Ramos — 30 mars 2026</p>
+    <div class="imp3 br">
+      <div class="img-box r32" style="margin-bottom:16px">[Photo]</div>
+      <span class="rub-pill">Environnement</span>
+      <h3>Sécheresse : l'Espagne perd 40 % de ses réserves d'eau en un an</h3>
+      <p class="excr-sm">La crise hydrique s'intensifie sur le pourtour méditerranéen, avec des effets directs sur l'agriculture.</p>
+      <p class="s-meta">Carla Ramos · 30 mars 2026</p>
     </div>
 
-    <div class="imp4-list">
-      <h4>À lire aussi</h4>
-      <div class="imp4-item">
-        <span class="cat-small">Économie</span>
-        <h5><a href="article.html">La BCE maintient ses taux face à une inflation persistante</a></h5>
-        <p class="meta">28 mars 2026</p>
-      </div>
-      <div class="imp4-item">
-        <span class="cat-small">Société</span>
-        <h5><a href="article.html">Logement : les jeunes de moins de 30 ans exclus des grandes villes</a></h5>
-        <p class="meta">28 mars 2026</p>
-      </div>
-      <div class="imp4-item">
-        <span class="cat-small">Histoire</span>
-        <h5><a href="article.html">80 ans après, Nuremberg résonne encore dans le droit international</a></h5>
-        <p class="meta">27 mars 2026</p>
-      </div>
-      <div class="imp4-item">
-        <span class="cat-small">Culture</span>
-        <h5><a href="article.html">IA et création littéraire : la frontière s'efface</a></h5>
-        <p class="meta">26 mars 2026</p>
-      </div>
-      <div class="imp4-item">
-        <span class="cat-small">International</span>
-        <h5><a href="article.html">Sommet G20 : les pays du Sud réclament une réforme du FMI</a></h5>
-        <p class="meta">25 mars 2026</p>
-      </div>
-      <div class="imp4-item">
-        <span class="cat-small">Éducation</span>
-        <h5><a href="article.html">École inclusive : les promesses non tenues de la loi de 2005</a></h5>
-        <p class="meta">24 mars 2026</p>
-      </div>
+    <div class="imp4">
+      <p class="imp4-head">À lire aussi</p>
+      <div class="imp4-item"><p class="imp4-rub">Économie</p><h5><a href="article.html">La BCE maintient ses taux face à l'inflation persistante</a></h5><p class="imp4-d">28 mars 2026</p></div>
+      <div class="imp4-item"><p class="imp4-rub">Société</p><h5><a href="article.html">Logement : les jeunes exclus des grandes villes</a></h5><p class="imp4-d">28 mars 2026</p></div>
+      <div class="imp4-item"><p class="imp4-rub">Histoire</p><h5><a href="article.html">80 ans après, Nuremberg résonne encore</a></h5><p class="imp4-d">27 mars 2026</p></div>
+      <div class="imp4-item"><p class="imp4-rub">Culture</p><h5><a href="article.html">IA et création littéraire : la frontière s'efface</a></h5><p class="imp4-d">26 mars 2026</p></div>
+      <div class="imp4-item"><p class="imp4-rub">International</p><h5><a href="article.html">G20 : les pays du Sud réclament une réforme du FMI</a></h5><p class="imp4-d">25 mars 2026</p></div>
     </div>
 
   </section>
 
   <div id="newsletter">
-    <div class="nl-text">
-      <strong>La lettre d'Éclairage</strong>
-      <p>Chaque semaine, les analyses qui comptent, directement dans votre boîte mail.</p>
+    <div>
+      <p class="nl-title">La lettre d'Éclairage</p>
+      <p class="nl-sub">Chaque semaine, les analyses qui comptent — directement dans votre boîte mail.</p>
     </div>
-    <form>
+    <div class="nl-form">
       <input type="email" placeholder="votre@email.com">
-      <button type="button">S'ABONNER</button>
-    </form>
+      <button>S'abonner</button>
+    </div>
   </div>
 
-  <section id="grid-section">
-    <h2 class="section-title">Articles récents</h2>
-    <div class="article-grid">
-      <div class="article-card">
-        <div class="placeholder-img">[IMG]</div>
-        <span class="cat-tag light">Entreprise</span>
-        <h3><a href="article.html">Les PME françaises face à la hausse du coût de l'énergie industrielle</a></h3>
-        <p class="author">Thomas Martin — 30 mars 2026</p>
-      </div>
-      <div class="article-card">
-        <div class="placeholder-img">[IMG]</div>
-        <span class="cat-tag light">Éducation &amp; Jeunesse</span>
-        <h3><a href="article.html">Décrochage scolaire : que nous disent vraiment les chiffres officiels ?</a></h3>
-        <p class="author">Sophie Leclerc — 29 mars 2026</p>
-      </div>
-      <div class="article-card">
-        <div class="placeholder-img">[IMG]</div>
-        <span class="cat-tag light">International</span>
-        <h3><a href="article.html">Taïwan et la Chine : un statu quo de plus en plus fragile</a></h3>
-        <p class="author">Paul Chen — 29 mars 2026</p>
-      </div>
-      <div class="article-card">
-        <div class="placeholder-img">[IMG]</div>
-        <span class="cat-tag light">Société</span>
-        <h3><a href="article.html">Santé mentale au travail : la France à la traîne des pays nordiques</a></h3>
-        <p class="author">Claire Bernard — 28 mars 2026</p>
-      </div>
-      <div class="article-card">
-        <div class="placeholder-img">[IMG]</div>
-        <span class="cat-tag light">Science</span>
-        <h3><a href="article.html">CRISPR : les promesses et les limites de l'édition génétique en 2026</a></h3>
-        <p class="author">Dr. Alice Morin — 27 mars 2026</p>
-      </div>
-      <div class="article-card">
-        <div class="placeholder-img">[IMG]</div>
-        <span class="cat-tag light">Culture</span>
-        <h3><a href="article.html">Le retour des librairies indépendantes face à Amazon</a></h3>
-        <p class="author">Julien Fabre — 26 mars 2026</p>
-      </div>
+  <section id="recent">
+    <p class="sec-label">Articles récents</p>
+    <div class="a-grid">
+      <div class="a-card"><div class="img-box r32">[Photo]</div><span class="a-rub">Entreprise</span><h3><a href="article.html">Les PME françaises face à la hausse du coût de l'énergie industrielle</a></h3><p class="a-auth">Thomas Martin · 30 mars 2026</p></div>
+      <div class="a-card"><div class="img-box r32">[Photo]</div><span class="a-rub">Éducation &amp; Jeunesse</span><h3><a href="article.html">Décrochage scolaire : que disent vraiment les chiffres officiels ?</a></h3><p class="a-auth">Sophie Leclerc · 29 mars 2026</p></div>
+      <div class="a-card"><div class="img-box r32">[Photo]</div><span class="a-rub">International</span><h3><a href="article.html">Taïwan et la Chine : un statu quo de plus en plus fragile</a></h3><p class="a-auth">Paul Chen · 29 mars 2026</p></div>
+      <div class="a-card"><div class="img-box r32">[Photo]</div><span class="a-rub">Société</span><h3><a href="article.html">Santé mentale au travail : la France à la traîne des pays nordiques</a></h3><p class="a-auth">Claire Bernard · 28 mars 2026</p></div>
+      <div class="a-card"><div class="img-box r32">[Photo]</div><span class="a-rub">Science</span><h3><a href="article.html">CRISPR : promesses et limites de l'édition génétique en 2026</a></h3><p class="a-auth">Dr. Alice Morin · 27 mars 2026</p></div>
+      <div class="a-card"><div class="img-box r32">[Photo]</div><span class="a-rub">Culture</span><h3><a href="article.html">Le retour des librairies indépendantes face à Amazon</a></h3><p class="a-auth">Julien Fabre · 26 mars 2026</p></div>
     </div>
   </section>
 
 </main>
 
 <footer>
-  <div>
-    <h4>Rubriques</h4>
-    <ul>
-      <li><a href="categorie.html?cat=Politique">Politique</a></li>
-      <li><a href="categorie.html?cat=Société">Société</a></li>
-      <li><a href="categorie.html?cat=Science">Science</a></li>
-      <li><a href="categorie.html?cat=Environnement">Environnement</a></li>
-      <li><a href="categorie.html?cat=Économie">Économie</a></li>
-      <li><a href="categorie.html?cat=Culture">Culture</a></li>
-      <li><a href="categorie.html?cat=International">International</a></li>
-      <li><a href="categorie.html?cat=Entreprise">Entreprise</a></li>
-      <li><a href="categorie.html?cat=Histoire">Histoire</a></li>
-      <li><a href="categorie.html?cat=Éducation">Éducation &amp; Jeunesse</a></li>
-    </ul>
+  <div class="f-grid">
+    <div class="f-brand">
+      <div class="f-brand-name">Éclairage</div>
+      <p>Analyses indépendantes rédigées par des experts académiques et professionnels. Inspiré de <em>The Conversation</em>.</p>
+    </div>
+    <div>
+      <h4>Rubriques</h4>
+      <ul>
+        <li><a href="categorie.html?cat=Politique">Politique</a></li>
+        <li><a href="categorie.html?cat=Société">Société</a></li>
+        <li><a href="categorie.html?cat=Science">Science</a></li>
+        <li><a href="categorie.html?cat=Environnement">Environnement</a></li>
+        <li><a href="categorie.html?cat=Économie">Économie</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>&nbsp;</h4>
+      <ul>
+        <li><a href="categorie.html?cat=Culture">Culture</a></li>
+        <li><a href="categorie.html?cat=International">International</a></li>
+        <li><a href="categorie.html?cat=Entreprise">Entreprise</a></li>
+        <li><a href="categorie.html?cat=Histoire">Histoire</a></li>
+        <li><a href="categorie.html?cat=Éducation">Éducation &amp; Jeunesse</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Le site</h4>
+      <ul>
+        <li><a href="#">À propos</a></li>
+        <li><a href="#">Charte éditoriale</a></li>
+        <li><a href="#">Nos auteurs</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="connexion.html">Connexion</a></li>
+      </ul>
+    </div>
   </div>
-  <div>
-    <h4>Le site</h4>
-    <ul>
-      <li><a href="#">À propos</a></li>
-      <li><a href="#">Notre charte éditoriale</a></li>
-      <li><a href="#">Nos auteurs</a></li>
-      <li><a href="#">Nous contacter</a></li>
-      <li><a href="connexion.html">Connexion</a></li>
-    </ul>
-  </div>
-  <div>
-    <h4>Éclairage</h4>
-    <p>Un site d'actualités et d'analyses indépendantes, rédigées par des experts académiques et professionnels.</p>
-    <p style="margin-top:8px;">Inspiré de <em>The Conversation</em>.</p>
-    <p class="copy">© 2026 Éclairage — Tous droits réservés</p>
-  </div>
+  <p class="f-copy">© 2026 Éclairage — Tous droits réservés</p>
 </footer>
 
 </body>

@@ -5,70 +5,78 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Connexion — Éclairage</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #F5F0E8; --bg2: #EDE7D9; --bg3: #E4DDD0;
-    --violet: #3B1F5E; --violet2: #2A1445; --violet-mid: #6B4A9B;
-    --violet-light: #C4B0DC; --text: #2A1445; --text2: #5A4070;
-    --text3: #8B7AA0; --border: #C4B0DC; --border2: #9B88B8;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family: 'Source Sans 3', sans-serif; background: var(--bg); color: var(--text); font-size: 16px; min-height: 100vh; }
+:root{
+  --beige:#F7F3EC;--beige2:#EEE8DC;--beige3:#E3DBCF;
+  --violet:#1E0F3C;--violet2:#2D1A55;--violet-m:#5B3E8F;
+  --violet-l:#A38DC4;--violet-xl:#D6C9E8;
+  --text:#1E0F3C;--text2:#4A3468;--text3:#9B8AB0;
+  --line:#DDD5E8;--line2:#C5B5D8;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--beige);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh;}
+a{color:inherit;text-decoration:none;}
 
-  #topbar { background: var(--violet2); color: var(--violet-light); padding: 5px 16px; font-size: 12px; display: flex; justify-content: space-between; }
-  #topbar a { color: var(--violet-light); text-decoration: none; }
-  #topbar a:hover { color: #fff; }
+#topbar{background:var(--violet);color:var(--violet-l);padding:6px 40px;font-size:11px;letter-spacing:.07em;display:flex;justify-content:space-between;}
+#topbar a{color:var(--violet-xl);transition:color .2s;}
+#topbar a:hover{color:#fff;}
 
-  header { background: var(--bg); border-bottom: 2px solid var(--violet); padding: 20px 16px 12px; }
-  header a { font-family: 'Playfair Display', serif; font-size: 56px; letter-spacing: -2px; line-height: 1; color: var(--violet2); text-decoration: none; }
+header{padding:32px 40px 28px;border-bottom:1px solid var(--line2);text-align:center;}
+.site-name{font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:300;letter-spacing:-2px;line-height:1;color:var(--violet);display:inline-block;}
 
-  .login-wrap { max-width: 440px; margin: 52px auto; padding: 0 16px; }
-  .login-box { background: var(--bg2); border: 1.5px solid var(--border); border-radius: 8px; padding: 36px 32px; }
-  .login-box h1 { font-family: 'Playfair Display', serif; font-size: 30px; color: var(--violet2); margin-bottom: 4px; }
-  .login-box p.sub { font-size: 13px; color: var(--text3); margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px; line-height: 1.5; }
+/* CONNEXION WRAPPER */
+.login-wrap{display:flex;justify-content:center;align-items:flex-start;padding:64px 20px 80px;}
+.login-box{width:100%;max-width:420px;}
 
-  /* TABS */
-  .tabs { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 24px; }
-  .tabs button { flex: 1; background: none; border: none; border-bottom: 3px solid transparent; padding: 10px; font-family: 'Source Sans 3', sans-serif; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; cursor: pointer; margin-bottom: -2px; color: var(--text3); transition: color 0.15s, border-color 0.15s; }
-  .tabs button.active { border-bottom: 3px solid var(--violet); color: var(--violet); }
-  .tabs button:hover { color: var(--violet-mid); }
+.login-heading{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;color:var(--violet);margin-bottom:6px;letter-spacing:-.5px;}
+.login-sub{font-size:13px;color:var(--text3);font-weight:300;line-height:1.6;margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid var(--line);}
 
-  .form-section { display: none; }
-  .form-section.active { display: block; }
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--line);margin-bottom:28px;}
+.tab-btn{flex:1;background:none;border:none;padding:12px 0;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s,border-color .2s;}
+.tab-btn:hover{color:var(--violet);}
+.tab-btn.active{color:var(--violet);border-bottom-color:var(--violet);}
 
-  label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; color: var(--text2); margin-bottom: 5px; margin-top: 18px; }
-  label:first-of-type { margin-top: 0; }
-  input[type="email"], input[type="password"], input[type="text"] {
-    display: block; width: 100%;
-    border: 1.5px solid var(--border2);
-    padding: 9px 12px;
-    font-family: 'Source Sans 3', sans-serif; font-size: 14px;
-    background: var(--bg); color: var(--text);
-    outline: none; border-radius: 5px;
-    transition: border-color 0.15s;
-  }
-  input:focus { border-color: var(--violet-mid); }
+.form-section{display:none;}
+.form-section.active{display:block;}
 
-  .checkbox-row { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 13px; color: var(--text2); }
-  input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--violet); }
+.field{margin-bottom:18px;}
+.field label{display:block;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+.field input{display:block;width:100%;border:1px solid var(--line2);padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--beige);color:var(--text);outline:none;border-radius:2px;transition:border-color .2s;}
+.field input:focus{border-color:var(--violet-m);}
+.field-hint{font-size:11px;color:var(--text3);text-align:right;margin-top:4px;}
+.field-hint a{color:var(--text3);transition:color .2s;}
+.field-hint a:hover{color:var(--violet-m);}
 
-  .btn-primary { display: block; width: 100%; margin-top: 24px; background: var(--violet); color: #fff; border: none; padding: 11px; font-family: 'Source Sans 3', sans-serif; font-size: 14px; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; border-radius: 5px; font-weight: 600; transition: background 0.15s; }
-  .btn-primary:hover { background: var(--violet2); }
+.check-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;}
+.check-row input[type="checkbox"]{width:16px;height:16px;margin-top:2px;accent-color:var(--violet);cursor:pointer;flex-shrink:0;}
+.check-row label{font-size:13px;color:var(--text2);font-weight:300;line-height:1.4;cursor:pointer;}
+.check-row label a{color:var(--violet-m);}
 
-  .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+.btn-submit{display:block;width:100%;margin-top:24px;background:var(--violet);color:#fff;border:none;padding:12px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:background .2s;}
+.btn-submit:hover{background:var(--violet2);}
 
-  .login-box p.switch { font-size: 13px; text-align: center; color: var(--text3); }
-  .login-box p.switch a { color: var(--violet-mid); text-decoration: none; }
-  .login-box p.switch a:hover { text-decoration: underline; }
+.divider{display:flex;align-items:center;gap:12px;margin:24px 0;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--line);}
+.divider span{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
 
-  .forgotten { font-size: 12px; text-align: right; margin-top: 5px; }
-  .forgotten a { color: var(--text3); text-decoration: none; }
-  .forgotten a:hover { color: var(--violet-mid); }
+.switch-text{text-align:center;font-size:13px;color:var(--text3);font-weight:300;}
+.switch-text a{color:var(--violet-m);transition:color .2s;}
+.switch-text a:hover{color:var(--violet);}
 
-  footer { background: var(--violet2); padding: 16px; font-size: 13px; color: var(--violet-light); text-align: center; margin-top: 52px; }
-  footer a { color: var(--violet-light); text-decoration: none; }
-  footer a:hover { color: #fff; }
+footer{background:var(--violet);color:var(--violet-l);padding:24px 40px;text-align:center;}
+footer a{color:var(--violet-l);font-size:12px;transition:color .2s;}
+footer a:hover{color:#fff;}
+.f-sep{opacity:.3;margin:0 10px;}
+.f-copy{font-size:11px;color:rgba(255,255,255,.25);margin-top:8px;}
+
+@media(max-width:700px){
+  #topbar{padding:6px 20px;}
+  header{padding:24px 20px;}
+  .site-name{font-size:44px;}
+  footer{padding:20px;}
+}
 </style>
 </head>
 <body>
@@ -79,85 +87,96 @@
 </div>
 
 <header>
-  <a href="index.html">ÉCLAIRAGE</a>
+  <a href="index.html">
+    <span class="site-name">Éclairage</span>
+  </a>
 </header>
 
 <div class="login-wrap">
   <div class="login-box">
-    <h1>Mon compte</h1>
-    <p class="sub">Accédez à vos articles sauvegardés, gérez votre abonnement newsletter et participez aux discussions.</p>
+    <h1 class="login-heading">Mon compte</h1>
+    <p class="login-sub">Accédez à vos articles sauvegardés, gérez votre abonnement newsletter et participez aux discussions.</p>
 
     <div class="tabs">
-      <button class="active" onclick="switchTab('connexion', this)">Connexion</button>
-      <button onclick="switchTab('inscription', this)">Inscription</button>
+      <button class="tab-btn active" onclick="switchTab('connexion',this)">Connexion</button>
+      <button class="tab-btn" onclick="switchTab('inscription',this)">Inscription</button>
     </div>
 
     <!-- CONNEXION -->
     <div id="connexion" class="form-section active">
-      <label for="email-co">Adresse e-mail</label>
-      <input type="email" id="email-co" placeholder="votre@email.com">
-
-      <label for="mdp-co">Mot de passe</label>
-      <input type="password" id="mdp-co" placeholder="••••••••">
-      <p class="forgotten"><a href="#">Mot de passe oublié ?</a></p>
-
-      <div class="checkbox-row">
-        <input type="checkbox" id="remember">
-        <label for="remember" style="margin:0; text-transform:none; font-weight:400;">Se souvenir de moi</label>
+      <div class="field">
+        <label for="email-co">Adresse e-mail</label>
+        <input type="email" id="email-co" placeholder="votre@email.com">
       </div>
-
-      <button class="btn-primary">Se connecter</button>
-      <hr class="divider">
-      <p class="switch">Pas encore de compte ? <a href="#" onclick="switchTabByName('inscription')">Créer un compte</a></p>
+      <div class="field">
+        <label for="mdp-co">Mot de passe</label>
+        <input type="password" id="mdp-co" placeholder="••••••••">
+        <p class="field-hint"><a href="#">Mot de passe oublié ?</a></p>
+      </div>
+      <div class="check-row">
+        <input type="checkbox" id="remember">
+        <label for="remember">Se souvenir de moi</label>
+      </div>
+      <button class="btn-submit">Se connecter</button>
+      <div class="divider"><span>ou</span></div>
+      <p class="switch-text">Pas encore de compte ? <a href="#" onclick="switchTabByName('inscription')">Créer un compte →</a></p>
     </div>
 
     <!-- INSCRIPTION -->
     <div id="inscription" class="form-section">
-      <label for="prenom">Prénom</label>
-      <input type="text" id="prenom" placeholder="Jean">
-
-      <label for="nom">Nom</label>
-      <input type="text" id="nom" placeholder="Dupont">
-
-      <label for="email-in">Adresse e-mail</label>
-      <input type="email" id="email-in" placeholder="votre@email.com">
-
-      <label for="mdp-in">Mot de passe</label>
-      <input type="password" id="mdp-in" placeholder="8 caractères minimum">
-
-      <label for="mdp-confirm">Confirmer le mot de passe</label>
-      <input type="password" id="mdp-confirm" placeholder="••••••••">
-
-      <div class="checkbox-row">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="field"><label for="prenom">Prénom</label><input type="text" id="prenom" placeholder="Jean"></div>
+        <div class="field"><label for="nom">Nom</label><input type="text" id="nom" placeholder="Dupont"></div>
+      </div>
+      <div class="field">
+        <label for="email-in">Adresse e-mail</label>
+        <input type="email" id="email-in" placeholder="votre@email.com">
+      </div>
+      <div class="field">
+        <label for="mdp-in">Mot de passe</label>
+        <input type="password" id="mdp-in" placeholder="8 caractères minimum">
+      </div>
+      <div class="field">
+        <label for="mdp-confirm">Confirmer le mot de passe</label>
+        <input type="password" id="mdp-confirm" placeholder="••••••••">
+      </div>
+      <div class="check-row">
         <input type="checkbox" id="newsletter">
-        <label for="newsletter" style="margin:0; text-transform:none; font-weight:400;">Recevoir la newsletter hebdomadaire</label>
+        <label for="newsletter">Recevoir la newsletter hebdomadaire d'Éclairage</label>
       </div>
-      <div class="checkbox-row">
+      <div class="check-row">
         <input type="checkbox" id="cgu">
-        <label for="cgu" style="margin:0; text-transform:none; font-weight:400;">J'accepte les <a href="#" style="color:var(--violet-mid);">conditions d'utilisation</a></label>
+        <label for="cgu">J'accepte les <a href="#">conditions d'utilisation</a> et la <a href="#">politique de confidentialité</a></label>
       </div>
-
-      <button class="btn-primary">Créer mon compte</button>
-      <hr class="divider">
-      <p class="switch">Déjà un compte ? <a href="#" onclick="switchTabByName('connexion')">Se connecter</a></p>
+      <button class="btn-submit">Créer mon compte</button>
+      <div class="divider"><span>ou</span></div>
+      <p class="switch-text">Déjà un compte ? <a href="#" onclick="switchTabByName('connexion')">Se connecter →</a></p>
     </div>
+
   </div>
 </div>
 
 <footer>
-  <a href="index.html">Retour à l'accueil</a> — <a href="#">Mentions légales</a> — <a href="#">Contact</a>
+  <div>
+    <a href="index.html">Retour à l'accueil</a>
+    <span class="f-sep">|</span>
+    <a href="#">Mentions légales</a>
+    <span class="f-sep">|</span>
+    <a href="#">Contact</a>
+  </div>
+  <p class="f-copy">© 2026 Éclairage</p>
 </footer>
 
 <script>
-function switchTab(id, btn) {
-  document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+function switchTab(id,btn){
+  document.querySelectorAll('.form-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   btn.classList.add('active');
 }
-function switchTabByName(id) {
-  var btns = document.querySelectorAll('.tabs button');
-  switchTab(id, id === 'connexion' ? btns[0] : btns[1]);
+function switchTabByName(id){
+  var btns=document.querySelectorAll('.tab-btn');
+  switchTab(id,id==='connexion'?btns[0]:btns[1]);
 }
 </script>
 </body>

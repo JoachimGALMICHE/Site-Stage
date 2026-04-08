@@ -5,65 +5,82 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="page-title">Catégorie — Éclairage</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #F5F0E8; --bg2: #EDE7D9; --bg3: #E4DDD0;
-    --violet: #3B1F5E; --violet2: #2A1445; --violet-mid: #6B4A9B;
-    --violet-light: #C4B0DC; --text: #2A1445; --text2: #5A4070;
-    --text3: #8B7AA0; --border: #C4B0DC; --border2: #9B88B8;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family: 'Source Sans 3', sans-serif; background: var(--bg); color: var(--text); font-size: 16px; }
+:root{
+  --beige:#F7F3EC;--beige2:#EEE8DC;--beige3:#E3DBCF;
+  --violet:#1E0F3C;--violet2:#2D1A55;--violet-m:#5B3E8F;
+  --violet-l:#A38DC4;--violet-xl:#D6C9E8;
+  --text:#1E0F3C;--text2:#4A3468;--text3:#9B8AB0;
+  --line:#DDD5E8;--line2:#C5B5D8;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--beige);color:var(--text);-webkit-font-smoothing:antialiased;}
+a{color:inherit;text-decoration:none;}
 
-  #topbar { background: var(--violet2); color: var(--violet-light); padding: 5px 16px; font-size: 12px; display: flex; justify-content: space-between; }
-  #topbar a { color: var(--violet-light); text-decoration: none; }
-  #topbar a:hover { color: #fff; }
+#topbar{background:var(--violet);color:var(--violet-l);padding:6px 40px;font-size:11px;letter-spacing:.07em;display:flex;justify-content:space-between;}
+#topbar a{color:var(--violet-xl);transition:color .2s;}
+#topbar a:hover{color:#fff;}
 
-  header { background: var(--bg); border-bottom: 2px solid var(--violet); padding: 20px 16px 12px; }
-  header a { font-family: 'Playfair Display', serif; font-size: 56px; letter-spacing: -2px; line-height: 1; color: var(--violet2); text-decoration: none; }
+header{padding:32px 40px 0;border-bottom:1px solid var(--line2);}
+.header-top{display:flex;align-items:flex-end;justify-content:space-between;padding-bottom:18px;}
+.site-name{font-family:'Cormorant Garamond',serif;font-size:74px;font-weight:300;letter-spacing:-3px;line-height:1;color:var(--violet);}
+.tagline{font-size:11px;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;}
 
-  nav#cats { background: var(--bg2); border-bottom: 2px solid var(--violet); overflow-x: auto; white-space: nowrap; padding: 0 16px; }
-  nav#cats a { display: inline-block; padding: 8px 12px; font-size: 12px; text-decoration: none; color: var(--text2); border-right: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; transition: background 0.15s, color 0.15s; }
-  nav#cats a:hover, nav#cats a.active { background: var(--violet); color: #fff; }
+nav#cats{overflow-x:auto;white-space:nowrap;scrollbar-width:none;}
+nav#cats::-webkit-scrollbar{display:none;}
+nav#cats a{display:inline-block;padding:13px 16px;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);border-bottom:2px solid transparent;transition:color .2s,border-color .2s;}
+nav#cats a:first-child{padding-left:0;}
+nav#cats a:hover{color:var(--violet);border-bottom-color:var(--line2);}
+nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet);}
 
-  main { max-width: 1100px; margin: 0 auto; padding: 28px 16px; }
+main{max-width:1160px;margin:0 auto;padding:0 40px;}
 
-  .cat-header { border-bottom: 2px solid var(--violet); margin-bottom: 24px; padding-bottom: 12px; display: flex; align-items: baseline; gap: 16px; }
-  .cat-header h1 { font-family: 'Playfair Display', serif; font-size: 42px; color: var(--violet2); }
-  .cat-header p { font-size: 13px; color: var(--text3); }
+/* CAT HEADER */
+.cat-header{padding:48px 0 32px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:20px;}
+.cat-header h1{font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:300;color:var(--violet);letter-spacing:-1px;}
+.cat-count{font-size:13px;color:var(--text3);font-weight:300;}
 
-  .filters { font-size: 12px; margin-bottom: 20px; display: inline-flex; border: 1.5px solid var(--border2); border-radius: 4px; overflow: hidden; }
-  .filters span { padding: 6px 14px; cursor: pointer; color: var(--text2); border-right: 1px solid var(--border); transition: background 0.15s, color 0.15s; font-weight: 600; letter-spacing: 0.04em; }
-  .filters span:last-child { border-right: none; }
-  .filters span:hover, .filters span.active { background: var(--violet); color: #fff; }
+/* FILTERS */
+.filters{display:flex;gap:0;margin:28px 0 0;border-bottom:1px solid var(--line);}
+.filter-btn{background:none;border:none;padding:10px 0;margin-right:28px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s,border-color .2s;}
+.filter-btn:hover{color:var(--violet);}
+.filter-btn.active{color:var(--violet);border-bottom-color:var(--violet);}
 
-  .article-list { }
-  .article-row { display: grid; grid-template-columns: 130px 1fr; gap: 20px; border-bottom: 1px solid var(--border); padding: 20px 0; align-items: start; }
-  .article-row .placeholder-img { background: var(--bg3); border: 1px solid var(--border); width: 130px; height: 88px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text3); border-radius: 3px; flex-shrink: 0; }
-  .cat-tag { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; background: var(--violet); color: #fff; display: inline-block; padding: 2px 7px; margin-bottom: 6px; border-radius: 2px; }
-  .article-row h2 { font-family: 'Playfair Display', serif; font-size: 21px; line-height: 1.15; margin-bottom: 5px; color: var(--violet2); }
-  .article-row h2 a { color: inherit; text-decoration: none; }
-  .article-row h2 a:hover { color: var(--violet-mid); }
-  .article-row .excerpt { font-size: 14px; color: var(--text2); line-height: 1.5; margin-bottom: 6px; }
-  .article-row .meta { font-size: 12px; color: var(--text3); }
+/* ARTICLE LIST */
+.article-list{padding:8px 0;}
+.article-row{display:grid;grid-template-columns:200px 1fr;gap:28px;padding:32px 0;border-bottom:1px solid var(--line);align-items:start;}
+.img-box{background:var(--beige3);border-radius:3px;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:11px;overflow:hidden;}
+.r32{aspect-ratio:3/2;}
+.rub-pill{display:inline-block;font-size:10px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--violet-m);background:var(--violet-xl);padding:3px 8px;border-radius:2px;margin-bottom:10px;}
+.article-row h2{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:400;line-height:1.18;color:var(--violet);margin-bottom:8px;}
+.article-row h2 a:hover{color:var(--violet-m);}
+.article-row .excr{font-size:14px;line-height:1.65;color:var(--text2);font-weight:300;margin-bottom:8px;}
+.article-row .meta{font-size:12px;color:var(--text3);}
+.article-row .meta b{color:var(--violet-m);font-weight:500;}
 
-  .pagination { margin-top: 28px; display: inline-flex; border: 1.5px solid var(--border2); border-radius: 4px; overflow: hidden; }
-  .pagination a { display: inline-block; padding: 7px 16px; text-decoration: none; color: var(--text2); border-right: 1px solid var(--border); font-size: 13px; font-weight: 600; transition: background 0.15s, color 0.15s; }
-  .pagination a:last-child { border-right: none; }
-  .pagination a:hover, .pagination a.active { background: var(--violet); color: #fff; }
+/* PAGINATION */
+.pagination{display:flex;gap:0;margin:36px 0 52px;border:1px solid var(--line2);border-radius:2px;overflow:hidden;display:inline-flex;}
+.pagination a{display:inline-block;padding:8px 16px;font-size:12px;font-weight:500;letter-spacing:.04em;color:var(--text2);border-right:1px solid var(--line2);transition:background .15s,color .15s;}
+.pagination a:last-child{border-right:none;}
+.pagination a:hover,.pagination a.active{background:var(--violet);color:#fff;}
 
-  footer { background: var(--violet2); color: var(--violet-light); padding: 28px 16px 16px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-top: 32px; }
-  footer h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #fff; border-bottom: 1px solid var(--violet-mid); padding-bottom: 6px; margin-bottom: 10px; }
-  footer a { color: var(--violet-light); text-decoration: none; font-size: 13px; }
-  footer a:hover { color: #fff; }
-  footer .copy { border-top: 1px solid var(--violet-mid); margin-top: 12px; padding-top: 10px; font-size: 11px; color: var(--text3); }
+footer{background:var(--violet);color:var(--violet-l);padding:40px 40px 24px;}
+.f-inner{display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:16px;}
+.f-brand{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:#fff;letter-spacing:-1px;}
+.f-links{display:flex;gap:24px;}
+.f-links a{font-size:12px;font-weight:300;color:var(--violet-l);transition:color .2s;}
+.f-links a:hover{color:#fff;}
+.f-copy{font-size:11px;color:rgba(255,255,255,.25);}
 
-  @media(max-width: 600px) {
-    .article-row { grid-template-columns: 1fr; }
-    .article-row .placeholder-img { width: 100%; height: 120px; }
-    footer { grid-template-columns: 1fr; }
-  }
+@media(max-width:700px){
+  header,main,footer{padding-left:20px;padding-right:20px;}
+  #topbar{padding:6px 20px;}
+  .site-name{font-size:44px;}
+  .header-top{flex-direction:column;gap:10px;}
+  .article-row{grid-template-columns:1fr;}
+  .cat-header h1{font-size:40px;}
+}
 </style>
 </head>
 <body>
@@ -74,163 +91,146 @@
 </div>
 
 <header>
-  <a href="index.html">ÉCLAIRAGE</a>
+  <div class="header-top">
+    <div>
+      <a href="index.html" style="display:block">
+        <div class="site-name">Éclairage</div>
+      </a>
+      <p class="tagline">Analyses &amp; actualités indépendantes</p>
+    </div>
+  </div>
+  <nav id="cats">
+    <a href="index.html">Accueil</a>
+    <a href="categorie.html?cat=Politique">Politique</a>
+    <a href="categorie.html?cat=Société">Société</a>
+    <a href="categorie.html?cat=Science">Science</a>
+    <a href="categorie.html?cat=Environnement">Environnement</a>
+    <a href="categorie.html?cat=Économie">Économie</a>
+    <a href="categorie.html?cat=Culture">Culture</a>
+    <a href="categorie.html?cat=International">International</a>
+    <a href="categorie.html?cat=Entreprise">Entreprise</a>
+    <a href="categorie.html?cat=Éducation">Éducation &amp; Jeunesse</a>
+    <a href="categorie.html?cat=Histoire">Histoire</a>
+  </nav>
 </header>
-
-<nav id="cats">
-  <a href="index.html">Accueil</a>
-  <a href="categorie.html?cat=Politique">Politique</a>
-  <a href="categorie.html?cat=Société">Société</a>
-  <a href="categorie.html?cat=Science">Science</a>
-  <a href="categorie.html?cat=Environnement">Environnement</a>
-  <a href="categorie.html?cat=Économie">Économie</a>
-  <a href="categorie.html?cat=Culture">Culture</a>
-  <a href="categorie.html?cat=International">International</a>
-  <a href="categorie.html?cat=Entreprise">Entreprise</a>
-  <a href="categorie.html?cat=Éducation">Éducation &amp; Jeunesse</a>
-  <a href="categorie.html?cat=Histoire">Histoire</a>
-</nav>
 
 <main>
   <div class="cat-header">
     <h1 id="cat-title">Catégorie</h1>
-    <p id="cat-count"></p>
+    <span class="cat-count" id="cat-count"></span>
   </div>
 
   <div class="filters">
-    <span class="active">Les plus récents</span>
-    <span>Les plus lus</span>
-    <span>Cette semaine</span>
-    <span>Ce mois</span>
+    <button class="filter-btn active">Les plus récents</button>
+    <button class="filter-btn">Les plus lus</button>
+    <button class="filter-btn">Cette semaine</button>
+    <button class="filter-btn">Ce mois</button>
   </div>
 
-  <div class="article-list" id="article-list">
-    <!-- Rempli dynamiquement par JS -->
-  </div>
+  <div class="article-list" id="article-list"></div>
 
   <div class="pagination">
     <a href="#" class="active">1</a>
     <a href="#">2</a>
     <a href="#">3</a>
-    <a href="#">→ Suivant</a>
+    <a href="#">→</a>
   </div>
 </main>
 
 <footer>
-  <div>
-    <h4>Rubriques</h4>
-    <p><a href="categorie.html?cat=Politique">Politique</a></p>
-    <p style="margin-top:4px"><a href="categorie.html?cat=Société">Société</a></p>
-    <p style="margin-top:4px"><a href="categorie.html?cat=Science">Science</a></p>
-    <p style="margin-top:4px"><a href="categorie.html?cat=Environnement">Environnement</a></p>
-    <p style="margin-top:4px"><a href="categorie.html?cat=Économie">Économie</a></p>
-    <p style="margin-top:4px"><a href="categorie.html?cat=Culture">Culture</a></p>
+  <div class="f-inner">
+    <a href="index.html" class="f-brand">Éclairage</a>
+    <div class="f-links">
+      <a href="#">À propos</a>
+      <a href="#">Contact</a>
+      <a href="connexion.html">Connexion</a>
+    </div>
   </div>
-  <div>
-    <h4>Le site</h4>
-    <p><a href="#">À propos</a></p>
-    <p style="margin-top:4px"><a href="#">Nous contacter</a></p>
-    <p style="margin-top:4px"><a href="connexion.html">Connexion</a></p>
-  </div>
-  <div>
-    <h4>Éclairage</h4>
-    <p style="font-size:13px; line-height:1.5; color:var(--violet-light);">Analyses indépendantes par des experts académiques et professionnels.</p>
-    <p class="copy">© 2026 Éclairage — Tous droits réservés</p>
-  </div>
+  <p class="f-copy">© 2026 Éclairage — Tous droits réservés</p>
 </footer>
 
 <script>
-// Données fictives par catégorie
-const DATA = {
-  "Politique": [
-    { titre: "La réforme des retraites fragilise le dialogue social en France", extrait: "Les syndicats annoncent une mobilisation nationale après l'échec des négociations.", auteur: "Marie Dupont", date: "31 mars 2026", duree: "8 min" },
-    { titre: "Après les législatives, la recomposition politique s'accélère", extrait: "L'émergence de nouveaux partis recompose profondément le paysage politique français.", auteur: "Antoine Garnier", date: "28 mars 2026", duree: "6 min" },
-    { titre: "Décentralisation : les régions veulent plus de pouvoir fiscal", extrait: "Un rapport sénatorial préconise de transférer une partie de la fiscalité nationale aux régions.", auteur: "Isabelle Fontaine", date: "25 mars 2026", duree: "5 min" },
-    { titre: "Le Parlement européen face à la montée des partis nationalistes", extrait: "Analyse des dynamiques politiques à Bruxelles un an après les élections européennes.", auteur: "Nicolas Petrov", date: "22 mars 2026", duree: "10 min" },
-    { titre: "Réforme constitutionnelle : les limites du pouvoir exécutif en question", extrait: "Un projet d'amendement relance le débat sur l'équilibre des pouvoirs sous la Ve République.", auteur: "Lucie Marchand", date: "19 mars 2026", duree: "7 min" },
+const DATA={
+  "Politique":[
+    {titre:"La réforme des retraites fragilise le dialogue social en France",extrait:"Les syndicats annoncent une mobilisation nationale après l'échec des négociations. Décryptage des enjeux d'une crise qui s'installe.",auteur:"Marie Dupont",date:"31 mars 2026",duree:"8 min"},
+    {titre:"Après les législatives, la recomposition politique s'accélère",extrait:"L'émergence de nouveaux partis et alliances recompose profondément le paysage politique français.",auteur:"Antoine Garnier",date:"28 mars 2026",duree:"6 min"},
+    {titre:"Décentralisation : les régions veulent plus de pouvoir fiscal",extrait:"Un rapport sénatorial préconise de transférer une partie de la fiscalité nationale aux régions.",auteur:"Isabelle Fontaine",date:"25 mars 2026",duree:"5 min"},
+    {titre:"Le Parlement européen face à la montée des partis nationalistes",extrait:"Analyse des dynamiques politiques à Bruxelles un an après les élections européennes de 2025.",auteur:"Nicolas Petrov",date:"22 mars 2026",duree:"10 min"},
+    {titre:"Réforme constitutionnelle : les limites du pouvoir exécutif en question",extrait:"Un projet d'amendement relance le débat sur l'équilibre des pouvoirs sous la Ve République.",auteur:"Lucie Marchand",date:"19 mars 2026",duree:"7 min"},
   ],
-  "Société": [
-    { titre: "Logement : les jeunes de moins de 30 ans exclus des grandes villes", extrait: "La hausse des loyers et la rareté des biens accessibles repoussent les jeunes actifs vers la périphérie.", auteur: "Camille Renard", date: "28 mars 2026", duree: "6 min" },
-    { titre: "Santé mentale au travail : la France à la traîne des pays nordiques", extrait: "Malgré les plans gouvernementaux, le burn-out reste sous-diagnostiqué et peu pris en charge.", auteur: "Claire Bernard", date: "26 mars 2026", duree: "5 min" },
-    { titre: "Le vieillissement de la population redessine la carte des services publics", extrait: "Les régions rurales font face à une pénurie croissante de médecins et de structures d'accueil.", auteur: "François Duval", date: "23 mars 2026", duree: "8 min" },
+  "Société":[
+    {titre:"Logement : les jeunes de moins de 30 ans exclus des grandes villes",extrait:"La hausse des loyers et la rareté des biens accessibles repoussent les jeunes actifs vers la périphérie.",auteur:"Camille Renard",date:"28 mars 2026",duree:"6 min"},
+    {titre:"Santé mentale au travail : la France à la traîne des pays nordiques",extrait:"Malgré les plans gouvernementaux, le burn-out reste sous-diagnostiqué et peu pris en charge.",auteur:"Claire Bernard",date:"26 mars 2026",duree:"5 min"},
+    {titre:"Le vieillissement de la population redessine la carte des services publics",extrait:"Les régions rurales font face à une pénurie croissante de médecins et de structures d'accueil.",auteur:"François Duval",date:"23 mars 2026",duree:"8 min"},
   ],
-  "Science": [
-    { titre: "Un vaccin contre Alzheimer entre en phase III d'essai clinique", extrait: "Des résultats préliminaires encourageants laissent espérer un traitement préventif d'ici 2030.", auteur: "Pr. Jean Lefebvre", date: "31 mars 2026", duree: "9 min" },
-    { titre: "CRISPR : les promesses et les limites de l'édition génétique en 2026", extrait: "La technique révolutionnaire se heurte à des obstacles éthiques et techniques encore non résolus.", auteur: "Dr. Alice Morin", date: "27 mars 2026", duree: "7 min" },
-    { titre: "Le CERN annonce une nouvelle particule candidate au-delà du boson de Higgs", extrait: "Une anomalie dans les données du LHC suscite l'enthousiasme de la communauté de physique des particules.", auteur: "Hugo Marceau", date: "20 mars 2026", duree: "6 min" },
+  "Science":[
+    {titre:"Un vaccin contre Alzheimer entre en phase III d'essai clinique",extrait:"Des résultats préliminaires laissent espérer un traitement préventif d'ici 2030.",auteur:"Pr. Jean Lefebvre",date:"31 mars 2026",duree:"9 min"},
+    {titre:"CRISPR : les promesses et les limites de l'édition génétique en 2026",extrait:"La technique révolutionnaire se heurte à des obstacles éthiques et techniques encore non résolus.",auteur:"Dr. Alice Morin",date:"27 mars 2026",duree:"7 min"},
+    {titre:"Le CERN annonce une nouvelle particule candidate",extrait:"Une anomalie dans les données du LHC suscite l'enthousiasme de la physique des particules.",auteur:"Hugo Marceau",date:"20 mars 2026",duree:"6 min"},
   ],
-  "Environnement": [
-    { titre: "Sécheresse : l'Espagne perd 40 % de ses réserves d'eau potable en un an", extrait: "La crise hydrique s'intensifie sur le pourtour méditerranéen avec des effets directs sur l'agriculture.", auteur: "Carla Ramos", date: "30 mars 2026", duree: "7 min" },
-    { titre: "Biodiversité marine : un tiers des récifs coralliens menacés de disparition d'ici 2040", extrait: "Le réchauffement des océans accélère le blanchissement des coraux à un rythme sans précédent.", auteur: "Marine Bel", date: "25 mars 2026", duree: "8 min" },
+  "Environnement":[
+    {titre:"Sécheresse : l'Espagne perd 40 % de ses réserves d'eau potable en un an",extrait:"La crise hydrique s'intensifie sur le pourtour méditerranéen avec des effets directs sur l'agriculture.",auteur:"Carla Ramos",date:"30 mars 2026",duree:"7 min"},
+    {titre:"Biodiversité marine : un tiers des récifs coralliens menacés",extrait:"Le réchauffement des océans accélère le blanchissement des coraux à un rythme sans précédent.",auteur:"Marine Bel",date:"25 mars 2026",duree:"8 min"},
   ],
-  "Économie": [
-    { titre: "La BCE maintient ses taux face à une inflation persistante", extrait: "Les gouverneurs de la BCE ont voté à l'unanimité pour le maintien des taux directeurs lors de la réunion de mars.", auteur: "Pierre Vidal", date: "28 mars 2026", duree: "5 min" },
-    { titre: "Les PME françaises face à la hausse du coût de l'énergie industrielle", extrait: "Malgré les aides publiques, de nombreuses petites entreprises envisagent de délocaliser une partie de leur production.", auteur: "Thomas Martin", date: "30 mars 2026", duree: "6 min" },
+  "Économie":[
+    {titre:"La BCE maintient ses taux face à une inflation persistante",extrait:"Les gouverneurs ont voté à l'unanimité pour le maintien des taux directeurs lors de la réunion de mars.",auteur:"Pierre Vidal",date:"28 mars 2026",duree:"5 min"},
+    {titre:"Les PME françaises face à la hausse du coût de l'énergie",extrait:"Malgré les aides publiques, de nombreuses petites entreprises envisagent de délocaliser une partie de leur production.",auteur:"Thomas Martin",date:"30 mars 2026",duree:"6 min"},
   ],
-  "Culture": [
-    { titre: "Le retour des librairies indépendantes face à Amazon", extrait: "Portées par un mouvement de consommation locale, les librairies de quartier résistent mieux qu'attendu.", auteur: "Julien Fabre", date: "26 mars 2026", duree: "5 min" },
-    { titre: "IA et création littéraire : la frontière s'efface", extrait: "Les outils génératifs s'invitent dans l'écriture romanesque, soulevant des questions sur l'originalité et le droit d'auteur.", auteur: "Nadia Korel", date: "24 mars 2026", duree: "7 min" },
+  "Culture":[
+    {titre:"Le retour des librairies indépendantes face à Amazon",extrait:"Portées par un mouvement de consommation locale, les librairies de quartier résistent mieux qu'attendu.",auteur:"Julien Fabre",date:"26 mars 2026",duree:"5 min"},
+    {titre:"IA et création littéraire : la frontière s'efface",extrait:"Les outils génératifs s'invitent dans l'écriture romanesque, soulevant des questions sur le droit d'auteur.",auteur:"Nadia Korel",date:"24 mars 2026",duree:"7 min"},
   ],
-  "International": [
-    { titre: "Taïwan et la Chine : un statu quo de plus en plus fragile", extrait: "Les manœuvres militaires chinoises dans le détroit s'intensifient, testant la réponse diplomatique des États-Unis.", auteur: "Paul Chen", date: "29 mars 2026", duree: "9 min" },
-    { titre: "Sommet G20 : les pays du Sud réclament une réforme du FMI", extrait: "Les économies émergentes dénoncent des règles de vote jugées archaïques et favorables aux puissances occidentales.", auteur: "Amara Diop", date: "25 mars 2026", duree: "8 min" },
+  "International":[
+    {titre:"Taïwan et la Chine : un statu quo de plus en plus fragile",extrait:"Les manœuvres militaires chinoises dans le détroit s'intensifient, testant la réponse diplomatique des États-Unis.",auteur:"Paul Chen",date:"29 mars 2026",duree:"9 min"},
+    {titre:"Sommet G20 : les pays du Sud réclament une réforme du FMI",extrait:"Les économies émergentes dénoncent des règles de vote jugées archaïques et favorables aux puissances occidentales.",auteur:"Amara Diop",date:"25 mars 2026",duree:"8 min"},
   ],
-  "Entreprise": [
-    { titre: "Les PME françaises face à la hausse du coût de l'énergie industrielle", extrait: "Malgré les aides publiques, de nombreuses petites entreprises envisagent de délocaliser.", auteur: "Thomas Martin", date: "30 mars 2026", duree: "6 min" },
-    { titre: "Startups françaises : le difficile accès aux grands marchés européens", extrait: "Les jeunes pousses hexagonales peinent à s'imposer face aux acteurs allemands et nordiques.", auteur: "Éléonore Baudin", date: "22 mars 2026", duree: "5 min" },
+  "Entreprise":[
+    {titre:"Les PME françaises face à la hausse du coût de l'énergie industrielle",extrait:"Malgré les aides publiques, de nombreuses petites entreprises envisagent de délocaliser.",auteur:"Thomas Martin",date:"30 mars 2026",duree:"6 min"},
+    {titre:"Startups françaises : le difficile accès aux grands marchés européens",extrait:"Les jeunes pousses hexagonales peinent à s'imposer face aux acteurs allemands et nordiques.",auteur:"Éléonore Baudin",date:"22 mars 2026",duree:"5 min"},
   ],
-  "Éducation": [
-    { titre: "Décrochage scolaire : que nous disent vraiment les chiffres officiels ?", extrait: "Les statistiques gouvernementales minimisent l'ampleur réelle du phénomène selon plusieurs chercheurs en éducation.", auteur: "Sophie Leclerc", date: "29 mars 2026", duree: "6 min" },
-    { titre: "École inclusive : les promesses non tenues de la loi de 2005", extrait: "Vingt ans après, les enfants en situation de handicap se heurtent encore à de nombreux obstacles dans le système scolaire.", auteur: "Rémi Laporte", date: "24 mars 2026", duree: "7 min" },
+  "Éducation":[
+    {titre:"Décrochage scolaire : que nous disent vraiment les chiffres officiels ?",extrait:"Les statistiques gouvernementales minimisent l'ampleur réelle du phénomène selon plusieurs chercheurs.",auteur:"Sophie Leclerc",date:"29 mars 2026",duree:"6 min"},
+    {titre:"École inclusive : les promesses non tenues de la loi de 2005",extrait:"Vingt ans après, les enfants en situation de handicap se heurtent encore à de nombreux obstacles.",auteur:"Rémi Laporte",date:"24 mars 2026",duree:"7 min"},
   ],
-  "Histoire": [
-    { titre: "80 ans après, Nuremberg résonne encore dans le droit international", extrait: "Les principes établis lors du procès de Nuremberg continuent d'influencer la justice pénale internationale contemporaine.", auteur: "Prof. Hélène Bauer", date: "27 mars 2026", duree: "10 min" },
-    { titre: "La Commune de Paris de 1871, matrice oubliée de la République sociale", extrait: "Historiens et politologues revisitent cet épisode fondateur à la lumière des débats actuels sur la démocratie directe.", auteur: "Laurent Giry", date: "20 mars 2026", duree: "9 min" },
+  "Histoire":[
+    {titre:"80 ans après, Nuremberg résonne encore dans le droit international",extrait:"Les principes établis lors du procès continuent d'influencer la justice pénale internationale contemporaine.",auteur:"Prof. Hélène Bauer",date:"27 mars 2026",duree:"10 min"},
+    {titre:"La Commune de Paris de 1871, matrice oubliée de la République sociale",extrait:"Historiens et politologues revisitent cet épisode fondateur à la lumière des débats actuels.",auteur:"Laurent Giry",date:"20 mars 2026",duree:"9 min"},
   ],
 };
 
-function getParam(name) {
-  return new URLSearchParams(window.location.search).get(name);
-}
+function getParam(n){return new URLSearchParams(window.location.search).get(n);}
 
-function init() {
-  const cat = getParam('cat') || 'Politique';
-  const displayCat = cat === 'Éducation' ? 'Éducation & Jeunesse' : cat;
+function init(){
+  const cat=getParam('cat')||'Politique';
+  const display=cat==='Éducation'?'Éducation &amp; Jeunesse':cat;
+  document.title=cat+' — Éclairage';
+  document.getElementById('cat-title').innerHTML=display;
+  const arts=DATA[cat]||DATA['Politique'];
+  document.getElementById('cat-count').textContent=arts.length+' articles';
 
-  // Titre page
-  document.title = displayCat + ' — Éclairage';
-  document.getElementById('page-title').textContent = displayCat + ' — Éclairage';
-  document.getElementById('cat-title').textContent = displayCat;
-
-  // Marquer lien actif dans nav
-  document.querySelectorAll('nav#cats a').forEach(a => {
+  // nav active
+  document.querySelectorAll('nav#cats a').forEach(a=>{
     a.classList.remove('active');
-    const href = a.getAttribute('href');
-    if (href && href.includes('cat=' + cat)) a.classList.add('active');
+    if(a.getAttribute('href')&&a.getAttribute('href').includes('cat='+cat)) a.classList.add('active');
   });
 
-  // Articles
-  const articles = DATA[cat] || DATA['Politique'];
-  document.getElementById('cat-count').textContent = articles.length + ' articles';
-
-  const list = document.getElementById('article-list');
-  list.innerHTML = articles.map(art => `
+  const list=document.getElementById('article-list');
+  list.innerHTML=arts.map(a=>`
     <div class="article-row">
-      <div class="placeholder-img">[IMG]</div>
+      <div class="img-box r32">[Photo]</div>
       <div>
-        <span class="cat-tag">${displayCat}</span>
-        <h2><a href="article.html">${art.titre}</a></h2>
-        <p class="excerpt">${art.extrait}</p>
-        <p class="meta">${art.auteur} — ${art.date} — ${art.duree} de lecture</p>
+        <span class="rub-pill">${display}</span>
+        <h2><a href="article.html">${a.titre}</a></h2>
+        <p class="excr">${a.extrait}</p>
+        <p class="meta"><b>${a.auteur}</b> &nbsp;·&nbsp; ${a.date} &nbsp;·&nbsp; ${a.duree} de lecture</p>
       </div>
     </div>
   `).join('');
 }
 
-// Filtres (cosmétique)
-document.querySelectorAll('.filters span').forEach(s => {
-  s.addEventListener('click', function() {
-    document.querySelectorAll('.filters span').forEach(x => x.classList.remove('active'));
+document.querySelectorAll('.filter-btn').forEach(b=>{
+  b.addEventListener('click',function(){
+    document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));
     this.classList.add('active');
   });
 });

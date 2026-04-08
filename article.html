@@ -5,73 +5,96 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Article — Éclairage</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #F5F0E8; --bg2: #EDE7D9; --bg3: #E4DDD0;
-    --violet: #3B1F5E; --violet2: #2A1445; --violet-mid: #6B4A9B;
-    --violet-light: #C4B0DC; --text: #2A1445; --text2: #5A4070;
-    --text3: #8B7AA0; --border: #C4B0DC; --border2: #9B88B8;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family: 'Source Sans 3', sans-serif; background: var(--bg); color: var(--text); font-size: 16px; }
+:root{
+  --beige:#F7F3EC;--beige2:#EEE8DC;--beige3:#E3DBCF;
+  --violet:#1E0F3C;--violet2:#2D1A55;--violet-m:#5B3E8F;
+  --violet-l:#A38DC4;--violet-xl:#D6C9E8;
+  --text:#1E0F3C;--text2:#4A3468;--text3:#9B8AB0;
+  --line:#DDD5E8;--line2:#C5B5D8;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--beige);color:var(--text);-webkit-font-smoothing:antialiased;}
+a{color:inherit;text-decoration:none;}
 
-  #topbar { background: var(--violet2); color: var(--violet-light); padding: 5px 16px; font-size: 12px; display: flex; justify-content: space-between; }
-  #topbar a { color: var(--violet-light); text-decoration: none; }
-  #topbar a:hover { color: #fff; }
+#topbar{background:var(--violet);color:var(--violet-l);padding:6px 40px;font-size:11px;letter-spacing:.07em;display:flex;justify-content:space-between;}
+#topbar a{color:var(--violet-xl);transition:color .2s;}
+#topbar a:hover{color:#fff;}
 
-  header { background: var(--bg); border-bottom: 2px solid var(--violet); padding: 20px 16px 12px; }
-  header a { font-family: 'Playfair Display', serif; font-size: 56px; letter-spacing: -2px; line-height: 1; color: var(--violet2); text-decoration: none; }
+header{padding:32px 40px 0;border-bottom:1px solid var(--line2);}
+.site-name{font-family:'Cormorant Garamond',serif;font-size:74px;font-weight:300;letter-spacing:-3px;line-height:1;color:var(--violet);display:block;padding-bottom:18px;}
 
-  nav#cats { background: var(--bg2); border-bottom: 2px solid var(--violet); overflow-x: auto; white-space: nowrap; padding: 0 16px; }
-  nav#cats a { display: inline-block; padding: 8px 12px; font-size: 12px; text-decoration: none; color: var(--text2); border-right: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; transition: background 0.15s, color 0.15s; }
-  nav#cats a:hover, nav#cats a.active { background: var(--violet); color: #fff; }
+nav#cats{overflow-x:auto;white-space:nowrap;scrollbar-width:none;}
+nav#cats::-webkit-scrollbar{display:none;}
+nav#cats a{display:inline-block;padding:13px 16px;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);border-bottom:2px solid transparent;transition:color .2s,border-color .2s;}
+nav#cats a:first-child{padding-left:0;}
+nav#cats a:hover{color:var(--violet);border-bottom-color:var(--line2);}
+nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet);}
 
-  main { max-width: 900px; margin: 0 auto; padding: 28px 16px; display: grid; grid-template-columns: 1fr 280px; gap: 36px; }
+/* LAYOUT */
+.page-layout{max-width:1160px;margin:0 auto;padding:0 40px;display:grid;grid-template-columns:1fr 300px;gap:64px;padding-top:48px;padding-bottom:64px;}
 
-  /* ARTICLE */
-  .breadcrumb { font-size: 12px; color: var(--text3); margin-bottom: 14px; }
-  .breadcrumb a { color: var(--violet-mid); text-decoration: none; }
-  .breadcrumb a:hover { text-decoration: underline; }
-  .cat-tag { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; background: var(--violet); color: #fff; display: inline-block; padding: 3px 8px; margin-bottom: 12px; border-radius: 2px; }
-  article h1 { font-family: 'Playfair Display', serif; font-size: 36px; line-height: 1.1; color: var(--violet2); margin-bottom: 14px; }
-  .standfirst { font-size: 18px; line-height: 1.6; color: var(--text2); border-left: 3px solid var(--violet-mid); padding-left: 14px; margin-bottom: 18px; }
-  .meta { font-size: 13px; color: var(--text3); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 9px 0; margin-bottom: 18px; }
-  .meta .author-name { color: var(--violet-mid); font-weight: 600; }
-  .placeholder-img { background: var(--bg3); border: 1.5px solid var(--border); width: 100%; height: 280px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--text3); margin-bottom: 8px; border-radius: 4px; }
-  figcaption { font-size: 11px; color: var(--text3); margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-  article p { font-size: 17px; line-height: 1.75; color: var(--text); margin-bottom: 18px; }
-  article h2 { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--violet2); margin: 28px 0 12px; border-top: 1.5px solid var(--border); padding-top: 10px; }
-  blockquote { border-left: 3px solid var(--violet-mid); padding-left: 16px; margin: 20px 0; font-size: 19px; font-style: italic; line-height: 1.55; color: var(--violet2); }
-  .tags { margin-top: 28px; border-top: 2px solid var(--border); padding-top: 14px; font-size: 12px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-  .tags strong { color: var(--text3); margin-right: 4px; }
-  .tags span { border: 1.5px solid var(--border2); color: var(--violet-mid); padding: 3px 10px; border-radius: 3px; }
+/* ARTICLE */
+.breadcrumb{font-size:12px;color:var(--text3);margin-bottom:20px;display:flex;gap:8px;align-items:center;}
+.breadcrumb a{color:var(--violet-m);transition:color .2s;}
+.breadcrumb a:hover{color:var(--violet);}
+.breadcrumb span{opacity:.4;}
+.rub-pill{display:inline-block;font-size:10px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--violet-m);background:var(--violet-xl);padding:3px 8px;border-radius:2px;margin-bottom:16px;}
+article h1{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;line-height:1.08;color:var(--violet);margin-bottom:20px;letter-spacing:-.5px;}
+.standfirst{font-size:18px;line-height:1.7;color:var(--text2);font-weight:300;border-left:2px solid var(--violet-m);padding-left:16px;margin-bottom:24px;}
+.art-meta{font-size:13px;color:var(--text3);padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:28px;display:flex;gap:16px;flex-wrap:wrap;}
+.art-meta b{color:var(--violet-m);font-weight:500;}
 
-  /* SIDEBAR */
-  .sidebar-block { border: 1.5px solid var(--border); border-radius: 6px; padding: 14px; margin-bottom: 18px; background: var(--bg2); }
-  .sidebar-block h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--violet-mid); border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 12px; font-weight: 600; }
-  .related-item { border-bottom: 1px solid var(--bg3); padding: 9px 0; }
-  .related-item:last-child { border-bottom: none; }
-  .related-item .cat { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--violet-mid); font-weight: 600; }
-  .related-item h4 { font-size: 14px; line-height: 1.3; margin-top: 2px; }
-  .related-item h4 a { color: var(--text); text-decoration: none; }
-  .related-item h4 a:hover { color: var(--violet-mid); }
-  .author-card { font-size: 13px; }
-  .author-avatar { background: var(--violet); color: #fff; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; margin-bottom: 10px; }
-  .author-card strong { font-size: 14px; display: block; margin-bottom: 4px; color: var(--violet2); }
-  .author-card p { color: var(--text2); font-size: 12px; line-height: 1.5; }
-  .nl-input { width: 100%; border: 1.5px solid var(--border2); padding: 7px 10px; font-family: 'Source Sans 3', sans-serif; font-size: 13px; background: var(--bg); color: var(--text); outline: none; border-radius: 4px; margin-bottom: 8px; }
-  .nl-input:focus { border-color: var(--violet-mid); }
-  .nl-btn { width: 100%; background: var(--violet); color: #fff; border: none; padding: 8px; font-family: 'Source Sans 3', sans-serif; font-size: 13px; cursor: pointer; border-radius: 4px; letter-spacing: 0.04em; }
-  .nl-btn:hover { background: var(--violet2); }
+.img-box{background:var(--beige3);border-radius:3px;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:11px;overflow:hidden;}
+.r169{aspect-ratio:16/9;}
+.r32{aspect-ratio:3/2;}
+figcaption{font-size:11px;color:var(--text3);margin-top:8px;margin-bottom:28px;font-weight:300;}
 
-  footer { background: var(--violet2); color: var(--violet-light); padding: 20px 16px; font-size: 13px; text-align: center; }
-  footer a { color: var(--violet-light); text-decoration: none; }
-  footer a:hover { color: #fff; }
+article p{font-size:17px;line-height:1.8;color:var(--text);margin-bottom:20px;font-weight:300;}
+article h2{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;color:var(--violet);margin:36px 0 14px;padding-top:28px;border-top:1px solid var(--line);}
+blockquote{margin:28px 0;padding:20px 24px;border-left:3px solid var(--violet-m);background:var(--beige2);border-radius:0 3px 3px 0;}
+blockquote p{font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;line-height:1.55;color:var(--violet2);margin:0;}
+.tags{margin-top:36px;padding-top:20px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.tags-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;font-weight:500;}
+.tag{font-size:12px;color:var(--violet-m);border:1px solid var(--violet-xl);padding:4px 12px;border-radius:2px;transition:background .15s;}
+.tag:hover{background:var(--violet-xl);}
 
-  @media(max-width: 800px) {
-    main { grid-template-columns: 1fr; }
-  }
+/* SIDEBAR */
+aside{padding-top:0;}
+.s-block{margin-bottom:32px;padding-bottom:32px;border-bottom:1px solid var(--line);}
+.s-block:last-child{border-bottom:none;}
+.s-title{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:16px;}
+.author-init{width:48px;height:48px;border-radius:50%;background:var(--violet);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500;margin-bottom:12px;}
+.author-name{font-size:15px;font-weight:500;color:var(--violet);margin-bottom:4px;}
+.author-bio{font-size:13px;color:var(--text2);line-height:1.55;font-weight:300;}
+.rel-item{padding:12px 0;border-bottom:1px solid var(--line);}
+.rel-item:last-child{border-bottom:none;}
+.rel-item:first-child{padding-top:0;}
+.rel-rub{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--violet-m);margin-bottom:4px;}
+.rel-item h4{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:400;line-height:1.3;color:var(--violet);}
+.rel-item h4 a:hover{color:var(--violet-m);}
+.nl-text{font-size:13px;color:var(--text2);font-weight:300;margin-bottom:12px;line-height:1.5;}
+.nl-input{width:100%;border:1px solid var(--line2);padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--beige);color:var(--text);outline:none;border-radius:2px;margin-bottom:8px;transition:border-color .2s;}
+.nl-input:focus{border-color:var(--violet-m);}
+.nl-btn{width:100%;background:var(--violet);color:#fff;border:none;padding:10px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:background .2s;}
+.nl-btn:hover{background:var(--violet2);}
+
+footer{background:var(--violet);color:var(--violet-l);padding:32px 40px 20px;}
+.f-inner{display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:12px;}
+.f-brand{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:#fff;letter-spacing:-1px;}
+.f-links{display:flex;gap:20px;}
+.f-links a{font-size:12px;font-weight:300;color:var(--violet-l);transition:color .2s;}
+.f-links a:hover{color:#fff;}
+.f-copy{font-size:11px;color:rgba(255,255,255,.25);}
+
+@media(max-width:900px){.page-layout{grid-template-columns:1fr;gap:40px;}}
+@media(max-width:700px){
+  header,.page-layout,footer{padding-left:20px;padding-right:20px;}
+  #topbar{padding:6px 20px;}
+  .site-name{font-size:44px;}
+  article h1{font-size:36px;}
+}
 </style>
 </head>
 <body>
@@ -82,37 +105,43 @@
 </div>
 
 <header>
-  <a href="index.html">ÉCLAIRAGE</a>
+  <a href="index.html" class="site-name">Éclairage</a>
+  <nav id="cats">
+    <a href="index.html">Accueil</a>
+    <a href="categorie.html?cat=Politique" class="active">Politique</a>
+    <a href="categorie.html?cat=Société">Société</a>
+    <a href="categorie.html?cat=Science">Science</a>
+    <a href="categorie.html?cat=Environnement">Environnement</a>
+    <a href="categorie.html?cat=Économie">Économie</a>
+    <a href="categorie.html?cat=Culture">Culture</a>
+    <a href="categorie.html?cat=International">International</a>
+    <a href="categorie.html?cat=Entreprise">Entreprise</a>
+    <a href="categorie.html?cat=Éducation">Éducation &amp; Jeunesse</a>
+    <a href="categorie.html?cat=Histoire">Histoire</a>
+  </nav>
 </header>
 
-<nav id="cats">
-  <a href="index.html">Accueil</a>
-  <a href="categorie.html?cat=Politique" class="active">Politique</a>
-  <a href="categorie.html?cat=Société">Société</a>
-  <a href="categorie.html?cat=Science">Science</a>
-  <a href="categorie.html?cat=Environnement">Environnement</a>
-  <a href="categorie.html?cat=Économie">Économie</a>
-  <a href="categorie.html?cat=Culture">Culture</a>
-  <a href="categorie.html?cat=International">International</a>
-  <a href="categorie.html?cat=Entreprise">Entreprise</a>
-  <a href="categorie.html?cat=Éducation">Éducation &amp; Jeunesse</a>
-  <a href="categorie.html?cat=Histoire">Histoire</a>
-</nav>
-
-<main>
+<div class="page-layout">
   <article>
     <p class="breadcrumb">
-      <a href="index.html">Accueil</a> › <a href="categorie.html?cat=Politique">Politique</a> › Article
+      <a href="index.html">Accueil</a>
+      <span>›</span>
+      <a href="categorie.html?cat=Politique">Politique</a>
+      <span>›</span>
+      <span style="color:var(--text2)">Article</span>
     </p>
-    <span class="cat-tag">Politique</span>
+    <span class="rub-pill">Politique</span>
     <h1>La réforme des retraites fragilise le dialogue social en France</h1>
-    <p class="standfirst">Les syndicats annoncent une mobilisation nationale après l'échec des négociations au ministère du Travail. Décryptage des enjeux politiques et économiques d'une crise qui s'installe dans la durée.</p>
-    <div class="meta">
-      Par <span class="author-name">Marie Dupont</span>, Professeure de sciences politiques, Université de Lyon &nbsp;|&nbsp; <time>31 mars 2026</time> &nbsp;|&nbsp; 8 min de lecture
+    <p class="standfirst">Les syndicats annoncent une mobilisation nationale après l'échec des négociations au ministère du Travail. Décryptage des enjeux d'une crise qui s'installe dans la durée.</p>
+    <div class="art-meta">
+      <span>Par <b>Marie Dupont</b></span>
+      <span>Université de Lyon</span>
+      <span>31 mars 2026</span>
+      <span>8 min de lecture</span>
     </div>
     <figure>
-      <div class="placeholder-img">[IMAGE PRINCIPALE DE L'ARTICLE]</div>
-      <figcaption>Manifestation devant le ministère du Travail, Paris, 28 mars 2026. Crédit photo : X</figcaption>
+      <div class="img-box r169">[Image principale]</div>
+      <figcaption>Manifestation devant le ministère du Travail, Paris, 28 mars 2026. Crédit : X</figcaption>
     </figure>
 
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
@@ -120,7 +149,9 @@
 
     <h2>Un bras de fer historique</h2>
     <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
-    <blockquote>« Nous ne pouvons pas accepter une réforme qui pénalise les travailleurs les plus fragiles sans aucune contrepartie. »</blockquote>
+    <blockquote>
+      <p>« Nous ne pouvons pas accepter une réforme qui pénalise les travailleurs les plus fragiles sans aucune contrepartie. »</p>
+    </blockquote>
     <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
 
     <h2>Les conséquences économiques</h2>
@@ -128,56 +159,50 @@
     <p>Similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.</p>
 
     <div class="tags">
-      <strong>Mots-clés :</strong>
-      <span>Retraites</span>
-      <span>Syndicats</span>
-      <span>Dialogue social</span>
-      <span>France</span>
-      <span>Politique sociale</span>
+      <span class="tags-label">Mots-clés</span>
+      <span class="tag">Retraites</span>
+      <span class="tag">Syndicats</span>
+      <span class="tag">Dialogue social</span>
+      <span class="tag">France</span>
+      <span class="tag">Politique sociale</span>
     </div>
   </article>
 
   <aside>
-    <div class="sidebar-block">
-      <h3>L'autrice</h3>
-      <div class="author-card">
-        <div class="author-avatar">MD</div>
-        <strong>Marie Dupont</strong>
-        <p>Professeure de sciences politiques à l'Université de Lyon. Spécialiste des relations sociales et du droit du travail en Europe.</p>
-      </div>
+    <div class="s-block">
+      <p class="s-title">L'autrice</p>
+      <div class="author-init">MD</div>
+      <p class="author-name">Marie Dupont</p>
+      <p class="author-bio">Professeure de sciences politiques à l'Université de Lyon. Spécialiste des relations sociales et du droit du travail en Europe.</p>
     </div>
 
-    <div class="sidebar-block">
-      <h3>À lire aussi</h3>
-      <div class="related-item">
-        <span class="cat">Économie</span>
-        <h4><a href="article.html">La BCE maintient ses taux face à l'inflation persistante</a></h4>
-      </div>
-      <div class="related-item">
-        <span class="cat">Société</span>
-        <h4><a href="article.html">Les jeunes de moins de 30 ans exclus des grandes villes</a></h4>
-      </div>
-      <div class="related-item">
-        <span class="cat">Politique</span>
-        <h4><a href="article.html">Après les législatives, la recomposition politique s'accélère</a></h4>
-      </div>
-      <div class="related-item">
-        <span class="cat">International</span>
-        <h4><a href="article.html">Les réformes sociales en Europe : un bilan comparatif</a></h4>
-      </div>
+    <div class="s-block">
+      <p class="s-title">À lire aussi</p>
+      <div class="rel-item"><p class="rel-rub">Économie</p><h4><a href="article.html">La BCE maintient ses taux face à l'inflation persistante</a></h4></div>
+      <div class="rel-item"><p class="rel-rub">Société</p><h4><a href="article.html">Les jeunes de moins de 30 ans exclus des grandes villes</a></h4></div>
+      <div class="rel-item"><p class="rel-rub">Politique</p><h4><a href="article.html">Après les législatives, la recomposition politique s'accélère</a></h4></div>
+      <div class="rel-item"><p class="rel-rub">International</p><h4><a href="article.html">Les réformes sociales en Europe : un bilan comparatif</a></h4></div>
     </div>
 
-    <div class="sidebar-block">
-      <h3>Newsletter</h3>
-      <p style="font-size:12px; color:var(--text2); margin-bottom:10px;">Recevez nos analyses chaque semaine.</p>
-      <input type="email" placeholder="email@exemple.com" class="nl-input">
-      <button class="nl-btn">S'ABONNER</button>
+    <div class="s-block">
+      <p class="s-title">Newsletter</p>
+      <p class="nl-text">Recevez nos analyses chaque semaine dans votre boîte mail.</p>
+      <input type="email" placeholder="votre@email.com" class="nl-input">
+      <button class="nl-btn">S'abonner</button>
     </div>
   </aside>
-</main>
+</div>
 
 <footer>
-  <a href="index.html">ÉCLAIRAGE</a> — <a href="#">À propos</a> — <a href="#">Contact</a> — <a href="connexion.html">Connexion</a> — © 2026 Tous droits réservés
+  <div class="f-inner">
+    <a href="index.html" class="f-brand">Éclairage</a>
+    <div class="f-links">
+      <a href="#">À propos</a>
+      <a href="#">Contact</a>
+      <a href="connexion.html">Connexion</a>
+    </div>
+  </div>
+  <p class="f-copy">© 2026 Éclairage — Tous droits réservés</p>
 </footer>
 
 </body>
