@@ -50,6 +50,12 @@ article h1{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300
 .r169{aspect-ratio:16/9;}
 .r32{aspect-ratio:3/2;}
 figcaption{font-size:11px;color:var(--text3);margin-top:8px;margin-bottom:28px;font-weight:300;}
+.conflict-banner{display:flex;gap:14px;align-items:flex-start;padding:14px 18px;border-radius:3px;margin-bottom:28px;border:1px solid;}
+.conflict-banner.no-conflict{background:#F0F8F2;border-color:#B8DEC4;color:#1A5C32;}
+.conflict-banner.has-conflict{background:#FDF3F0;border-color:#E8C4B8;color:#5C2A1A;}
+.conflict-icon{font-size:16px;margin-top:1px;flex-shrink:0;}
+.conflict-banner strong{font-size:13px;font-weight:500;display:block;margin-bottom:3px;}
+.conflict-banner p{font-size:12px;line-height:1.5;opacity:.85;font-weight:300;}
 
 article p{font-size:17px;line-height:1.8;color:var(--text);margin-bottom:20px;font-weight:300;}
 article h2{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;color:var(--violet);margin:36px 0 14px;padding-top:28px;border-top:1px solid var(--line);}
@@ -118,6 +124,7 @@ footer{background:var(--violet);color:var(--violet-l);padding:32px 40px 20px;}
     <a href="categorie.html?cat=Entreprise">Entreprise</a>
     <a href="categorie.html?cat=Éducation">Éducation &amp; Jeunesse</a>
     <a href="categorie.html?cat=Histoire">Histoire</a>
+    <a href="categorie.html?cat=Critique">Critique litt. &amp; artistique</a>
   </nav>
 </header>
 
@@ -138,6 +145,13 @@ footer{background:var(--violet);color:var(--violet-l);padding:32px 40px 20px;}
       <span>Université de Lyon</span>
       <span>31 mars 2026</span>
       <span>8 min de lecture</span>
+    </div>
+    <div class="conflict-banner no-conflict">
+      <span class="conflict-icon">✓</span>
+      <div>
+        <strong>Aucun conflit d'intérêt déclaré</strong>
+        <p>L'autrice certifie n'avoir aucun lien financier ou institutionnel avec les organisations mentionnées dans cet article.</p>
+      </div>
     </div>
     <figure>
       <div class="img-box r169">[Image principale]</div>

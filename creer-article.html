@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Créer un article — Éclairage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --beige:#F7F3EC;--beige2:#EEE8DC;--beige3:#E3DBCF;
+  --violet:#1E0F3C;--violet2:#2D1A55;--violet-m:#5B3E8F;
+  --violet-l:#A38DC4;--violet-xl:#D6C9E8;
+  --text:#1E0F3C;--text2:#4A3468;--text3:#9B8AB0;
+  --line:#DDD5E8;--line2:#C5B5D8;
+  --green:#1A5C32;--green-bg:#F0F8F2;--green-bd:#B8DEC4;
+  --orange:#7A3A10;--orange-bg:#FDF6F0;--orange-bd:#E8D0B8;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--beige);color:var(--text);-webkit-font-smoothing:antialiased;}
+a{color:inherit;text-decoration:none;}
+
+/* TOPBAR */
+#topbar{background:var(--violet);color:var(--violet-l);padding:6px 40px;font-size:11px;letter-spacing:.07em;display:flex;justify-content:space-between;align-items:center;}
+#topbar a{color:var(--violet-xl);transition:color .2s;}
+#topbar a:hover{color:#fff;}
+.t-sep{opacity:.3;margin:0 10px;}
+
+/* HEADER */
+header{padding:28px 40px 20px;border-bottom:1px solid var(--line2);display:flex;align-items:center;justify-content:space-between;}
+.site-name{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;letter-spacing:-2px;line-height:1;color:var(--violet);}
+.header-badge{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--violet-m);background:var(--violet-xl);padding:4px 12px;border-radius:2px;}
+
+/* LAYOUT */
+.editor-layout{max-width:900px;margin:0 auto;padding:40px 40px 80px;}
+
+/* PROGRESS */
+.progress-bar{display:flex;gap:0;margin-bottom:40px;border:1px solid var(--line2);border-radius:3px;overflow:hidden;}
+.step{flex:1;padding:10px 0;text-align:center;font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);background:var(--beige2);border-right:1px solid var(--line2);cursor:pointer;transition:background .2s,color .2s;}
+.step:last-child{border-right:none;}
+.step.active{background:var(--violet);color:#fff;}
+.step.done{background:var(--violet-xl);color:var(--violet-m);}
+
+/* SECTIONS */
+.form-step{display:none;}
+.form-step.active{display:block;}
+
+/* LABELS & INPUTS */
+.field{margin-bottom:28px;}
+.field-label{display:block;font-size:11px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;}
+.field-hint{font-size:12px;color:var(--text3);font-weight:300;margin-bottom:8px;}
+.f-input{display:block;width:100%;border:1px solid var(--line2);padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--beige);color:var(--text);outline:none;border-radius:2px;transition:border-color .2s;}
+.f-input:focus{border-color:var(--violet-m);}
+.f-input.title-input{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;letter-spacing:-.3px;padding:14px;}
+.f-input.title-input::placeholder{color:var(--violet-xl);}
+textarea.f-input{resize:vertical;line-height:1.7;min-height:120px;}
+textarea.f-input.body-ta{min-height:340px;font-size:15px;font-weight:300;line-height:1.8;}
+select.f-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239B8AB0' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;cursor:pointer;}
+
+/* CHAR COUNT */
+.char-count{font-size:11px;color:var(--text3);text-align:right;margin-top:4px;}
+
+/* GRID 2 COL */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+
+/* CONFLICT TOGGLE */
+.conflict-toggle{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;}
+.ct-option{border:1px solid var(--line2);border-radius:3px;padding:14px 16px;cursor:pointer;transition:border-color .2s,background .2s;display:flex;align-items:flex-start;gap:10px;}
+.ct-option input[type="radio"]{margin-top:3px;accent-color:var(--violet);flex-shrink:0;}
+.ct-option .ct-label{font-size:13px;font-weight:500;color:var(--text);display:block;margin-bottom:2px;}
+.ct-option .ct-desc{font-size:12px;color:var(--text3);font-weight:300;line-height:1.4;}
+.ct-option:has(input:checked).no-c{border-color:var(--green-bd);background:var(--green-bg);}
+.ct-option:has(input:checked).yes-c{border-color:var(--orange-bd);background:var(--orange-bg);}
+
+#conflict-detail-wrap{margin-top:12px;display:none;}
+#conflict-detail-wrap.visible{display:block;}
+
+/* IMAGE DROP ZONE */
+.img-drop{border:1.5px dashed var(--line2);border-radius:3px;padding:40px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;position:relative;}
+.img-drop:hover{border-color:var(--violet-m);background:var(--beige2);}
+.img-drop.has-image{border-style:solid;border-color:var(--violet-m);background:var(--beige2);}
+.img-drop input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.drop-icon{font-size:32px;margin-bottom:10px;color:var(--violet-l);}
+.drop-text{font-size:14px;color:var(--text2);font-weight:300;}
+.drop-sub{font-size:12px;color:var(--text3);margin-top:4px;}
+.img-preview{display:none;margin-top:16px;}
+.img-preview img{max-width:100%;max-height:220px;border-radius:3px;object-fit:cover;}
+.img-name{font-size:12px;color:var(--violet-m);margin-top:8px;}
+.img-remove{font-size:11px;color:var(--text3);cursor:pointer;text-decoration:underline;margin-top:4px;display:inline-block;}
+.img-remove:hover{color:var(--violet-m);}
+
+/* APERÇU LIVE */
+#preview-panel{background:var(--beige2);border:1px solid var(--line);border-radius:4px;padding:32px;margin-bottom:28px;}
+.preview-cat{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--violet-m);margin-bottom:14px;}
+.preview-title{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;line-height:1.1;color:var(--violet);margin-bottom:12px;letter-spacing:-.3px;}
+.preview-meta{font-size:12px;color:var(--text3);margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--line);}
+.preview-meta b{color:var(--violet-m);font-weight:500;}
+.preview-standfirst{font-size:16px;line-height:1.7;color:var(--text2);font-weight:300;border-left:2px solid var(--violet-m);padding-left:14px;margin-bottom:16px;}
+.preview-img{background:var(--beige3);border-radius:3px;height:180px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text3);margin-bottom:16px;overflow:hidden;}
+.preview-img img{width:100%;height:100%;object-fit:cover;}
+.preview-body{font-size:15px;line-height:1.75;color:var(--text);font-weight:300;white-space:pre-wrap;}
+.preview-conflict{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-radius:3px;border:1px solid;margin-top:16px;font-size:12px;}
+.preview-conflict.no-c{background:var(--green-bg);border-color:var(--green-bd);color:var(--green);}
+.preview-conflict.yes-c{background:var(--orange-bg);border-color:var(--orange-bd);color:var(--orange);}
+
+/* SECTION TITLE */
+.step-title{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;color:var(--violet);margin-bottom:6px;letter-spacing:-.3px;}
+.step-sub{font-size:13px;color:var(--text3);font-weight:300;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--line);}
+
+/* NAVIGATION BOUTONS */
+.form-nav{display:flex;justify-content:space-between;align-items:center;margin-top:36px;padding-top:24px;border-top:1px solid var(--line);}
+.btn-back{background:none;border:1px solid var(--line2);padding:10px 22px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;border-radius:2px;transition:border-color .2s,color .2s;}
+.btn-back:hover{border-color:var(--violet-m);color:var(--violet);}
+.btn-next{background:var(--violet);color:#fff;border:none;padding:10px 28px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;letter-spacing:.04em;cursor:pointer;border-radius:2px;transition:background .2s;}
+.btn-next:hover{background:var(--violet2);}
+.btn-submit{background:var(--violet-m);color:#fff;border:none;padding:11px 32px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;letter-spacing:.04em;cursor:pointer;border-radius:2px;transition:background .2s;}
+.btn-submit:hover{background:var(--violet);}
+
+/* SUCCESS */
+#success-screen{display:none;text-align:center;padding:64px 0;}
+#success-screen.visible{display:block;}
+.success-icon{font-size:48px;margin-bottom:20px;}
+.success-title{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;color:var(--violet);margin-bottom:10px;}
+.success-sub{font-size:15px;color:var(--text3);font-weight:300;margin-bottom:32px;}
+.success-actions{display:flex;gap:12px;justify-content:center;}
+.sa-btn{padding:10px 22px;border-radius:2px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:background .2s;}
+.sa-primary{background:var(--violet);color:#fff;border:none;}
+.sa-primary:hover{background:var(--violet2);}
+.sa-secondary{background:none;border:1px solid var(--line2);color:var(--text2);}
+.sa-secondary:hover{border-color:var(--violet-m);}
+
+footer{background:var(--violet);color:var(--violet-l);padding:20px 40px;text-align:center;}
+footer a{color:var(--violet-l);font-size:12px;transition:color .2s;}
+footer a:hover{color:#fff;}
+.f-copy{font-size:11px;color:rgba(255,255,255,.25);margin-top:6px;}
+
+@media(max-width:700px){
+  #topbar,header,.editor-layout,footer{padding-left:20px;padding-right:20px;}
+  .site-name{font-size:36px;}
+  .grid2{grid-template-columns:1fr;}
+  .conflict-toggle{grid-template-columns:1fr;}
+  .f-input.title-input{font-size:22px;}
+}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <span><a href="index.html">← Retour au site</a></span>
+  <span>Interface rédacteur</span>
+</div>
+
+<header>
+  <a href="index.html"><span class="site-name">Éclairage</span></a>
+  <span class="header-badge">Créer un article</span>
+</header>
+
+<div class="editor-layout">
+
+  <!-- BARRE DE PROGRESSION -->
+  <div class="progress-bar" id="progress">
+    <div class="step active" onclick="goToStep(1)">1 — Informations</div>
+    <div class="step" onclick="goToStep(2)">2 — Contenu</div>
+    <div class="step" onclick="goToStep(3)">3 — Image</div>
+    <div class="step" onclick="goToStep(4)">4 — Aperçu</div>
+  </div>
+
+  <!-- ÉTAPE 1 : INFORMATIONS -->
+  <div class="form-step active" id="step-1">
+    <h2 class="step-title">Informations générales</h2>
+    <p class="step-sub">Renseignez les métadonnées de votre article.</p>
+
+    <div class="field">
+      <label class="field-label">Titre de l'article *</label>
+      <input class="f-input title-input" type="text" id="f-titre" placeholder="Écrivez un titre clair et accrocheur…" oninput="updatePreview()">
+      <p class="char-count"><span id="titre-count">0</span> / 120 caractères</p>
+    </div>
+
+    <div class="grid2">
+      <div class="field">
+        <label class="field-label">Auteur(e) *</label>
+        <input class="f-input" type="text" id="f-auteur" placeholder="Prénom Nom" oninput="updatePreview()">
+      </div>
+      <div class="field">
+        <label class="field-label">Institution / titre</label>
+        <input class="f-input" type="text" id="f-institution" placeholder="Université de Lyon, CNRS…" oninput="updatePreview()">
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="field">
+        <label class="field-label">Rubrique *</label>
+        <select class="f-input" id="f-rubrique" onchange="updatePreview()">
+          <option value="">Choisir une rubrique…</option>
+          <option>Politique</option>
+          <option>Société</option>
+          <option>Science</option>
+          <option>Environnement</option>
+          <option>Économie</option>
+          <option>Culture</option>
+          <option>International</option>
+          <option>Entreprise</option>
+          <option>Éducation &amp; Jeunesse</option>
+          <option>Histoire</option>
+          <option>Critique litt. &amp; artistique</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label">Durée de lecture estimée</label>
+        <select class="f-input" id="f-duree" onchange="updatePreview()">
+          <option>3 min</option>
+          <option>5 min</option>
+          <option selected>8 min</option>
+          <option>10 min</option>
+          <option>15 min</option>
+          <option>20 min</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Chapeau / introduction *</label>
+      <p class="field-hint">2-3 phrases qui résument l'article — affiché en gras sous le titre.</p>
+      <textarea class="f-input" id="f-chapeau" rows="3" placeholder="Résumez l'essentiel de votre article en 2-3 phrases…" oninput="updatePreview()"></textarea>
+    </div>
+
+    <!-- CONFLIT D'INTÉRÊT -->
+    <div class="field">
+      <label class="field-label">Déclaration de conflit d'intérêt *</label>
+      <p class="field-hint">Éclairage exige une transparence totale sur les liens financiers ou institutionnels de l'auteur avec les sujets traités.</p>
+      <div class="conflict-toggle">
+        <label class="ct-option no-c">
+          <input type="radio" name="conflict" value="none" onchange="toggleConflict(false)" checked>
+          <div>
+            <span class="ct-label">Aucun conflit</span>
+            <span class="ct-desc">Je n'ai aucun lien financier ou institutionnel avec les organisations ou sujets mentionnés.</span>
+          </div>
+        </label>
+        <label class="ct-option yes-c">
+          <input type="radio" name="conflict" value="yes" onchange="toggleConflict(true)">
+          <div>
+            <span class="ct-label">Conflit déclaré</span>
+            <span class="ct-desc">J'ai un lien à déclarer (financement, emploi, conseil, actionnariat…).</span>
+          </div>
+        </label>
+      </div>
+      <div id="conflict-detail-wrap">
+        <textarea class="f-input" id="f-conflict-detail" rows="3" placeholder="Décrivez précisément votre lien : ex. « Cet article a été réalisé dans le cadre d'un projet financé par… »" oninput="updatePreview()" style="margin-top:8px"></textarea>
+      </div>
+    </div>
+
+    <div class="form-nav">
+      <span></span>
+      <button class="btn-next" onclick="goToStep(2)">Suivant : Contenu →</button>
+    </div>
+  </div>
+
+  <!-- ÉTAPE 2 : CONTENU -->
+  <div class="form-step" id="step-2">
+    <h2 class="step-title">Contenu de l'article</h2>
+    <p class="step-sub">Rédigez le corps de votre article. Vous pouvez utiliser des sauts de ligne pour structurer les paragraphes.</p>
+
+    <div class="field">
+      <label class="field-label">Texte de l'article *</label>
+      <textarea class="f-input body-ta" id="f-corps" placeholder="Commencez à rédiger votre article ici…&#10;&#10;Utilisez des lignes vides pour séparer les paragraphes.&#10;&#10;Conseil : visez entre 600 et 2 000 mots pour un article d'analyse." oninput="updatePreview(); countWords()"></textarea>
+      <p class="char-count"><span id="word-count">0</span> mots</p>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Mots-clés</label>
+      <p class="field-hint">Séparez les mots-clés par une virgule.</p>
+      <input class="f-input" type="text" id="f-tags" placeholder="ex. retraites, syndicats, dialogue social, France">
+    </div>
+
+    <div class="form-nav">
+      <button class="btn-back" onclick="goToStep(1)">← Retour</button>
+      <button class="btn-next" onclick="goToStep(3)">Suivant : Image →</button>
+    </div>
+  </div>
+
+  <!-- ÉTAPE 3 : IMAGE -->
+  <div class="form-step" id="step-3">
+    <h2 class="step-title">Image principale</h2>
+    <p class="step-sub">Choisissez une image représentative. Format recommandé : 1200×800 px, JPG ou PNG.</p>
+
+    <div class="field">
+      <label class="field-label">Image de l'article</label>
+      <div class="img-drop" id="drop-zone">
+        <input type="file" accept="image/*" onchange="handleImage(event)" id="img-input">
+        <div class="drop-icon">🖼</div>
+        <p class="drop-text">Cliquez ou glissez-déposez une image</p>
+        <p class="drop-sub">JPG, PNG, WEBP — max. 5 Mo — ratio 3:2 recommandé</p>
+        <div class="img-preview" id="img-preview">
+          <img id="img-preview-el" src="" alt="">
+          <p class="img-name" id="img-name"></p>
+          <span class="img-remove" onclick="removeImage(event)">Supprimer l'image</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Légende de l'image</label>
+      <input class="f-input" type="text" id="f-legende" placeholder="Description, source, crédit photo…" oninput="updatePreview()">
+    </div>
+
+    <div class="form-nav">
+      <button class="btn-back" onclick="goToStep(2)">← Retour</button>
+      <button class="btn-next" onclick="goToStep(4)">Aperçu →</button>
+    </div>
+  </div>
+
+  <!-- ÉTAPE 4 : APERÇU -->
+  <div class="form-step" id="step-4">
+    <h2 class="step-title">Aperçu avant soumission</h2>
+    <p class="step-sub">Vérifiez le rendu de votre article tel qu'il apparaîtra sur le site.</p>
+
+    <div id="preview-panel">
+      <p class="preview-cat" id="prev-cat">Rubrique</p>
+      <h2 class="preview-title" id="prev-titre">Titre de l'article</h2>
+      <p class="preview-meta" id="prev-meta">Auteur · Institution · Date · Durée</p>
+      <p class="preview-standfirst" id="prev-chapeau">Le chapeau apparaîtra ici…</p>
+      <div class="preview-img" id="prev-img-wrap"><img id="prev-img" src="" alt=""></div>
+      <div class="preview-conflict no-c" id="prev-conflict">
+        <span>✓</span><span id="prev-conflict-text">Aucun conflit d'intérêt déclaré</span>
+      </div>
+      <div class="preview-body" id="prev-corps" style="margin-top:16px"></div>
+    </div>
+
+    <div class="form-nav">
+      <button class="btn-back" onclick="goToStep(3)">← Retour</button>
+      <button class="btn-submit" onclick="submitArticle()">Soumettre l'article →</button>
+    </div>
+  </div>
+
+  <!-- SUCCÈS -->
+  <div id="success-screen">
+    <div class="success-icon">✅</div>
+    <h2 class="success-title">Article soumis avec succès</h2>
+    <p class="success-sub">Votre article a été transmis à l'équipe de modération.<br>Vous recevrez une réponse sous 48 heures.</p>
+    <div class="success-actions">
+      <button class="sa-btn sa-primary" onclick="resetForm()">Créer un nouvel article</button>
+      <a href="index.html"><button class="sa-btn sa-secondary">Retour à l'accueil</button></a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <a href="index.html">Éclairage</a>
+  <span style="opacity:.3;margin:0 10px">|</span>
+  <a href="#">Documentation rédacteur</a>
+  <p class="f-copy">© 2026 Éclairage</p>
+</footer>
+
+<script>
+let currentStep = 1;
+let imgDataUrl = null;
+
+function goToStep(n) {
+  document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step-' + n).classList.add('active');
+  document.querySelectorAll('.step').forEach((s, i) => {
+    s.classList.remove('active', 'done');
+    if (i + 1 < n) s.classList.add('done');
+    if (i + 1 === n) s.classList.add('active');
+  });
+  currentStep = n;
+  if (n === 4) updatePreview();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function updatePreview() {
+  const titre = document.getElementById('f-titre').value || 'Titre de l\'article';
+  const auteur = document.getElementById('f-auteur').value || 'Auteur';
+  const institution = document.getElementById('f-institution').value;
+  const rubrique = document.getElementById('f-rubrique').value || 'Rubrique';
+  const duree = document.getElementById('f-duree').value;
+  const chapeau = document.getElementById('f-chapeau').value || 'Le chapeau apparaîtra ici…';
+  const corps = document.getElementById('f-corps').value;
+  const conflict = document.querySelector('input[name="conflict"]:checked').value;
+  const conflictDetail = document.getElementById('f-conflict-detail').value;
+  const today = new Date().toLocaleDateString('fr-FR', {day:'numeric', month:'long', year:'numeric'});
+
+  document.getElementById('prev-cat').textContent = rubrique;
+  document.getElementById('prev-titre').textContent = titre;
+  document.getElementById('prev-meta').innerHTML = `<b>${auteur}</b>${institution ? ' · ' + institution : ''} · ${today} · ${duree} de lecture`;
+  document.getElementById('prev-chapeau').textContent = chapeau;
+  document.getElementById('prev-corps').textContent = corps;
+
+  // Conflit
+  const conflictEl = document.getElementById('prev-conflict');
+  const conflictText = document.getElementById('prev-conflict-text');
+  if (conflict === 'none') {
+    conflictEl.className = 'preview-conflict no-c';
+    conflictText.textContent = 'Aucun conflit d\'intérêt déclaré — L\'auteur certifie n\'avoir aucun lien avec les organisations mentionnées.';
+  } else {
+    conflictEl.className = 'preview-conflict yes-c';
+    conflictText.textContent = 'Conflit d\'intérêt déclaré : ' + (conflictDetail || 'Détail non renseigné');
+  }
+
+  // Image
+  const imgWrap = document.getElementById('prev-img-wrap');
+  const imgEl = document.getElementById('prev-img');
+  if (imgDataUrl) {
+    imgWrap.style.display = 'block';
+    imgEl.src = imgDataUrl;
+  } else {
+    imgWrap.style.display = 'none';
+  }
+
+  // Titre char count
+  document.getElementById('titre-count').textContent = document.getElementById('f-titre').value.length;
+}
+
+function countWords() {
+  const text = document.getElementById('f-corps').value.trim();
+  const words = text ? text.split(/\s+/).length : 0;
+  document.getElementById('word-count').textContent = words;
+}
+
+function toggleConflict(show) {
+  const wrap = document.getElementById('conflict-detail-wrap');
+  wrap.classList.toggle('visible', show);
+  updatePreview();
+}
+
+function handleImage(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    imgDataUrl = ev.target.result;
+    document.getElementById('img-preview-el').src = imgDataUrl;
+    document.getElementById('img-name').textContent = file.name;
+    document.getElementById('img-preview').style.display = 'block';
+    document.getElementById('drop-zone').classList.add('has-image');
+    document.querySelector('.drop-icon').style.display = 'none';
+    document.querySelector('.drop-text').style.display = 'none';
+    document.querySelector('.drop-sub').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeImage(e) {
+  e.stopPropagation();
+  imgDataUrl = null;
+  document.getElementById('img-preview').style.display = 'none';
+  document.getElementById('img-input').value = '';
+  document.getElementById('drop-zone').classList.remove('has-image');
+  document.querySelector('.drop-icon').style.display = 'block';
+  document.querySelector('.drop-text').style.display = 'block';
+  document.querySelector('.drop-sub').style.display = 'block';
+}
+
+function submitArticle() {
+  document.querySelector('.editor-layout > *:not(#success-screen)');
+  document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
+  document.getElementById('progress').style.display = 'none';
+  document.getElementById('success-screen').classList.add('visible');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function resetForm() {
+  document.querySelectorAll('input[type="text"], input[type="email"], textarea').forEach(el => el.value = '');
+  document.getElementById('f-rubrique').selectedIndex = 0;
+  imgDataUrl = null;
+  document.getElementById('img-preview').style.display = 'none';
+  document.getElementById('drop-zone').classList.remove('has-image');
+  document.querySelector('input[name="conflict"][value="none"]').checked = true;
+  toggleConflict(false);
+  document.getElementById('success-screen').classList.remove('visible');
+  document.getElementById('progress').style.display = 'flex';
+  goToStep(1);
+}
+
+// Drag & drop
+const dropZone = document.getElementById('drop-zone');
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--violet-m)'; });
+dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = ''; });
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.style.borderColor = '';
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) {
+    document.getElementById('img-input').files = e.dataTransfer.files;
+    handleImage({ target: { files: [file] } });
+  }
+});
+</script>
+</body>
+</html>
