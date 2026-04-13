@@ -171,170 +171,155 @@ footer a:hover{color:#fff;}
 </footer>
 
 <script>
-// ── BASE DE COMPTES (stockée en localStorage) ──────────────────────────
-// Comptes préchargés au premier lancement
-const COMPTES_DEFAUT = [
-  {
-    email: 'joachim.galmiche@hotmail.fr',
-    mdp:   'Hel10s.Heter10us',
-    prenom:'Joachim',
-    nom:   'Galmiche',
-    role:  'super-admin',
-    newsletter: true
-  }
+var COMPTES_DEFAUT = [
+  { email:'joachim.galmiche@hotmail.fr', mdp:'Hel10s.Heter10us', prenom:'Joachim', nom:'Galmiche', role:'super-admin', newsletter:true }
 ];
 
-const ROLES_LABEL = {
-  'super-admin':          'Super-administrateur',
-  'moderateur-redaction': 'Modérateur de rédaction',
-  'redacteur':            'Rédacteur',
-  'moderateur-comments':  'Modérateur de commentaires',
-  'lecteur-commentateur': 'Lecteur-commentateur',
-  'lecteur':              'Lecteur'
+var ROLES_LABEL = {
+  'super-admin':'Super-administrateur',
+  'moderateur-redaction':'Modérateur de rédaction',
+  'redacteur':'Rédacteur',
+  'moderateur-comments':'Modérateur de commentaires',
+  'lecteur-commentateur':'Lecteur-commentateur',
+  'lecteur':'Lecteur'
 };
 
-// Initialiser le store si vide
 function getComptes() {
-  const raw = localStorage.getItem('eclairage_comptes');
-  if (!raw) {
-    localStorage.setItem('eclairage_comptes', JSON.stringify(COMPTES_DEFAUT));
-    return COMPTES_DEFAUT;
-  }
-  return JSON.parse(raw);
+  try {
+    var raw = localStorage.getItem('eclairage_comptes');
+    if (!raw) {
+      localStorage.setItem('eclairage_comptes', JSON.stringify(COMPTES_DEFAUT));
+      return JSON.parse(JSON.stringify(COMPTES_DEFAUT));
+    }
+    return JSON.parse(raw);
+  } catch(e) { return JSON.parse(JSON.stringify(COMPTES_DEFAUT)); }
 }
 
-function saveComptes(comptes) {
-  localStorage.setItem('eclairage_comptes', JSON.stringify(comptes));
+function saveComptes(liste) {
+  try { localStorage.setItem('eclairage_comptes', JSON.stringify(liste)); } catch(e) {}
 }
 
-// ── ONGLETS ────────────────────────────────────────────────────────────
-function switchTab(id, btn) {
-  document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  btn.classList.add('active');
-  // Reset messages
-  ['login-error','signup-error','signup-success'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) { el.style.display = 'none'; el.textContent = ''; }
-  });
-}
-function switchTabByName(id) {
-  const btns = document.querySelectorAll('.tab-btn');
-  switchTab(id, id === 'connexion' ? btns[0] : btns[1]);
-}
-
-function showError(id, msg) {
-  const el = document.getElementById(id);
-  el.textContent = msg;
-  el.style.display = 'block';
-}
-function hideError(id) {
-  const el = document.getElementById(id);
-  el.style.display = 'none';
-}
-
-// ── CONNEXION ──────────────────────────────────────────────────────────
-function handleLogin() {
-  hideError('login-error');
-  const email = document.getElementById('email-co').value.trim().toLowerCase();
-  const mdp   = document.getElementById('mdp-co').value;
-
-  if (!email || !mdp) {
-    showError('login-error', 'Veuillez remplir tous les champs.');
-    return;
-  }
-
-  const comptes = getComptes();
-  const compte  = comptes.find(c => c.email.toLowerCase() === email && c.mdp === mdp);
-
-  if (!compte) {
-    showError('login-error', 'Email ou mot de passe incorrect.');
-    return;
-  }
-
-  // Sauvegarder la session
-  localStorage.setItem('eclairage_session', JSON.stringify({
-    email:  compte.email,
-    prenom: compte.prenom,
-    nom:    compte.nom,
-    role:   compte.role
-  }));
-
-  // Redirection selon rôle
-  if (compte.role === 'super-admin' || compte.role === 'moderateur-redaction' || compte.role === 'redacteur') {
-    window.location.href = 'index.html';
+function msg(elemId, texte, type) {
+  var el = document.getElementById(elemId);
+  if (!el) return;
+  el.textContent = texte;
+  el.style.display = texte ? 'block' : 'none';
+  if (type === 'ok') {
+    el.style.background = '#F0F8F2'; el.style.borderColor = '#B8DEC4'; el.style.color = '#1A5C32';
   } else {
-    window.location.href = 'index.html';
+    el.style.background = '#FDF3F0'; el.style.borderColor = '#E8C4B8'; el.style.color = '#5C2A1A';
   }
 }
 
-// ── INSCRIPTION ────────────────────────────────────────────────────────
-function handleSignup() {
-  hideError('signup-error');
-  hideError('signup-success');
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.form-section').forEach(function(s){ s.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById(tabId).classList.add('active');
+  btn.classList.add('active');
+  msg('login-error', '');
+  msg('signup-error', '');
+  msg('signup-success', '');
+}
 
-  const prenom  = document.getElementById('prenom').value.trim();
-  const nom     = document.getElementById('nom').value.trim();
-  const email   = document.getElementById('email-in').value.trim().toLowerCase();
-  const mdp     = document.getElementById('mdp-in').value;
-  const mdpConf = document.getElementById('mdp-confirm').value;
-  const cgu     = document.getElementById('cgu').checked;
-  const nl      = document.getElementById('newsletter-cb').checked;
+function switchTabByName(tabId) {
+  var btns = document.querySelectorAll('.tab-btn');
+  switchTab(tabId, tabId === 'connexion' ? btns[0] : btns[1]);
+}
 
-  // Validations
-  if (!prenom || !nom) { showError('signup-error', 'Veuillez entrer votre prénom et nom.'); return; }
-  if (!email)          { showError('signup-error', 'Veuillez entrer une adresse e-mail.'); return; }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('signup-error', 'Adresse e-mail invalide.'); return; }
-  if (mdp.length < 8)  { showError('signup-error', 'Le mot de passe doit contenir au moins 8 caractères.'); return; }
-  if (mdp !== mdpConf) { showError('signup-error', 'Les mots de passe ne correspondent pas.'); return; }
-  if (!cgu)            { showError('signup-error', 'Vous devez accepter les conditions d\'utilisation.'); return; }
+function handleLogin() {
+  msg('login-error', '');
+  var email = document.getElementById('email-co').value.trim().toLowerCase();
+  var mdp   = document.getElementById('mdp-co').value;
 
-  const comptes = getComptes();
-  if (comptes.find(c => c.email.toLowerCase() === email)) {
-    showError('signup-error', 'Un compte existe déjà avec cette adresse e-mail.');
-    return;
+  if (!email || !mdp) { msg('login-error', 'Veuillez remplir tous les champs.'); return; }
+
+  var comptes = getComptes();
+  var compte = null;
+  for (var i = 0; i < comptes.length; i++) {
+    if (comptes[i].email.toLowerCase() === email && comptes[i].mdp === mdp) {
+      compte = comptes[i]; break;
+    }
   }
 
-  // Créer le compte (rôle lecteur par défaut)
-  const nouveau = { email, mdp, prenom, nom, role: 'lecteur', newsletter: nl };
-  comptes.push(nouveau);
+  if (!compte) { msg('login-error', 'Email ou mot de passe incorrect.'); return; }
+
+  try {
+    localStorage.setItem('eclairage_session', JSON.stringify({
+      email: compte.email, prenom: compte.prenom, nom: compte.nom, role: compte.role
+    }));
+  } catch(e) {}
+
+  window.location.href = 'index.html';
+}
+
+function handleSignup() {
+  msg('signup-error', '');
+  msg('signup-success', '');
+
+  var prenom  = document.getElementById('prenom').value.trim();
+  var nom     = document.getElementById('nom').value.trim();
+  var email   = document.getElementById('email-in').value.trim().toLowerCase();
+  var mdp     = document.getElementById('mdp-in').value;
+  var mdpConf = document.getElementById('mdp-confirm').value;
+  var cgu     = document.getElementById('cgu').checked;
+  var nl      = document.getElementById('newsletter-cb').checked;
+
+  if (!prenom || !nom)  { msg('signup-error', 'Veuillez entrer votre prénom et nom.'); return; }
+  if (!email)           { msg('signup-error', 'Veuillez entrer une adresse e-mail.'); return; }
+  if (email.indexOf('@') < 1) { msg('signup-error', 'Adresse e-mail invalide.'); return; }
+  if (mdp.length < 8)   { msg('signup-error', 'Le mot de passe doit contenir au moins 8 caractères.'); return; }
+  if (mdp !== mdpConf)  { msg('signup-error', 'Les mots de passe ne correspondent pas.'); return; }
+  if (!cgu)             { msg('signup-error', "Vous devez accepter les conditions d'utilisation."); return; }
+
+  var comptes = getComptes();
+  for (var i = 0; i < comptes.length; i++) {
+    if (comptes[i].email.toLowerCase() === email) {
+      msg('signup-error', 'Un compte existe déjà avec cette adresse e-mail.'); return;
+    }
+  }
+
+  comptes.push({ email:email, mdp:mdp, prenom:prenom, nom:nom, role:'lecteur', newsletter:nl });
   saveComptes(comptes);
 
-  // Message succès + bascule vers connexion après 2s
-  const succEl = document.getElementById('signup-success');
-  succEl.textContent = `Compte créé ! Bienvenue ${prenom}. Vous pouvez maintenant vous connecter.`;
-  succEl.style.display = 'block';
+  msg('signup-success', 'Compte créé ! Bienvenue ' + prenom + '. Redirection vers la connexion…', 'ok');
+  document.getElementById('prenom').value = '';
+  document.getElementById('nom').value = '';
   document.getElementById('email-in').value = '';
   document.getElementById('mdp-in').value = '';
   document.getElementById('mdp-confirm').value = '';
 
-  setTimeout(() => {
+  var savedEmail = email;
+  setTimeout(function() {
     switchTabByName('connexion');
-    document.getElementById('email-co').value = email;
+    document.getElementById('email-co').value = savedEmail;
   }, 2000);
 }
 
-// ── ENTER pour valider ─────────────────────────────────────────────────
-document.addEventListener('keydown', e => {
+document.addEventListener('keydown', function(e) {
   if (e.key !== 'Enter') return;
-  const active = document.querySelector('.form-section.active');
-  if (active && active.id === 'connexion') handleLogin();
-  if (active && active.id === 'inscription') handleSignup();
+  var active = document.querySelector('.form-section.active');
+  if (!active) return;
+  if (active.id === 'connexion')  handleLogin();
+  if (active.id === 'inscription') handleSignup();
 });
 
-// ── Afficher badge session si connecté ────────────────────────────────
+// Badge session
 (function() {
-  const session = localStorage.getItem('eclairage_session');
-  if (session) {
-    const s = JSON.parse(session);
-    const topbar = document.querySelector('#topbar span:last-child');
-    if (topbar) topbar.innerHTML = `Connecté : <strong style="color:#fff">${s.prenom}</strong> — <span style="color:var(--violet-xl)">${(ROLES_LABEL[s.role]||s.role)}</span> &nbsp;|&nbsp; <a href="#" onclick="deconnexion()">Déconnexion</a>`;
-  }
+  try {
+    var session = localStorage.getItem('eclairage_session');
+    if (!session) return;
+    var s = JSON.parse(session);
+    var topbar = document.querySelector('#topbar span:last-child');
+    if (topbar) {
+      topbar.innerHTML = 'Connecté : <strong style="color:#fff">' + s.prenom + '</strong>'
+        + ' — <span style="color:var(--violet-xl)">' + (ROLES_LABEL[s.role] || s.role) + '</span>'
+        + ' &nbsp;|&nbsp; <a href="#" onclick="deconnexion()">Déconnexion</a>';
+    }
+  } catch(e) {}
 })();
 
 function deconnexion() {
-  localStorage.removeItem('eclairage_session');
+  try { localStorage.removeItem('eclairage_session'); } catch(e) {}
   location.reload();
 }
 </script>
