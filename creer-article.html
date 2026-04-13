@@ -13,133 +13,160 @@
   --violet-l:#A38DC4;--violet-xl:#D6C9E8;
   --text:#1E0F3C;--text2:#4A3468;--text3:#9B8AB0;
   --line:#DDD5E8;--line2:#C5B5D8;
-  --green:#1A5C32;--green-bg:#F0F8F2;--green-bd:#B8DEC4;
+  --green:#1A5C32;--green-bg:#EAF5EE;--green-bd:#B8DEC4;
   --orange:#7A3A10;--orange-bg:#FDF6F0;--orange-bd:#E8D0B8;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'DM Sans',sans-serif;background:var(--beige);color:var(--text);-webkit-font-smoothing:antialiased;}
 a{color:inherit;text-decoration:none;}
 
-/* TOPBAR */
 #topbar{background:var(--violet);color:var(--violet-l);padding:6px 40px;font-size:11px;letter-spacing:.07em;display:flex;justify-content:space-between;align-items:center;}
 #topbar a{color:var(--violet-xl);transition:color .2s;}
-#topbar a:hover{color:#fff;}
-.t-sep{opacity:.3;margin:0 10px;}
 
-/* HEADER */
-header{padding:28px 40px 20px;border-bottom:1px solid var(--line2);display:flex;align-items:center;justify-content:space-between;}
-.site-name{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;letter-spacing:-2px;line-height:1;color:var(--violet);}
-.header-badge{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--violet-m);background:var(--violet-xl);padding:4px 12px;border-radius:2px;}
-
-/* LAYOUT */
-.editor-layout{max-width:900px;margin:0 auto;padding:40px 40px 80px;}
-
-/* PROGRESS */
-.progress-bar{display:flex;gap:0;margin-bottom:40px;border:1px solid var(--line2);border-radius:3px;overflow:hidden;}
-.step{flex:1;padding:10px 0;text-align:center;font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);background:var(--beige2);border-right:1px solid var(--line2);cursor:pointer;transition:background .2s,color .2s;}
-.step:last-child{border-right:none;}
-.step.active{background:var(--violet);color:#fff;}
-.step.done{background:var(--violet-xl);color:var(--violet-m);}
-
-/* SECTIONS */
-.form-step{display:none;}
-.form-step.active{display:block;}
-
-/* LABELS & INPUTS */
-.field{margin-bottom:28px;}
-.field-label{display:block;font-size:11px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;}
-.field-hint{font-size:12px;color:var(--text3);font-weight:300;margin-bottom:8px;}
-.f-input{display:block;width:100%;border:1px solid var(--line2);padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--beige);color:var(--text);outline:none;border-radius:2px;transition:border-color .2s;}
-.f-input:focus{border-color:var(--violet-m);}
-.f-input.title-input{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;letter-spacing:-.3px;padding:14px;}
-.f-input.title-input::placeholder{color:var(--violet-xl);}
-textarea.f-input{resize:vertical;line-height:1.7;min-height:120px;}
-textarea.f-input.body-ta{min-height:340px;font-size:15px;font-weight:300;line-height:1.8;}
-select.f-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239B8AB0' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;cursor:pointer;}
-
-/* CHAR COUNT */
-.char-count{font-size:11px;color:var(--text3);text-align:right;margin-top:4px;}
-
-/* GRID 2 COL */
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
-
-/* CONFLICT TOGGLE */
-.conflict-toggle{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;}
-.ct-option{border:1px solid var(--line2);border-radius:3px;padding:14px 16px;cursor:pointer;transition:border-color .2s,background .2s;display:flex;align-items:flex-start;gap:10px;}
-.ct-option input[type="radio"]{margin-top:3px;accent-color:var(--violet);flex-shrink:0;}
-.ct-option .ct-label{font-size:13px;font-weight:500;color:var(--text);display:block;margin-bottom:2px;}
-.ct-option .ct-desc{font-size:12px;color:var(--text3);font-weight:300;line-height:1.4;}
-.ct-option:has(input:checked).no-c{border-color:var(--green-bd);background:var(--green-bg);}
-.ct-option:has(input:checked).yes-c{border-color:var(--orange-bd);background:var(--orange-bg);}
-
-#conflict-detail-wrap{margin-top:12px;display:none;}
-#conflict-detail-wrap.visible{display:block;}
-
-/* IMAGE DROP ZONE */
-.img-drop{border:1.5px dashed var(--line2);border-radius:3px;padding:40px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;position:relative;}
-.img-drop:hover{border-color:var(--violet-m);background:var(--beige2);}
-.img-drop.has-image{border-style:solid;border-color:var(--violet-m);background:var(--beige2);}
-.img-drop input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;}
-.drop-icon{font-size:32px;margin-bottom:10px;color:var(--violet-l);}
-.drop-text{font-size:14px;color:var(--text2);font-weight:300;}
-.drop-sub{font-size:12px;color:var(--text3);margin-top:4px;}
-.img-preview{display:none;margin-top:16px;}
-.img-preview img{max-width:100%;max-height:220px;border-radius:3px;object-fit:cover;}
-.img-name{font-size:12px;color:var(--violet-m);margin-top:8px;}
-.img-remove{font-size:11px;color:var(--text3);cursor:pointer;text-decoration:underline;margin-top:4px;display:inline-block;}
-.img-remove:hover{color:var(--violet-m);}
-
-/* APERÇU LIVE */
-#preview-panel{background:var(--beige2);border:1px solid var(--line);border-radius:4px;padding:32px;margin-bottom:28px;}
-.preview-cat{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--violet-m);margin-bottom:14px;}
-.preview-title{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;line-height:1.1;color:var(--violet);margin-bottom:12px;letter-spacing:-.3px;}
-.preview-meta{font-size:12px;color:var(--text3);margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--line);}
-.preview-meta b{color:var(--violet-m);font-weight:500;}
-.preview-standfirst{font-size:16px;line-height:1.7;color:var(--text2);font-weight:300;border-left:2px solid var(--violet-m);padding-left:14px;margin-bottom:16px;}
-.preview-img{background:var(--beige3);border-radius:3px;height:180px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text3);margin-bottom:16px;overflow:hidden;}
-.preview-img img{width:100%;height:100%;object-fit:cover;}
-.preview-body{font-size:15px;line-height:1.75;color:var(--text);font-weight:300;white-space:pre-wrap;}
-.preview-conflict{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-radius:3px;border:1px solid;margin-top:16px;font-size:12px;}
-.preview-conflict.no-c{background:var(--green-bg);border-color:var(--green-bd);color:var(--green);}
-.preview-conflict.yes-c{background:var(--orange-bg);border-color:var(--orange-bd);color:var(--orange);}
-
-/* SECTION TITLE */
-.step-title{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;color:var(--violet);margin-bottom:6px;letter-spacing:-.3px;}
-.step-sub{font-size:13px;color:var(--text3);font-weight:300;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--line);}
-
-/* NAVIGATION BOUTONS */
-.form-nav{display:flex;justify-content:space-between;align-items:center;margin-top:36px;padding-top:24px;border-top:1px solid var(--line);}
-.btn-back{background:none;border:1px solid var(--line2);padding:10px 22px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;border-radius:2px;transition:border-color .2s,color .2s;}
-.btn-back:hover{border-color:var(--violet-m);color:var(--violet);}
-.btn-next{background:var(--violet);color:#fff;border:none;padding:10px 28px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;letter-spacing:.04em;cursor:pointer;border-radius:2px;transition:background .2s;}
-.btn-next:hover{background:var(--violet2);}
-.btn-submit{background:var(--violet-m);color:#fff;border:none;padding:11px 32px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;letter-spacing:.04em;cursor:pointer;border-radius:2px;transition:background .2s;}
+header{padding:20px 40px;border-bottom:1px solid var(--line2);display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--beige);}
+.site-name{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;letter-spacing:-2px;color:var(--violet);}
+.header-actions{display:flex;gap:10px;align-items:center;}
+.btn{padding:8px 18px;border-radius:2px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;letter-spacing:.05em;cursor:pointer;transition:all .2s;}
+.btn-ghost{background:none;border:1px solid var(--line2);color:var(--text2);}
+.btn-ghost:hover{border-color:var(--violet-m);color:var(--violet);}
+.btn-primary{background:var(--violet);color:#fff;border:1px solid var(--violet);}
+.btn-primary:hover{background:var(--violet2);}
+.btn-submit{background:var(--violet-m);color:#fff;border:1px solid var(--violet-m);}
 .btn-submit:hover{background:var(--violet);}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--orange-bd);display:inline-block;margin-right:6px;}
+.status-dot.saved{background:var(--green-bd);}
+#save-label{font-size:12px;color:var(--text3);}
+
+/* LAYOUT PRINCIPAL */
+.editor-layout{display:grid;grid-template-columns:1fr 280px;height:calc(100vh - 70px);overflow:hidden;}
+
+/* ZONE ÉDITEUR */
+.editor-main{overflow-y:auto;padding:40px 48px;background:var(--beige);}
+
+/* MÉTADONNÉES */
+.meta-fields{margin-bottom:32px;padding-bottom:28px;border-bottom:1px solid var(--line);}
+.meta-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px;}
+.meta-row.full{grid-template-columns:1fr;}
+.f-label{font-size:10px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--text3);margin-bottom:5px;display:block;}
+.f-input{width:100%;border:1px solid var(--line2);padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--beige);color:var(--text);outline:none;border-radius:2px;transition:border-color .2s;}
+.f-input:focus{border-color:var(--violet-m);}
+select.f-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239B8AB0'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;cursor:pointer;}
+.title-input{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;letter-spacing:-.3px;padding:10px 0;border:none;border-bottom:1px solid var(--line);border-radius:0;background:transparent;width:100%;outline:none;color:var(--violet);}
+.title-input::placeholder{color:var(--violet-xl);}
+.chapeau-input{font-size:16px;font-weight:300;line-height:1.6;padding:10px 0;border:none;border-bottom:1px solid var(--line);border-radius:0;background:transparent;width:100%;outline:none;color:var(--text2);resize:none;}
+.chapeau-input::placeholder{color:var(--text3);}
+
+/* CONFLIT */
+.conflict-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}
+.c-opt{border:1px solid var(--line2);border-radius:2px;padding:10px 12px;cursor:pointer;display:flex;gap:8px;align-items:flex-start;transition:border-color .15s,background .15s;}
+.c-opt input{accent-color:var(--violet-m);margin-top:2px;flex-shrink:0;}
+.c-opt:has(input:checked).no-c{border-color:var(--green-bd);background:var(--green-bg);}
+.c-opt:has(input:checked).yes-c{border-color:var(--orange-bd);background:var(--orange-bg);}
+.c-opt-title{font-size:12px;font-weight:500;display:block;}
+.c-opt-desc{font-size:11px;color:var(--text3);font-weight:300;}
+#conflict-detail{display:none;margin-top:10px;}
+#conflict-detail.show{display:block;}
+
+/* CANVAS BLOCS */
+#canvas{min-height:300px;padding:8px 0;}
+.canvas-empty{text-align:center;padding:48px 20px;color:var(--text3);font-size:14px;font-weight:300;border:1.5px dashed var(--line2);border-radius:4px;margin:8px 0;}
+
+/* BLOCS */
+.block{position:relative;margin:6px 0;border:1px solid transparent;border-radius:3px;transition:border-color .15s;}
+.block:hover{border-color:var(--line);}
+.block.dragging{opacity:.4;}
+.block.drag-over{border-color:var(--violet-m);background:var(--beige2);}
+
+.block-toolbar{position:absolute;top:-1px;right:-1px;display:none;gap:2px;background:var(--beige);border:1px solid var(--line);border-radius:3px;padding:3px;z-index:10;}
+.block:hover .block-toolbar{display:flex;}
+.tb-btn{background:none;border:none;width:26px;height:26px;cursor:pointer;border-radius:2px;font-size:13px;color:var(--text3);display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;}
+.tb-btn:hover{background:var(--beige3);color:var(--violet);}
+.drag-handle{cursor:grab;font-size:14px;}
+.drag-handle:active{cursor:grabbing;}
+
+/* BLOC TITRE */
+.block-title-el{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;color:var(--violet);width:100%;border:none;background:transparent;outline:none;padding:8px 10px;line-height:1.2;}
+.block-title-el::placeholder{color:var(--violet-xl);}
+
+/* BLOC SOUS-TITRE */
+.block-subtitle-el{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;font-style:italic;color:var(--text2);width:100%;border:none;background:transparent;outline:none;padding:6px 10px;}
+.block-subtitle-el::placeholder{color:var(--text3);}
+
+/* BLOC TEXTE */
+.block-text-el{font-size:16px;font-weight:300;line-height:1.8;color:var(--text);width:100%;border:none;background:transparent;outline:none;padding:8px 10px;resize:none;min-height:80px;font-family:'DM Sans',sans-serif;}
+.block-text-el::placeholder{color:var(--text3);}
+
+/* BLOC CITATION */
+.block-quote-wrap{border-left:2px solid var(--violet-m);padding-left:14px;margin:4px 10px;}
+.block-quote-el{font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;color:var(--violet2);width:100%;border:none;background:transparent;outline:none;padding:6px 0;resize:none;min-height:60px;line-height:1.5;}
+.block-quote-el::placeholder{color:var(--violet-l);}
+
+/* BLOC SEPARATEUR */
+.block-sep-el{border:none;border-top:1px solid var(--line);margin:16px 10px;}
+
+/* BLOC IMAGE */
+.block-img-wrap{padding:6px 10px;}
+.img-drop-zone{border:1.5px dashed var(--line2);border-radius:3px;padding:32px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;position:relative;}
+.img-drop-zone:hover{border-color:var(--violet-m);background:var(--beige2);}
+.img-drop-zone.has-img{border-style:solid;border-color:var(--line);padding:0;overflow:hidden;}
+.img-drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2;}
+.img-drop-zone img{width:100%;max-height:400px;object-fit:cover;display:block;}
+.img-placeholder-txt{font-size:13px;color:var(--text3);font-weight:300;margin-top:6px;}
+.img-caption-input{width:100%;border:none;border-top:1px solid var(--line);padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text3);background:var(--beige2);outline:none;font-style:italic;}
+.img-caption-input::placeholder{color:var(--line2);}
+.img-remove-btn{position:absolute;top:8px;right:8px;background:rgba(30,15,60,.7);color:#fff;border:none;border-radius:2px;padding:3px 8px;font-size:11px;cursor:pointer;z-index:3;}
+
+/* SÉPARATEUR DROP */
+.drop-sep{height:6px;border-radius:3px;margin:2px 0;transition:background .15s,height .15s;}
+.drop-sep.active{height:24px;background:var(--violet-xl);}
+
+/* SIDEBAR */
+.editor-sidebar{border-left:1px solid var(--line2);overflow-y:auto;background:var(--beige2);display:flex;flex-direction:column;}
+.sidebar-section{padding:20px;border-bottom:1px solid var(--line);}
+.sidebar-title{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;}
+
+/* PALETTE DE BLOCS */
+.block-palette{display:flex;flex-direction:column;gap:6px;}
+.palette-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line2);border-radius:3px;cursor:grab;background:var(--beige);transition:border-color .15s,background .15s;user-select:none;}
+.palette-item:hover{border-color:var(--violet-m);background:#fff;}
+.palette-item:active{cursor:grabbing;}
+.palette-icon{font-size:16px;width:24px;text-align:center;flex-shrink:0;}
+.palette-label{font-size:13px;color:var(--text);font-weight:400;}
+.palette-desc{font-size:11px;color:var(--text3);font-weight:300;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.stat-card{background:var(--beige);border:1px solid var(--line);border-radius:2px;padding:10px;text-align:center;}
+.stat-val{font-size:20px;font-weight:500;color:var(--violet);font-family:'Cormorant Garamond',serif;}
+.stat-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-top:2px;}
+
+/* TAGS */
+.tags-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.tag-item{font-size:11px;color:var(--violet-m);background:var(--violet-xl);padding:3px 8px;border-radius:2px;display:flex;align-items:center;gap:4px;}
+.tag-remove{cursor:pointer;font-size:13px;line-height:1;opacity:.6;}
+.tag-remove:hover{opacity:1;}
+#tag-input{border:1px solid var(--line2);padding:6px 10px;font-size:12px;font-family:'DM Sans',sans-serif;background:var(--beige);color:var(--text);outline:none;border-radius:2px;width:100%;margin-top:8px;}
+#tag-input:focus{border-color:var(--violet-m);}
 
 /* SUCCESS */
-#success-screen{display:none;text-align:center;padding:64px 0;}
-#success-screen.visible{display:block;}
-.success-icon{font-size:48px;margin-bottom:20px;}
-.success-title{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;color:var(--violet);margin-bottom:10px;}
-.success-sub{font-size:15px;color:var(--text3);font-weight:300;margin-bottom:32px;}
-.success-actions{display:flex;gap:12px;justify-content:center;}
-.sa-btn{padding:10px 22px;border-radius:2px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:background .2s;}
-.sa-primary{background:var(--violet);color:#fff;border:none;}
-.sa-primary:hover{background:var(--violet2);}
-.sa-secondary{background:none;border:1px solid var(--line2);color:var(--text2);}
-.sa-secondary:hover{border-color:var(--violet-m);}
+#success-overlay{display:none;position:fixed;inset:0;background:var(--beige);z-index:100;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+#success-overlay.show{display:flex;}
+.success-icon{font-size:52px;margin-bottom:20px;}
+.success-title{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;color:var(--violet);margin-bottom:8px;}
+.success-sub{font-size:14px;color:var(--text3);font-weight:300;margin-bottom:32px;}
+.success-btns{display:flex;gap:12px;}
 
-footer{background:var(--violet);color:var(--violet-l);padding:20px 40px;text-align:center;}
-footer a{color:var(--violet-l);font-size:12px;transition:color .2s;}
-footer a:hover{color:#fff;}
-.f-copy{font-size:11px;color:rgba(255,255,255,.25);margin-top:6px;}
+/* TOAST */
+#toast{position:fixed;bottom:24px;right:24px;background:var(--violet);color:#fff;padding:10px 18px;border-radius:3px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:200;}
+#toast.show{opacity:1;}
 
-@media(max-width:700px){
-  #topbar,header,.editor-layout,footer{padding-left:20px;padding-right:20px;}
-  .site-name{font-size:36px;}
-  .grid2{grid-template-columns:1fr;}
-  .conflict-toggle{grid-template-columns:1fr;}
-  .f-input.title-input{font-size:22px;}
+footer{background:var(--violet);color:var(--violet-l);padding:14px 40px;font-size:11px;text-align:center;}
+footer a{color:var(--violet-l);}
+
+@media(max-width:900px){
+  .editor-layout{grid-template-columns:1fr;height:auto;}
+  .editor-sidebar{border-left:none;border-top:1px solid var(--line2);}
+  header,#topbar,.editor-main,footer{padding-left:20px;padding-right:20px;}
 }
 </style>
 </head>
@@ -147,351 +174,600 @@ footer a:hover{color:#fff;}
 
 <div id="topbar">
   <span><a href="index.html">← Retour au site</a></span>
-  <span>Interface rédacteur</span>
+  <span id="topbar-right">Interface rédacteur</span>
 </div>
 
 <header>
   <a href="index.html"><span class="site-name">Éclairage</span></a>
-  <span class="header-badge">Créer un article</span>
+  <div class="header-actions">
+    <span id="save-label"><span class="status-dot" id="status-dot"></span>Brouillon</span>
+    <button class="btn btn-ghost" onclick="saveDraft()">Sauvegarder</button>
+    <button class="btn btn-submit" onclick="submitArticle()">Soumettre →</button>
+  </div>
 </header>
 
 <div class="editor-layout">
 
-  <!-- BARRE DE PROGRESSION -->
-  <div class="progress-bar" id="progress">
-    <div class="step active" onclick="goToStep(1)">1 — Informations</div>
-    <div class="step" onclick="goToStep(2)">2 — Contenu</div>
-    <div class="step" onclick="goToStep(3)">3 — Image</div>
-    <div class="step" onclick="goToStep(4)">4 — Aperçu</div>
-  </div>
+  <!-- ÉDITEUR PRINCIPAL -->
+  <div class="editor-main">
 
-  <!-- ÉTAPE 1 : INFORMATIONS -->
-  <div class="form-step active" id="step-1">
-    <h2 class="step-title">Informations générales</h2>
-    <p class="step-sub">Renseignez les métadonnées de votre article.</p>
-
-    <div class="field">
-      <label class="field-label">Titre de l'article *</label>
-      <input class="f-input title-input" type="text" id="f-titre" placeholder="Écrivez un titre clair et accrocheur…" oninput="updatePreview()">
-      <p class="char-count"><span id="titre-count">0</span> / 120 caractères</p>
-    </div>
-
-    <div class="grid2">
-      <div class="field">
-        <label class="field-label">Auteur(e) *</label>
-        <input class="f-input" type="text" id="f-auteur" placeholder="Prénom Nom" oninput="updatePreview()">
+    <!-- MÉTADONNÉES -->
+    <div class="meta-fields">
+      <div class="meta-row full" style="margin-bottom:18px;">
+        <input class="title-input" id="f-titre" type="text" placeholder="Titre de l'article…" oninput="markUnsaved();updateStats()">
       </div>
-      <div class="field">
-        <label class="field-label">Institution / titre</label>
-        <input class="f-input" type="text" id="f-institution" placeholder="Université de Lyon, CNRS…" oninput="updatePreview()">
+      <div class="meta-row full" style="margin-bottom:18px;">
+        <textarea class="chapeau-input" id="f-chapeau" rows="2" placeholder="Chapeau — résumez l'article en 2-3 phrases…" oninput="markUnsaved();autoResize(this)"></textarea>
       </div>
-    </div>
-
-    <div class="grid2">
-      <div class="field">
-        <label class="field-label">Rubrique *</label>
-        <select class="f-input" id="f-rubrique" onchange="updatePreview()">
-          <option value="">Choisir une rubrique…</option>
-          <option>Politique</option>
-          <option>Société</option>
-          <option>Science</option>
-          <option>Environnement</option>
-          <option>Économie</option>
-          <option>Culture</option>
-          <option>International</option>
-          <option>Entreprise</option>
-          <option>Éducation &amp; Jeunesse</option>
-          <option>Histoire</option>
-          <option>Critique litt. &amp; artistique</option>
-        </select>
-      </div>
-      <div class="field">
-        <label class="field-label">Durée de lecture estimée</label>
-        <select class="f-input" id="f-duree" onchange="updatePreview()">
-          <option>3 min</option>
-          <option>5 min</option>
-          <option selected>8 min</option>
-          <option>10 min</option>
-          <option>15 min</option>
-          <option>20 min</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="field">
-      <label class="field-label">Chapeau / introduction *</label>
-      <p class="field-hint">2-3 phrases qui résument l'article — affiché en gras sous le titre.</p>
-      <textarea class="f-input" id="f-chapeau" rows="3" placeholder="Résumez l'essentiel de votre article en 2-3 phrases…" oninput="updatePreview()"></textarea>
-    </div>
-
-    <!-- CONFLIT D'INTÉRÊT -->
-    <div class="field">
-      <label class="field-label">Déclaration de conflit d'intérêt *</label>
-      <p class="field-hint">Éclairage exige une transparence totale sur les liens financiers ou institutionnels de l'auteur avec les sujets traités.</p>
-      <div class="conflict-toggle">
-        <label class="ct-option no-c">
-          <input type="radio" name="conflict" value="none" onchange="toggleConflict(false)" checked>
-          <div>
-            <span class="ct-label">Aucun conflit</span>
-            <span class="ct-desc">Je n'ai aucun lien financier ou institutionnel avec les organisations ou sujets mentionnés.</span>
-          </div>
-        </label>
-        <label class="ct-option yes-c">
-          <input type="radio" name="conflict" value="yes" onchange="toggleConflict(true)">
-          <div>
-            <span class="ct-label">Conflit déclaré</span>
-            <span class="ct-desc">J'ai un lien à déclarer (financement, emploi, conseil, actionnariat…).</span>
-          </div>
-        </label>
-      </div>
-      <div id="conflict-detail-wrap">
-        <textarea class="f-input" id="f-conflict-detail" rows="3" placeholder="Décrivez précisément votre lien : ex. « Cet article a été réalisé dans le cadre d'un projet financé par… »" oninput="updatePreview()" style="margin-top:8px"></textarea>
-      </div>
-    </div>
-
-    <div class="form-nav">
-      <span></span>
-      <button class="btn-next" onclick="goToStep(2)">Suivant : Contenu →</button>
-    </div>
-  </div>
-
-  <!-- ÉTAPE 2 : CONTENU -->
-  <div class="form-step" id="step-2">
-    <h2 class="step-title">Contenu de l'article</h2>
-    <p class="step-sub">Rédigez le corps de votre article. Vous pouvez utiliser des sauts de ligne pour structurer les paragraphes.</p>
-
-    <div class="field">
-      <label class="field-label">Texte de l'article *</label>
-      <textarea class="f-input body-ta" id="f-corps" placeholder="Commencez à rédiger votre article ici…&#10;&#10;Utilisez des lignes vides pour séparer les paragraphes.&#10;&#10;Conseil : visez entre 600 et 2 000 mots pour un article d'analyse." oninput="updatePreview(); countWords()"></textarea>
-      <p class="char-count"><span id="word-count">0</span> mots</p>
-    </div>
-
-    <div class="field">
-      <label class="field-label">Mots-clés</label>
-      <p class="field-hint">Séparez les mots-clés par une virgule.</p>
-      <input class="f-input" type="text" id="f-tags" placeholder="ex. retraites, syndicats, dialogue social, France">
-    </div>
-
-    <div class="form-nav">
-      <button class="btn-back" onclick="goToStep(1)">← Retour</button>
-      <button class="btn-next" onclick="goToStep(3)">Suivant : Image →</button>
-    </div>
-  </div>
-
-  <!-- ÉTAPE 3 : IMAGE -->
-  <div class="form-step" id="step-3">
-    <h2 class="step-title">Image principale</h2>
-    <p class="step-sub">Choisissez une image représentative. Format recommandé : 1200×800 px, JPG ou PNG.</p>
-
-    <div class="field">
-      <label class="field-label">Image de l'article</label>
-      <div class="img-drop" id="drop-zone">
-        <input type="file" accept="image/*" onchange="handleImage(event)" id="img-input">
-        <div class="drop-icon">🖼</div>
-        <p class="drop-text">Cliquez ou glissez-déposez une image</p>
-        <p class="drop-sub">JPG, PNG, WEBP — max. 5 Mo — ratio 3:2 recommandé</p>
-        <div class="img-preview" id="img-preview">
-          <img id="img-preview-el" src="" alt="">
-          <p class="img-name" id="img-name"></p>
-          <span class="img-remove" onclick="removeImage(event)">Supprimer l'image</span>
+      <div class="meta-row">
+        <div>
+          <span class="f-label">Auteur(e)</span>
+          <input class="f-input" id="f-auteur" type="text" placeholder="Prénom Nom" oninput="markUnsaved()">
+        </div>
+        <div>
+          <span class="f-label">Institution</span>
+          <input class="f-input" id="f-institution" type="text" placeholder="Université, CNRS…" oninput="markUnsaved()">
         </div>
       </div>
-    </div>
-
-    <div class="field">
-      <label class="field-label">Légende de l'image</label>
-      <input class="f-input" type="text" id="f-legende" placeholder="Description, source, crédit photo…" oninput="updatePreview()">
-    </div>
-
-    <div class="form-nav">
-      <button class="btn-back" onclick="goToStep(2)">← Retour</button>
-      <button class="btn-next" onclick="goToStep(4)">Aperçu →</button>
-    </div>
-  </div>
-
-  <!-- ÉTAPE 4 : APERÇU -->
-  <div class="form-step" id="step-4">
-    <h2 class="step-title">Aperçu avant soumission</h2>
-    <p class="step-sub">Vérifiez le rendu de votre article tel qu'il apparaîtra sur le site.</p>
-
-    <div id="preview-panel">
-      <p class="preview-cat" id="prev-cat">Rubrique</p>
-      <h2 class="preview-title" id="prev-titre">Titre de l'article</h2>
-      <p class="preview-meta" id="prev-meta">Auteur · Institution · Date · Durée</p>
-      <p class="preview-standfirst" id="prev-chapeau">Le chapeau apparaîtra ici…</p>
-      <div class="preview-img" id="prev-img-wrap"><img id="prev-img" src="" alt=""></div>
-      <div class="preview-conflict no-c" id="prev-conflict">
-        <span>✓</span><span id="prev-conflict-text">Aucun conflit d'intérêt déclaré</span>
+      <div class="meta-row">
+        <div>
+          <span class="f-label">Rubrique</span>
+          <select class="f-input" id="f-rubrique" onchange="markUnsaved()">
+            <option value="">Choisir…</option>
+            <option>Politique</option><option>Société</option><option>Science</option>
+            <option>Environnement</option><option>Économie</option><option>Culture</option>
+            <option>International</option><option>Entreprise</option>
+            <option>Éducation & Jeunesse</option><option>Histoire</option>
+            <option>Critique litt. & artistique</option>
+          </select>
+        </div>
+        <div>
+          <span class="f-label">Durée de lecture</span>
+          <select class="f-input" id="f-duree" onchange="markUnsaved()">
+            <option>3 min</option><option>5 min</option><option selected>8 min</option>
+            <option>10 min</option><option>15 min</option><option>20 min</option>
+          </select>
+        </div>
       </div>
-      <div class="preview-body" id="prev-corps" style="margin-top:16px"></div>
+      <!-- CONFLIT -->
+      <span class="f-label" style="margin-top:14px;display:block;">Conflit d'intérêt</span>
+      <div class="conflict-row">
+        <label class="c-opt no-c">
+          <input type="radio" name="conflict" value="none" checked onchange="toggleConflict(false)">
+          <div><span class="c-opt-title">Aucun conflit</span><span class="c-opt-desc">Pas de lien à déclarer</span></div>
+        </label>
+        <label class="c-opt yes-c">
+          <input type="radio" name="conflict" value="yes" onchange="toggleConflict(true)">
+          <div><span class="c-opt-title">Conflit déclaré</span><span class="c-opt-desc">Préciser ci-dessous</span></div>
+        </label>
+      </div>
+      <div id="conflict-detail">
+        <textarea class="f-input" id="f-conflict-txt" rows="2" placeholder="Décrivez votre lien…" style="margin-top:8px;resize:none;" oninput="markUnsaved()"></textarea>
+      </div>
     </div>
 
-    <div class="form-nav">
-      <button class="btn-back" onclick="goToStep(3)">← Retour</button>
-      <button class="btn-submit" onclick="submitArticle()">Soumettre l'article →</button>
+    <!-- CANVAS BLOCS -->
+    <div id="canvas">
+      <div class="canvas-empty" id="canvas-empty">
+        Glissez des blocs depuis le panneau de droite pour construire votre article
+      </div>
     </div>
+
   </div>
 
-  <!-- SUCCÈS -->
-  <div id="success-screen">
-    <div class="success-icon">✅</div>
-    <h2 class="success-title">Article soumis avec succès</h2>
-    <p class="success-sub">Votre article a été transmis à l'équipe de modération.<br>Vous recevrez une réponse sous 48 heures.</p>
-    <div class="success-actions">
-      <button class="sa-btn sa-primary" onclick="resetForm()">Créer un nouvel article</button>
-      <a href="index.html"><button class="sa-btn sa-secondary">Retour à l'accueil</button></a>
-    </div>
-  </div>
+  <!-- SIDEBAR -->
+  <div class="editor-sidebar">
 
+    <div class="sidebar-section">
+      <p class="sidebar-title">Ajouter un bloc</p>
+      <div class="block-palette">
+        <div class="palette-item" draggable="true" data-type="title" ondragstart="paletteDragStart(event)">
+          <span class="palette-icon">H</span>
+          <div><div class="palette-label">Titre de section</div><div class="palette-desc">Grand titre entre paragraphes</div></div>
+        </div>
+        <div class="palette-item" draggable="true" data-type="subtitle" ondragstart="paletteDragStart(event)">
+          <span class="palette-icon">h</span>
+          <div><div class="palette-label">Sous-titre</div><div class="palette-desc">Titre secondaire, italique</div></div>
+        </div>
+        <div class="palette-item" draggable="true" data-type="text" ondragstart="paletteDragStart(event)">
+          <span class="palette-icon">¶</span>
+          <div><div class="palette-label">Paragraphe</div><div class="palette-desc">Bloc de texte principal</div></div>
+        </div>
+        <div class="palette-item" draggable="true" data-type="quote" ondragstart="paletteDragStart(event)">
+          <span class="palette-icon">"</span>
+          <div><div class="palette-label">Citation</div><div class="palette-desc">Mise en avant d'une phrase</div></div>
+        </div>
+        <div class="palette-item" draggable="true" data-type="image" ondragstart="paletteDragStart(event)">
+          <span class="palette-icon">🖼</span>
+          <div><div class="palette-label">Image</div><div class="palette-desc">Photo + légende optionnelle</div></div>
+        </div>
+        <div class="palette-item" draggable="true" data-type="separator" ondragstart="paletteDragStart(event)">
+          <span class="palette-icon">—</span>
+          <div><div class="palette-label">Séparateur</div><div class="palette-desc">Ligne de séparation</div></div>
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--text3);margin-top:10px;text-align:center;">ou cliquez sur un bloc pour l'ajouter directement</p>
+    </div>
+
+    <div class="sidebar-section">
+      <p class="sidebar-title">Statistiques</p>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-val" id="stat-words">0</div><div class="stat-lbl">mots</div></div>
+        <div class="stat-card"><div class="stat-val" id="stat-blocks">0</div><div class="stat-lbl">blocs</div></div>
+        <div class="stat-card"><div class="stat-val" id="stat-chars">0</div><div class="stat-lbl">caractères</div></div>
+        <div class="stat-card"><div class="stat-val" id="stat-read">0'</div><div class="stat-lbl">lecture</div></div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <p class="sidebar-title">Mots-clés</p>
+      <div class="tags-wrap" id="tags-wrap"></div>
+      <input id="tag-input" type="text" placeholder="Ajouter un mot-clé + Entrée">
+    </div>
+
+    <div class="sidebar-section" style="border-bottom:none;">
+      <p class="sidebar-title">Importance</p>
+      <select class="f-input" id="f-importance" onchange="markUnsaved()" style="background:var(--beige)">
+        <option value="">Non définie</option>
+        <option value="1">1 — À la une (pleine largeur)</option>
+        <option value="2">2 — Grand article</option>
+        <option value="3">3 — Article moyen</option>
+        <option value="4">4 — Liste latérale</option>
+      </select>
+    </div>
+
+  </div>
 </div>
 
+<!-- SUCCESS -->
+<div id="success-overlay">
+  <div class="success-icon">✅</div>
+  <h2 class="success-title">Article soumis</h2>
+  <p class="success-sub">Votre article a été transmis à la modération.<br>Réponse sous 48h.</p>
+  <div class="success-btns">
+    <button class="btn btn-primary" onclick="resetEditor()">Nouvel article</button>
+    <a href="index.html"><button class="btn btn-ghost">Retour à l'accueil</button></a>
+  </div>
+</div>
+
+<div id="toast"></div>
+
 <footer>
-  <a href="index.html">Éclairage</a>
-  <span style="opacity:.3;margin:0 10px">|</span>
-  <a href="#">Documentation rédacteur</a>
-  <p class="f-copy">© 2026 Éclairage</p>
+  <a href="index.html">Éclairage</a> — Interface rédacteur — © 2026
 </footer>
 
 <script>
-let currentStep = 1;
-let imgDataUrl = null;
+// ── ÉTAT ─────────────────────────────────────────────────────────────
+var blocks = [];
+var tags = [];
+var unsaved = false;
+var dragSrcType = null;   // 'palette' ou 'block'
+var dragSrcIndex = null;
 
-function goToStep(n) {
-  document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
-  document.getElementById('step-' + n).classList.add('active');
-  document.querySelectorAll('.step').forEach((s, i) => {
-    s.classList.remove('active', 'done');
-    if (i + 1 < n) s.classList.add('done');
-    if (i + 1 === n) s.classList.add('active');
-  });
-  currentStep = n;
-  if (n === 4) updatePreview();
-  window.scrollTo({top: 0, behavior: 'smooth'});
+// ── UTILS ─────────────────────────────────────────────────────────────
+function uid() { return 'b' + Math.random().toString(36).slice(2,8); }
+
+function markUnsaved() {
+  unsaved = true;
+  document.getElementById('status-dot').classList.remove('saved');
+  document.getElementById('save-label').innerHTML = '<span class="status-dot" id="status-dot"></span>Non sauvegardé';
 }
 
-function updatePreview() {
-  const titre = document.getElementById('f-titre').value || 'Titre de l\'article';
-  const auteur = document.getElementById('f-auteur').value || 'Auteur';
-  const institution = document.getElementById('f-institution').value;
-  const rubrique = document.getElementById('f-rubrique').value || 'Rubrique';
-  const duree = document.getElementById('f-duree').value;
-  const chapeau = document.getElementById('f-chapeau').value || 'Le chapeau apparaîtra ici…';
-  const corps = document.getElementById('f-corps').value;
-  const conflict = document.querySelector('input[name="conflict"]:checked').value;
-  const conflictDetail = document.getElementById('f-conflict-detail').value;
-  const today = new Date().toLocaleDateString('fr-FR', {day:'numeric', month:'long', year:'numeric'});
-
-  document.getElementById('prev-cat').textContent = rubrique;
-  document.getElementById('prev-titre').textContent = titre;
-  document.getElementById('prev-meta').innerHTML = `<b>${auteur}</b>${institution ? ' · ' + institution : ''} · ${today} · ${duree} de lecture`;
-  document.getElementById('prev-chapeau').textContent = chapeau;
-  document.getElementById('prev-corps').textContent = corps;
-
-  // Conflit
-  const conflictEl = document.getElementById('prev-conflict');
-  const conflictText = document.getElementById('prev-conflict-text');
-  if (conflict === 'none') {
-    conflictEl.className = 'preview-conflict no-c';
-    conflictText.textContent = 'Aucun conflit d\'intérêt déclaré — L\'auteur certifie n\'avoir aucun lien avec les organisations mentionnées.';
-  } else {
-    conflictEl.className = 'preview-conflict yes-c';
-    conflictText.textContent = 'Conflit d\'intérêt déclaré : ' + (conflictDetail || 'Détail non renseigné');
-  }
-
-  // Image
-  const imgWrap = document.getElementById('prev-img-wrap');
-  const imgEl = document.getElementById('prev-img');
-  if (imgDataUrl) {
-    imgWrap.style.display = 'block';
-    imgEl.src = imgDataUrl;
-  } else {
-    imgWrap.style.display = 'none';
-  }
-
-  // Titre char count
-  document.getElementById('titre-count').textContent = document.getElementById('f-titre').value.length;
+function markSaved() {
+  unsaved = false;
+  document.getElementById('status-dot').className = 'status-dot saved';
+  document.getElementById('save-label').innerHTML = '<span class="status-dot saved" id="status-dot"></span>Sauvegardé';
 }
 
-function countWords() {
-  const text = document.getElementById('f-corps').value.trim();
-  const words = text ? text.split(/\s+/).length : 0;
-  document.getElementById('word-count').textContent = words;
+function toast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2200);
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
 }
 
 function toggleConflict(show) {
-  const wrap = document.getElementById('conflict-detail-wrap');
-  wrap.classList.toggle('visible', show);
-  updatePreview();
+  var el = document.getElementById('conflict-detail');
+  el.className = show ? 'show' : '';
 }
 
-function handleImage(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    imgDataUrl = ev.target.result;
-    document.getElementById('img-preview-el').src = imgDataUrl;
-    document.getElementById('img-name').textContent = file.name;
-    document.getElementById('img-preview').style.display = 'block';
-    document.getElementById('drop-zone').classList.add('has-image');
-    document.querySelector('.drop-icon').style.display = 'none';
-    document.querySelector('.drop-text').style.display = 'none';
-    document.querySelector('.drop-sub').style.display = 'none';
-  };
-  reader.readAsDataURL(file);
+// ── STATS ─────────────────────────────────────────────────────────────
+function updateStats() {
+  var allText = document.getElementById('f-titre').value + ' ' + document.getElementById('f-chapeau').value;
+  blocks.forEach(function(b) {
+    if (b.type === 'text' || b.type === 'title' || b.type === 'subtitle' || b.type === 'quote') {
+      var el = document.getElementById('input-' + b.id);
+      if (el) allText += ' ' + el.value;
+    }
+  });
+  allText = allText.trim();
+  var words = allText ? allText.split(/\s+/).filter(function(w){ return w.length > 0; }).length : 0;
+  var chars = allText.replace(/\s/g,'').length;
+  var readMin = Math.max(1, Math.round(words / 200));
+  document.getElementById('stat-words').textContent = words;
+  document.getElementById('stat-blocks').textContent = blocks.length;
+  document.getElementById('stat-chars').textContent = chars;
+  document.getElementById('stat-read').textContent = readMin + "'";
 }
 
-function removeImage(e) {
-  e.stopPropagation();
-  imgDataUrl = null;
-  document.getElementById('img-preview').style.display = 'none';
-  document.getElementById('img-input').value = '';
-  document.getElementById('drop-zone').classList.remove('has-image');
-  document.querySelector('.drop-icon').style.display = 'block';
-  document.querySelector('.drop-text').style.display = 'block';
-  document.querySelector('.drop-sub').style.display = 'block';
+// ── RENDU CANVAS ──────────────────────────────────────────────────────
+function renderCanvas() {
+  var canvas = document.getElementById('canvas');
+  var empty = document.getElementById('canvas-empty');
+
+  if (blocks.length === 0) {
+    canvas.innerHTML = '';
+    canvas.appendChild(empty);
+    empty.style.display = 'block';
+    updateStats();
+    return;
+  }
+  empty.style.display = 'none';
+  canvas.innerHTML = '';
+
+  // Drop zone au début
+  canvas.appendChild(makeDropSep(0));
+
+  blocks.forEach(function(block, idx) {
+    canvas.appendChild(makeBlockEl(block, idx));
+    canvas.appendChild(makeDropSep(idx + 1));
+  });
+
+  updateStats();
+}
+
+function makeDropSep(insertIdx) {
+  var div = document.createElement('div');
+  div.className = 'drop-sep';
+  div.dataset.insertIdx = insertIdx;
+  div.addEventListener('dragover', function(e){ e.preventDefault(); this.classList.add('active'); });
+  div.addEventListener('dragleave', function(){ this.classList.remove('active'); });
+  div.addEventListener('drop', function(e){ e.preventDefault(); this.classList.remove('active'); handleDrop(parseInt(this.dataset.insertIdx)); });
+  return div;
+}
+
+function makeBlockEl(block, idx) {
+  var outer = document.createElement('div');
+  outer.className = 'block';
+  outer.id = 'block-' + block.id;
+  outer.draggable = true;
+  outer.dataset.idx = idx;
+
+  // Toolbar
+  var tb = document.createElement('div');
+  tb.className = 'block-toolbar';
+  tb.innerHTML =
+    '<span class="tb-btn drag-handle" title="Déplacer">⠿</span>' +
+    '<button class="tb-btn" title="Monter" onclick="moveBlock(' + idx + ',-1)">↑</button>' +
+    '<button class="tb-btn" title="Descendre" onclick="moveBlock(' + idx + ',1)">↓</button>' +
+    '<button class="tb-btn" title="Dupliquer" onclick="duplicateBlock(' + idx + ')">⎘</button>' +
+    '<button class="tb-btn" title="Supprimer" onclick="removeBlock(' + idx + ')" style="color:#c44">✕</button>';
+  outer.appendChild(tb);
+
+  // Contenu
+  var inner = makeBlockContent(block);
+  outer.appendChild(inner);
+
+  // Drag events sur le bloc
+  outer.addEventListener('dragstart', function(e){
+    dragSrcType = 'block';
+    dragSrcIndex = idx;
+    setTimeout(function(){ outer.classList.add('dragging'); }, 0);
+  });
+  outer.addEventListener('dragend', function(){
+    outer.classList.remove('dragging');
+  });
+
+  return outer;
+}
+
+function makeBlockContent(block) {
+  var wrap = document.createElement('div');
+
+  if (block.type === 'title') {
+    var inp = document.createElement('input');
+    inp.type = 'text';
+    inp.className = 'block-title-el';
+    inp.id = 'input-' + block.id;
+    inp.placeholder = 'Titre de section…';
+    inp.value = block.content || '';
+    inp.addEventListener('input', function(){ block.content = this.value; markUnsaved(); updateStats(); });
+    wrap.appendChild(inp);
+
+  } else if (block.type === 'subtitle') {
+    var inp = document.createElement('input');
+    inp.type = 'text';
+    inp.className = 'block-subtitle-el';
+    inp.id = 'input-' + block.id;
+    inp.placeholder = 'Sous-titre…';
+    inp.value = block.content || '';
+    inp.addEventListener('input', function(){ block.content = this.value; markUnsaved(); updateStats(); });
+    wrap.appendChild(inp);
+
+  } else if (block.type === 'text') {
+    var ta = document.createElement('textarea');
+    ta.className = 'block-text-el';
+    ta.id = 'input-' + block.id;
+    ta.placeholder = 'Rédigez votre paragraphe ici…';
+    ta.value = block.content || '';
+    ta.addEventListener('input', function(){ block.content = this.value; markUnsaved(); updateStats(); autoResize(this); });
+    setTimeout(function(){ autoResize(ta); }, 0);
+    wrap.appendChild(ta);
+
+  } else if (block.type === 'quote') {
+    var qw = document.createElement('div');
+    qw.className = 'block-quote-wrap';
+    var ta = document.createElement('textarea');
+    ta.className = 'block-quote-el';
+    ta.id = 'input-' + block.id;
+    ta.placeholder = '« Citation… »';
+    ta.value = block.content || '';
+    ta.addEventListener('input', function(){ block.content = this.value; markUnsaved(); updateStats(); autoResize(this); });
+    setTimeout(function(){ autoResize(ta); }, 0);
+    qw.appendChild(ta);
+    wrap.appendChild(qw);
+
+  } else if (block.type === 'separator') {
+    var hr = document.createElement('hr');
+    hr.className = 'block-sep-el';
+    wrap.appendChild(hr);
+
+  } else if (block.type === 'image') {
+    var imgWrap = document.createElement('div');
+    imgWrap.className = 'block-img-wrap';
+
+    var dropZone = document.createElement('div');
+    dropZone.className = 'img-drop-zone' + (block.src ? ' has-img' : '');
+    dropZone.id = 'drop-' + block.id;
+
+    var fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.addEventListener('change', function(e){
+      var file = e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev){
+        block.src = ev.target.result;
+        block.filename = file.name;
+        markUnsaved();
+        renderCanvas();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    if (block.src) {
+      var img = document.createElement('img');
+      img.src = block.src;
+      var removeBtn = document.createElement('button');
+      removeBtn.className = 'img-remove-btn';
+      removeBtn.textContent = '✕ Changer';
+      removeBtn.addEventListener('click', function(e){
+        e.preventDefault(); e.stopPropagation();
+        block.src = null; block.filename = null;
+        markUnsaved(); renderCanvas();
+      });
+      dropZone.appendChild(fileInput);
+      dropZone.appendChild(img);
+      dropZone.appendChild(removeBtn);
+    } else {
+      var icon = document.createElement('div');
+      icon.style.fontSize = '28px';
+      icon.style.marginBottom = '8px';
+      icon.textContent = '🖼';
+      var txt = document.createElement('p');
+      txt.className = 'img-placeholder-txt';
+      txt.textContent = 'Cliquez ou glissez une image ici';
+      dropZone.appendChild(fileInput);
+      dropZone.appendChild(icon);
+      dropZone.appendChild(txt);
+    }
+
+    var caption = document.createElement('input');
+    caption.type = 'text';
+    caption.className = 'img-caption-input';
+    caption.placeholder = 'Légende, source, crédit photo…';
+    caption.value = block.caption || '';
+    caption.addEventListener('input', function(){ block.caption = this.value; markUnsaved(); });
+
+    imgWrap.appendChild(dropZone);
+    imgWrap.appendChild(caption);
+    wrap.appendChild(imgWrap);
+  }
+
+  return wrap;
+}
+
+// ── ACTIONS BLOCS ─────────────────────────────────────────────────────
+function addBlock(type, insertAt) {
+  var b = { id: uid(), type: type, content: '', src: null, caption: '' };
+  if (insertAt === undefined) insertAt = blocks.length;
+  blocks.splice(insertAt, 0, b);
+  markUnsaved();
+  renderCanvas();
+  // Focus
+  setTimeout(function(){
+    var el = document.getElementById('input-' + b.id);
+    if (el) el.focus();
+  }, 50);
+}
+
+function removeBlock(idx) {
+  blocks.splice(idx, 1);
+  markUnsaved();
+  renderCanvas();
+}
+
+function moveBlock(idx, dir) {
+  var newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= blocks.length) return;
+  var tmp = blocks[idx];
+  blocks[idx] = blocks[newIdx];
+  blocks[newIdx] = tmp;
+  markUnsaved();
+  renderCanvas();
+}
+
+function duplicateBlock(idx) {
+  var orig = blocks[idx];
+  var copy = JSON.parse(JSON.stringify(orig));
+  copy.id = uid();
+  blocks.splice(idx + 1, 0, copy);
+  markUnsaved();
+  renderCanvas();
+}
+
+// ── DRAG & DROP ───────────────────────────────────────────────────────
+function paletteDragStart(e) {
+  dragSrcType = 'palette';
+  dragSrcIndex = null;
+  e.dataTransfer.setData('blockType', e.currentTarget.dataset.type);
+}
+
+function handleDrop(insertIdx) {
+  if (dragSrcType === 'palette') {
+    // Depuis la palette — récupérer le type
+    addBlock(window._lastDragType || 'text', insertIdx);
+  } else if (dragSrcType === 'block' && dragSrcIndex !== null) {
+    // Réorganiser
+    var moved = blocks.splice(dragSrcIndex, 1)[0];
+    var realIdx = dragSrcIndex < insertIdx ? insertIdx - 1 : insertIdx;
+    blocks.splice(realIdx, 0, moved);
+    markUnsaved();
+    renderCanvas();
+  }
+  dragSrcType = null;
+  dragSrcIndex = null;
+}
+
+// Stocker le type au dragstart palette
+document.querySelectorAll('.palette-item').forEach(function(item){
+  item.addEventListener('dragstart', function(e){
+    window._lastDragType = this.dataset.type;
+  });
+  // Clic = ajouter à la fin
+  item.addEventListener('click', function(){
+    addBlock(this.dataset.type);
+  });
+});
+
+// ── TAGS ──────────────────────────────────────────────────────────────
+document.getElementById('tag-input').addEventListener('keydown', function(e){
+  if (e.key !== 'Enter') return;
+  e.preventDefault();
+  var val = this.value.trim();
+  if (!val || tags.indexOf(val) !== -1) return;
+  tags.push(val);
+  this.value = '';
+  renderTags();
+  markUnsaved();
+});
+
+function renderTags() {
+  var wrap = document.getElementById('tags-wrap');
+  wrap.innerHTML = tags.map(function(t, i){
+    return '<span class="tag-item">' + t + '<span class="tag-remove" onclick="removeTag(' + i + ')">×</span></span>';
+  }).join('');
+}
+
+function removeTag(i) {
+  tags.splice(i, 1);
+  renderTags();
+  markUnsaved();
+}
+
+// ── SAUVEGARDE ────────────────────────────────────────────────────────
+function saveDraft() {
+  try {
+    localStorage.setItem('eclairage_draft', JSON.stringify({
+      titre: document.getElementById('f-titre').value,
+      chapeau: document.getElementById('f-chapeau').value,
+      auteur: document.getElementById('f-auteur').value,
+      institution: document.getElementById('f-institution').value,
+      rubrique: document.getElementById('f-rubrique').value,
+      duree: document.getElementById('f-duree').value,
+      importance: document.getElementById('f-importance').value,
+      conflict: document.querySelector('input[name=conflict]:checked').value,
+      conflictTxt: document.getElementById('f-conflict-txt').value,
+      tags: tags,
+      blocks: blocks
+    }));
+  } catch(e) {}
+  markSaved();
+  toast('✓ Brouillon sauvegardé');
+}
+
+function loadDraft() {
+  try {
+    var raw = localStorage.getItem('eclairage_draft');
+    if (!raw) return;
+    var d = JSON.parse(raw);
+    document.getElementById('f-titre').value = d.titre || '';
+    document.getElementById('f-chapeau').value = d.chapeau || '';
+    document.getElementById('f-auteur').value = d.auteur || '';
+    document.getElementById('f-institution').value = d.institution || '';
+    if (d.rubrique) document.getElementById('f-rubrique').value = d.rubrique;
+    if (d.duree) document.getElementById('f-duree').value = d.duree;
+    if (d.importance) document.getElementById('f-importance').value = d.importance;
+    if (d.conflict === 'yes') {
+      document.querySelector('input[name=conflict][value=yes]').checked = true;
+      toggleConflict(true);
+    }
+    document.getElementById('f-conflict-txt').value = d.conflictTxt || '';
+    tags = d.tags || [];
+    blocks = d.blocks || [];
+    renderTags();
+    renderCanvas();
+    autoResize(document.getElementById('f-chapeau'));
+    markSaved();
+  } catch(e) {}
 }
 
 function submitArticle() {
-  document.querySelector('.editor-layout > *:not(#success-screen)');
-  document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
-  document.getElementById('progress').style.display = 'none';
-  document.getElementById('success-screen').classList.add('visible');
-  window.scrollTo({top: 0, behavior: 'smooth'});
-}
-
-function resetForm() {
-  document.querySelectorAll('input[type="text"], input[type="email"], textarea').forEach(el => el.value = '');
-  document.getElementById('f-rubrique').selectedIndex = 0;
-  imgDataUrl = null;
-  document.getElementById('img-preview').style.display = 'none';
-  document.getElementById('drop-zone').classList.remove('has-image');
-  document.querySelector('input[name="conflict"][value="none"]').checked = true;
-  toggleConflict(false);
-  document.getElementById('success-screen').classList.remove('visible');
-  document.getElementById('progress').style.display = 'flex';
-  goToStep(1);
-}
-
-// Drag & drop
-const dropZone = document.getElementById('drop-zone');
-dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--violet-m)'; });
-dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = ''; });
-dropZone.addEventListener('drop', e => {
-  e.preventDefault();
-  dropZone.style.borderColor = '';
-  const file = e.dataTransfer.files[0];
-  if (file && file.type.startsWith('image/')) {
-    document.getElementById('img-input').files = e.dataTransfer.files;
-    handleImage({ target: { files: [file] } });
+  if (!document.getElementById('f-titre').value.trim()) {
+    toast('⚠ Veuillez entrer un titre'); return;
   }
-});
-</script>
+  if (!document.getElementById('f-rubrique').value) {
+    toast('⚠ Veuillez choisir une rubrique'); return;
+  }
+  saveDraft();
+  document.getElementById('success-overlay').classList.add('show');
+}
 
+function resetEditor() {
+  blocks = []; tags = [];
+  try { localStorage.removeItem('eclairage_draft'); } catch(e) {}
+  document.getElementById('f-titre').value = '';
+  document.getElementById('f-chapeau').value = '';
+  document.getElementById('f-auteur').value = '';
+  document.getElementById('f-institution').value = '';
+  document.getElementById('f-rubrique').selectedIndex = 0;
+  document.getElementById('f-importance').selectedIndex = 0;
+  document.getElementById('f-conflict-txt').value = '';
+  document.querySelector('input[name=conflict][value=none]').checked = true;
+  toggleConflict(false);
+  renderTags();
+  renderCanvas();
+  document.getElementById('success-overlay').classList.remove('show');
+  markSaved();
+}
+
+// Autosave toutes les 30s
+setInterval(function(){ if (unsaved) saveDraft(); }, 30000);
+
+// Init
+loadDraft();
+if (blocks.length === 0) renderCanvas();
+</script>
 
 <script>
 (function() {
-  var ROLES_LABEL = {
+  var ROLES = {
     'super-admin':'Super-administrateur',
     'moderateur-redaction':'Modérateur de rédaction',
     'redacteur':'Rédacteur',
@@ -499,27 +775,19 @@ dropZone.addEventListener('drop', e => {
     'lecteur-commentateur':'Lecteur-commentateur',
     'lecteur':'Lecteur'
   };
-  function deco() {
-    localStorage.removeItem('eclairage_session');
-    window.location.href = 'connexion.html';
-  }
   try {
     var raw = localStorage.getItem('eclairage_session');
     if (!raw) return;
     var s = JSON.parse(raw);
-    var topbar = document.querySelector('#topbar span:last-child');
-    if (!topbar) return;
-    var roleLabel = ROLES_LABEL[s.role] || s.role;
-    var adminBtn = '';
-    if (s.role === 'super-admin') {
-      adminBtn = ' <span style="opacity:.3;margin:0 6px">|</span> <a href="permissions.html" style="background:var(--violet-m);color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;">⚙ Admin</a>';
-    }
-    var decoBtn = ' <span style="opacity:.3;margin:0 6px">|</span> <a href="connexion.html" id="btn-deco">Déconnexion</a>';
-    topbar.innerHTML = '<span style="color:var(--violet-xl)">' + roleLabel + '</span>'
-      + ' — <strong style="color:#fff">' + s.prenom + '</strong>'
-      + adminBtn + decoBtn;
-    var d = document.getElementById('btn-deco');
-    if (d) d.addEventListener('click', function(e){ e.preventDefault(); deco(); });
+    var el = document.getElementById('topbar-right');
+    if (!el) return;
+    var admin = s.role === 'super-admin'
+      ? '<a href="permissions.html" style="background:#5B3E8F;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:8px;">&#9881; Admin</a>'
+      : '';
+    el.innerHTML = '<span style="color:#D6C9E8">' + (ROLES[s.role]||s.role) + '</span>'
+      + ' &mdash; <strong style="color:#fff">' + s.prenom + '</strong>'
+      + admin
+      + '<a href="connexion.html" onclick="localStorage.removeItem(\'eclairage_session\')" style="color:#D6C9E8;margin-left:8px;">| D&eacute;connexion</a>';
   } catch(e) {}
 })();
 </script>
