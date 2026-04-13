@@ -167,9 +167,7 @@ footer a:hover{color:#fff;}
   </div>
 
   <div class="legend">
-    <div class="legend-item"><div class="legend-dot leg-forced"></div> Toujours accordé (non modifiable)</div>
-    <div class="legend-item"><div class="legend-dot leg-free"></div> Modifiable librement</div>
-    <div class="legend-item"><div class="legend-dot leg-locked"></div> Toujours refusé (non modifiable)</div>
+    <div class="legend-item"><div class="legend-dot leg-free"></div> Toutes les cases sont modifiables librement</div>
   </div>
 
 </div>
@@ -184,75 +182,75 @@ footer a:hover{color:#fff;}
 <script>
 // ─── DÉFINITION DES GROUPES ET PERMISSIONS ──────────────────────────────────
 // Colonnes : [super-admin, mod-redaction, redacteur, mod-comments, lecteur-comment, lecteur]
-// Valeur : 'forced' = toujours coché (grisé), 'locked' = toujours décoché (grisé), true/false = modifiable
+// Valeur : true = toujours coché (grisé), false = toujours décoché (grisé), true/false = modifiable
 
 var GROUPES = [
   {
     label: 'Lecture & navigation',
     perms: [
-      { id:'read_articles',    label:'Lire les articles publiés',          desc:'Accès aux articles visibles sur le site',                      vals:['forced','forced','forced','forced','forced','forced'] },
-      { id:'read_categories',  label:'Naviguer par catégorie',              desc:'Filtrer les articles par rubrique',                             vals:['forced','forced','forced','forced','forced','forced'] },
-      { id:'save_articles',    label:'Sauvegarder des articles',            desc:'Mettre des articles en favoris',                                vals:['forced','forced','forced','forced','forced',false] },
-      { id:'follow_categories',label:'Suivre des catégories',               desc:'Recevoir les nouveautés d\'une rubrique',                       vals:['forced','forced','forced','forced',false,false] },
-      { id:'newsletter',       label:'S\'abonner à la newsletter',          desc:'Recevoir la lettre hebdomadaire',                               vals:['forced','forced','forced','forced','forced','forced'] },
+      { id:'read_articles',    label:'Lire les articles publiés',          desc:'Accès aux articles visibles sur le site',                      vals:[true,true,true,true,true,true] },
+      { id:'read_categories',  label:'Naviguer par catégorie',              desc:'Filtrer les articles par rubrique',                             vals:[true,true,true,true,true,true] },
+      { id:'save_articles',    label:'Sauvegarder des articles',            desc:'Mettre des articles en favoris',                                vals:[true,true,true,true,true,false] },
+      { id:'follow_categories',label:'Suivre des catégories',               desc:'Recevoir les nouveautés d\'une rubrique',                       vals:[true,true,true,true,false,false] },
+      { id:'newsletter',       label:'S\'abonner à la newsletter',          desc:'Recevoir la lettre hebdomadaire',                               vals:[true,true,true,true,true,true] },
     ]
   },
   {
     label: 'Commentaires',
     perms: [
-      { id:'read_comments',    label:'Lire les commentaires',               desc:'Voir les commentaires sous les articles',                       vals:['forced','forced','forced','forced','forced',false] },
-      { id:'post_comments',    label:'Publier un commentaire',              desc:'Écrire un commentaire sur un article',                          vals:['forced','forced','forced','forced','forced','locked'] },
-      { id:'edit_own_comment', label:'Modifier son propre commentaire',     desc:'Éditer un commentaire que l\'on a posté',                       vals:['forced','forced','forced','forced',false,'locked'] },
-      { id:'delete_own_comment',label:'Supprimer son propre commentaire',   desc:'Retirer un de ses commentaires',                               vals:['forced','forced','forced','forced',false,'locked'] },
-      { id:'report_comment',   label:'Signaler un commentaire',             desc:'Envoyer un signalement à la modération',                        vals:['forced','forced','forced','forced','forced','locked'] },
+      { id:'read_comments',    label:'Lire les commentaires',               desc:'Voir les commentaires sous les articles',                       vals:[true,true,true,true,true,false] },
+      { id:'post_comments',    label:'Publier un commentaire',              desc:'Écrire un commentaire sur un article',                          vals:[true,true,true,true,true,false] },
+      { id:'edit_own_comment', label:'Modifier son propre commentaire',     desc:'Éditer un commentaire que l\'on a posté',                       vals:[true,true,true,true,false,false] },
+      { id:'delete_own_comment',label:'Supprimer son propre commentaire',   desc:'Retirer un de ses commentaires',                               vals:[true,true,true,true,false,false] },
+      { id:'report_comment',   label:'Signaler un commentaire',             desc:'Envoyer un signalement à la modération',                        vals:[true,true,true,true,true,false] },
     ]
   },
   {
     label: 'Modération des commentaires',
     perms: [
-      { id:'view_reported',    label:'Voir les commentaires signalés',      desc:'Accéder à la file de signalements',                             vals:['forced','forced','locked','forced',false,'locked'] },
-      { id:'approve_comment',  label:'Approuver un commentaire',            desc:'Valider un commentaire en attente',                             vals:['forced','forced','locked','forced',false,'locked'] },
-      { id:'delete_any_comment',label:'Supprimer n\'importe quel commentaire',desc:'Retirer un commentaire d\'un autre utilisateur',              vals:['forced','forced','locked','forced',false,'locked'] },
-      { id:'ban_user_comment', label:'Bannir un utilisateur des commentaires',desc:'Empêcher un compte de commenter',                             vals:['forced',false,'locked',false,'locked','locked'] },
+      { id:'view_reported',    label:'Voir les commentaires signalés',      desc:'Accéder à la file de signalements',                             vals:[true,true,false,true,false,false] },
+      { id:'approve_comment',  label:'Approuver un commentaire',            desc:'Valider un commentaire en attente',                             vals:[true,true,false,true,false,false] },
+      { id:'delete_any_comment',label:'Supprimer n\'importe quel commentaire',desc:'Retirer un commentaire d\'un autre utilisateur',              vals:[true,true,false,true,false,false] },
+      { id:'ban_user_comment', label:'Bannir un utilisateur des commentaires',desc:'Empêcher un compte de commenter',                             vals:[true,false,false,false,false,false] },
     ]
   },
   {
     label: 'Rédaction & articles',
     perms: [
-      { id:'submit_article',   label:'Soumettre un article',                desc:'Envoyer un article à la modération éditoriale',                 vals:['forced','forced','forced','locked','locked','locked'] },
-      { id:'edit_own_article', label:'Modifier son propre article',         desc:'Éditer un article que l\'on a rédigé',                          vals:['forced','forced','forced','locked','locked','locked'] },
-      { id:'save_draft',       label:'Enregistrer un brouillon',            desc:'Sauvegarder un article non finalisé',                           vals:['forced','forced','forced','locked','locked','locked'] },
+      { id:'submit_article',   label:'Soumettre un article',                desc:'Envoyer un article à la modération éditoriale',                 vals:[true,true,true,false,false,false] },
+      { id:'edit_own_article', label:'Modifier son propre article',         desc:'Éditer un article que l\'on a rédigé',                          vals:[true,true,true,false,false,false] },
+      { id:'save_draft',       label:'Enregistrer un brouillon',            desc:'Sauvegarder un article non finalisé',                           vals:[true,true,true,false,false,false] },
     ]
   },
   {
     label: 'Modération éditoriale',
     perms: [
-      { id:'view_pending',     label:'Voir les articles en attente',        desc:'Accéder à la file d\'articles soumis',                          vals:['forced','forced','locked','locked','locked','locked'] },
-      { id:'approve_article',  label:'Publier un article',                  desc:'Valider et mettre en ligne un article soumis',                  vals:['forced','forced','locked','locked','locked','locked'] },
-      { id:'reject_article',   label:'Refuser un article',                  desc:'Renvoyer un article avec commentaires',                         vals:['forced','forced','locked','locked','locked','locked'] },
-      { id:'edit_any_article', label:'Modifier n\'importe quel article',    desc:'Éditer un article d\'un autre auteur',                          vals:['forced','forced','locked','locked','locked','locked'] },
-      { id:'delete_article',   label:'Supprimer un article',                desc:'Retirer définitivement un article publié',                      vals:['forced',false,'locked','locked','locked','locked'] },
-      { id:'feature_article',  label:'Mettre en avant un article',          desc:'Définir l\'importance 1/2/3/4 d\'un article',                   vals:['forced','forced','locked','locked','locked','locked'] },
+      { id:'view_pending',     label:'Voir les articles en attente',        desc:'Accéder à la file d\'articles soumis',                          vals:[true,true,false,false,false,false] },
+      { id:'approve_article',  label:'Publier un article',                  desc:'Valider et mettre en ligne un article soumis',                  vals:[true,true,false,false,false,false] },
+      { id:'reject_article',   label:'Refuser un article',                  desc:'Renvoyer un article avec commentaires',                         vals:[true,true,false,false,false,false] },
+      { id:'edit_any_article', label:'Modifier n\'importe quel article',    desc:'Éditer un article d\'un autre auteur',                          vals:[true,true,false,false,false,false] },
+      { id:'delete_article',   label:'Supprimer un article',                desc:'Retirer définitivement un article publié',                      vals:[true,false,false,false,false,false] },
+      { id:'feature_article',  label:'Mettre en avant un article',          desc:'Définir l\'importance 1/2/3/4 d\'un article',                   vals:[true,true,false,false,false,false] },
     ]
   },
   {
     label: 'Gestion des utilisateurs',
     perms: [
-      { id:'view_users',       label:'Voir la liste des utilisateurs',      desc:'Accéder au tableau des comptes inscrits',                       vals:['forced',false,'locked',false,'locked','locked'] },
-      { id:'assign_role',      label:'Attribuer un rôle à un utilisateur',  desc:'Changer le rôle d\'un compte (sauf super-admin)',                vals:['forced',false,'locked','locked','locked','locked'] },
-      { id:'assign_superadmin',label:'Attribuer le rôle super-administrateur',desc:'Promouvoir un compte au niveau le plus élevé',                vals:['forced','locked','locked','locked','locked','locked'] },
-      { id:'suspend_user',     label:'Suspendre un compte',                 desc:'Désactiver temporairement l\'accès d\'un utilisateur',           vals:['forced',false,'locked','locked','locked','locked'] },
-      { id:'delete_user',      label:'Supprimer un compte',                 desc:'Effacer définitivement un compte du système',                   vals:['forced','locked','locked','locked','locked','locked'] },
+      { id:'view_users',       label:'Voir la liste des utilisateurs',      desc:'Accéder au tableau des comptes inscrits',                       vals:[true,false,false,false,false,false] },
+      { id:'assign_role',      label:'Attribuer un rôle à un utilisateur',  desc:'Changer le rôle d\'un compte (sauf super-admin)',                vals:[true,false,false,false,false,false] },
+      { id:'assign_superadmin',label:'Attribuer le rôle super-administrateur',desc:'Promouvoir un compte au niveau le plus élevé',                vals:[true,false,false,false,false,false] },
+      { id:'suspend_user',     label:'Suspendre un compte',                 desc:'Désactiver temporairement l\'accès d\'un utilisateur',           vals:[true,false,false,false,false,false] },
+      { id:'delete_user',      label:'Supprimer un compte',                 desc:'Effacer définitivement un compte du système',                   vals:[true,false,false,false,false,false] },
     ]
   },
   {
     label: 'Administration du site',
     perms: [
-      { id:'manage_categories',label:'Gérer les catégories',                desc:'Créer, renommer, supprimer des rubriques',                      vals:['forced','locked','locked','locked','locked','locked'] },
-      { id:'manage_perms',     label:'Modifier les permissions des rôles',  desc:'Accéder à cette page et modifier les droits',                   vals:['forced','locked','locked','locked','locked','locked'] },
-      { id:'view_stats',       label:'Voir les statistiques du site',       desc:'Accéder aux données de trafic et d\'engagement',                vals:['forced',false,'locked','locked','locked','locked'] },
-      { id:'manage_newsletter',label:'Gérer la newsletter',                 desc:'Envoyer et programmer les lettres d\'information',              vals:['forced',false,'locked','locked','locked','locked'] },
-      { id:'site_settings',    label:'Paramètres généraux du site',         desc:'Modifier le nom, les métadonnées, la configuration',            vals:['forced','locked','locked','locked','locked','locked'] },
+      { id:'manage_categories',label:'Gérer les catégories',                desc:'Créer, renommer, supprimer des rubriques',                      vals:[true,false,false,false,false,false] },
+      { id:'manage_perms',     label:'Modifier les permissions des rôles',  desc:'Accéder à cette page et modifier les droits',                   vals:[true,false,false,false,false,false] },
+      { id:'view_stats',       label:'Voir les statistiques du site',       desc:'Accéder aux données de trafic et d\'engagement',                vals:[true,false,false,false,false,false] },
+      { id:'manage_newsletter',label:'Gérer la newsletter',                 desc:'Envoyer et programmer les lettres d\'information',              vals:[true,false,false,false,false,false] },
+      { id:'site_settings',    label:'Paramètres généraux du site',         desc:'Modifier le nom, les métadonnées, la configuration',            vals:[true,false,false,false,false,false] },
     ]
   }
 ];
@@ -268,7 +266,7 @@ function getPermsState() {
   GROUPES.forEach(function(g) {
     g.perms.forEach(function(p) {
       state[p.id] = p.vals.map(function(v) {
-        return v === 'forced' ? true : v === 'locked' ? false : v;
+        return v === true ? true : v === false ? false : v;
       });
     });
   });
@@ -308,27 +306,21 @@ function renderTable() {
         var td = document.createElement('td');
         td.className = 'perm-cell';
 
-        if (v === 'forced') {
-          td.innerHTML = '<span class="forced-check" title="Toujours accordé">✓</span>';
-        } else if (v === 'locked') {
-          td.innerHTML = '<span class="locked-check" title="Toujours refusé">—</span>';
-        } else {
-          var cb = document.createElement('input');
-          cb.type = 'checkbox';
-          cb.className = 'perm-check';
-          cb.checked = state[perm.id] ? state[perm.id][colIdx] : v;
-          cb.dataset.permId = perm.id;
-          cb.dataset.col = colIdx;
-          cb.addEventListener('change', function() {
-            if (!state[this.dataset.permId]) {
-              state[this.dataset.permId] = perm.vals.map(function(x){ return x === 'forced' ? true : x === 'locked' ? false : x; });
-            }
-            state[this.dataset.permId][parseInt(this.dataset.col)] = this.checked;
-            document.getElementById('save-status').textContent = 'Modifications non enregistrées — pensez à enregistrer';
-            document.getElementById('save-status').style.color = 'var(--orange)';
-          });
-          td.appendChild(cb);
-        }
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.className = 'perm-check';
+        cb.checked = (state[perm.id] !== undefined) ? state[perm.id][colIdx] : v;
+        cb.dataset.permId = perm.id;
+        cb.dataset.col = colIdx;
+        cb.addEventListener('change', function() {
+          if (!state[this.dataset.permId]) {
+            state[this.dataset.permId] = perm.vals.slice();
+          }
+          state[this.dataset.permId][parseInt(this.dataset.col)] = this.checked;
+          document.getElementById('save-status').textContent = 'Modifications non enregistrées — pensez à enregistrer';
+          document.getElementById('save-status').style.color = 'var(--orange)';
+        });
+        td.appendChild(cb);
         tr.appendChild(td);
       });
 
@@ -393,7 +385,7 @@ function deconnexion() {
 
 <script>
 (function() {
-  var ROLES_LABEL = {
+  var ROLES = {
     'super-admin':'Super-administrateur',
     'moderateur-redaction':'Modérateur de rédaction',
     'redacteur':'Rédacteur',
@@ -401,27 +393,19 @@ function deconnexion() {
     'lecteur-commentateur':'Lecteur-commentateur',
     'lecteur':'Lecteur'
   };
-  function deco() {
-    localStorage.removeItem('eclairage_session');
-    window.location.href = 'connexion.html';
-  }
   try {
     var raw = localStorage.getItem('eclairage_session');
     if (!raw) return;
     var s = JSON.parse(raw);
-    var topbar = document.querySelector('#topbar span:last-child');
-    if (!topbar) return;
-    var roleLabel = ROLES_LABEL[s.role] || s.role;
-    var adminBtn = '';
-    if (s.role === 'super-admin') {
-      adminBtn = ' <span style="opacity:.3;margin:0 6px">|</span> <a href="permissions.html" style="background:var(--violet-m);color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;">⚙ Admin</a>';
-    }
-    var decoBtn = ' <span style="opacity:.3;margin:0 6px">|</span> <a href="connexion.html" id="btn-deco">Déconnexion</a>';
-    topbar.innerHTML = '<span style="color:var(--violet-xl)">' + roleLabel + '</span>'
-      + ' — <strong style="color:#fff">' + s.prenom + '</strong>'
-      + adminBtn + decoBtn;
-    var d = document.getElementById('btn-deco');
-    if (d) d.addEventListener('click', function(e){ e.preventDefault(); deco(); });
+    var el = document.getElementById('topbar-right');
+    if (!el) return;
+    var admin = s.role === 'super-admin'
+      ? '<a href="permissions.html" style="background:#5B3E8F;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:8px;">&#9881; Admin</a>'
+      : '';
+    el.innerHTML = '<span style="color:#D6C9E8">' + (ROLES[s.role]||s.role) + '</span>'
+      + ' &mdash; <strong style="color:#fff">' + s.prenom + '</strong>'
+      + admin
+      + '<a href="connexion.html" onclick="localStorage.removeItem('eclairage_session')" style="color:#D6C9E8;margin-left:8px;">| D&eacute;connexion</a>';
   } catch(e) {}
 })();
 </script>
