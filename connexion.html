@@ -117,7 +117,8 @@ footer a:hover{color:#fff;}
         <input type="checkbox" id="remember">
         <label for="remember">Se souvenir de moi</label>
       </div>
-      <button class="btn-submit">Se connecter</button>
+      <div id="login-error" style="display:none;margin-top:14px;padding:10px 14px;background:#FDF3F0;border:1px solid #E8C4B8;border-radius:3px;font-size:13px;color:#5C2A1A;"></div>
+      <button class="btn-submit" onclick="handleLogin()">Se connecter</button>
       <div class="divider"><span>ou</span></div>
       <p class="switch-text">Pas encore de compte ? <a href="#" onclick="switchTabByName('inscription')">Créer un compte →</a></p>
     </div>
@@ -141,14 +142,16 @@ footer a:hover{color:#fff;}
         <input type="password" id="mdp-confirm" placeholder="••••••••">
       </div>
       <div class="check-row">
-        <input type="checkbox" id="newsletter">
-        <label for="newsletter">Recevoir la newsletter hebdomadaire d'Éclairage</label>
+        <input type="checkbox" id="newsletter-cb">
+        <label for="newsletter-cb">Recevoir la newsletter hebdomadaire d'Éclairage</label>
       </div>
       <div class="check-row">
         <input type="checkbox" id="cgu">
         <label for="cgu">J'accepte les <a href="#">conditions d'utilisation</a> et la <a href="#">politique de confidentialité</a></label>
       </div>
-      <button class="btn-submit">Créer mon compte</button>
+      <div id="signup-error" style="display:none;margin-top:14px;padding:10px 14px;background:#FDF3F0;border:1px solid #E8C4B8;border-radius:3px;font-size:13px;color:#5C2A1A;"></div>
+      <div id="signup-success" style="display:none;margin-top:14px;padding:10px 14px;background:#F0F8F2;border:1px solid #B8DEC4;border-radius:3px;font-size:13px;color:#1A5C32;"></div>
+      <button class="btn-submit" onclick="handleSignup()">Créer mon compte</button>
       <div class="divider"><span>ou</span></div>
       <p class="switch-text">Déjà un compte ? <a href="#" onclick="switchTabByName('connexion')">Se connecter →</a></p>
     </div>
@@ -168,15 +171,171 @@ footer a:hover{color:#fff;}
 </footer>
 
 <script>
-function switchTab(id,btn){
-  document.querySelectorAll('.form-section').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+// ── BASE DE COMPTES (stockée en localStorage) ──────────────────────────
+// Comptes préchargés au premier lancement
+const COMPTES_DEFAUT = [
+  {
+    email: 'joachim.galmiche@hotmail.fr',
+    mdp:   'Hel10s.Heter10us',
+    prenom:'Joachim',
+    nom:   'Galmiche',
+    role:  'super-admin',
+    newsletter: true
+  }
+];
+
+const ROLES_LABEL = {
+  'super-admin':          'Super-administrateur',
+  'moderateur-redaction': 'Modérateur de rédaction',
+  'redacteur':            'Rédacteur',
+  'moderateur-comments':  'Modérateur de commentaires',
+  'lecteur-commentateur': 'Lecteur-commentateur',
+  'lecteur':              'Lecteur'
+};
+
+// Initialiser le store si vide
+function getComptes() {
+  const raw = localStorage.getItem('eclairage_comptes');
+  if (!raw) {
+    localStorage.setItem('eclairage_comptes', JSON.stringify(COMPTES_DEFAUT));
+    return COMPTES_DEFAUT;
+  }
+  return JSON.parse(raw);
+}
+
+function saveComptes(comptes) {
+  localStorage.setItem('eclairage_comptes', JSON.stringify(comptes));
+}
+
+// ── ONGLETS ────────────────────────────────────────────────────────────
+function switchTab(id, btn) {
+  document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   btn.classList.add('active');
+  // Reset messages
+  ['login-error','signup-error','signup-success'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.style.display = 'none'; el.textContent = ''; }
+  });
 }
-function switchTabByName(id){
-  var btns=document.querySelectorAll('.tab-btn');
-  switchTab(id,id==='connexion'?btns[0]:btns[1]);
+function switchTabByName(id) {
+  const btns = document.querySelectorAll('.tab-btn');
+  switchTab(id, id === 'connexion' ? btns[0] : btns[1]);
+}
+
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function hideError(id) {
+  const el = document.getElementById(id);
+  el.style.display = 'none';
+}
+
+// ── CONNEXION ──────────────────────────────────────────────────────────
+function handleLogin() {
+  hideError('login-error');
+  const email = document.getElementById('email-co').value.trim().toLowerCase();
+  const mdp   = document.getElementById('mdp-co').value;
+
+  if (!email || !mdp) {
+    showError('login-error', 'Veuillez remplir tous les champs.');
+    return;
+  }
+
+  const comptes = getComptes();
+  const compte  = comptes.find(c => c.email.toLowerCase() === email && c.mdp === mdp);
+
+  if (!compte) {
+    showError('login-error', 'Email ou mot de passe incorrect.');
+    return;
+  }
+
+  // Sauvegarder la session
+  localStorage.setItem('eclairage_session', JSON.stringify({
+    email:  compte.email,
+    prenom: compte.prenom,
+    nom:    compte.nom,
+    role:   compte.role
+  }));
+
+  // Redirection selon rôle
+  if (compte.role === 'super-admin' || compte.role === 'moderateur-redaction' || compte.role === 'redacteur') {
+    window.location.href = 'index.html';
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+
+// ── INSCRIPTION ────────────────────────────────────────────────────────
+function handleSignup() {
+  hideError('signup-error');
+  hideError('signup-success');
+
+  const prenom  = document.getElementById('prenom').value.trim();
+  const nom     = document.getElementById('nom').value.trim();
+  const email   = document.getElementById('email-in').value.trim().toLowerCase();
+  const mdp     = document.getElementById('mdp-in').value;
+  const mdpConf = document.getElementById('mdp-confirm').value;
+  const cgu     = document.getElementById('cgu').checked;
+  const nl      = document.getElementById('newsletter-cb').checked;
+
+  // Validations
+  if (!prenom || !nom) { showError('signup-error', 'Veuillez entrer votre prénom et nom.'); return; }
+  if (!email)          { showError('signup-error', 'Veuillez entrer une adresse e-mail.'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('signup-error', 'Adresse e-mail invalide.'); return; }
+  if (mdp.length < 8)  { showError('signup-error', 'Le mot de passe doit contenir au moins 8 caractères.'); return; }
+  if (mdp !== mdpConf) { showError('signup-error', 'Les mots de passe ne correspondent pas.'); return; }
+  if (!cgu)            { showError('signup-error', 'Vous devez accepter les conditions d\'utilisation.'); return; }
+
+  const comptes = getComptes();
+  if (comptes.find(c => c.email.toLowerCase() === email)) {
+    showError('signup-error', 'Un compte existe déjà avec cette adresse e-mail.');
+    return;
+  }
+
+  // Créer le compte (rôle lecteur par défaut)
+  const nouveau = { email, mdp, prenom, nom, role: 'lecteur', newsletter: nl };
+  comptes.push(nouveau);
+  saveComptes(comptes);
+
+  // Message succès + bascule vers connexion après 2s
+  const succEl = document.getElementById('signup-success');
+  succEl.textContent = `Compte créé ! Bienvenue ${prenom}. Vous pouvez maintenant vous connecter.`;
+  succEl.style.display = 'block';
+  document.getElementById('email-in').value = '';
+  document.getElementById('mdp-in').value = '';
+  document.getElementById('mdp-confirm').value = '';
+
+  setTimeout(() => {
+    switchTabByName('connexion');
+    document.getElementById('email-co').value = email;
+  }, 2000);
+}
+
+// ── ENTER pour valider ─────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const active = document.querySelector('.form-section.active');
+  if (active && active.id === 'connexion') handleLogin();
+  if (active && active.id === 'inscription') handleSignup();
+});
+
+// ── Afficher badge session si connecté ────────────────────────────────
+(function() {
+  const session = localStorage.getItem('eclairage_session');
+  if (session) {
+    const s = JSON.parse(session);
+    const topbar = document.querySelector('#topbar span:last-child');
+    if (topbar) topbar.innerHTML = `Connecté : <strong style="color:#fff">${s.prenom}</strong> — <span style="color:var(--violet-xl)">${(ROLES_LABEL[s.role]||s.role)}</span> &nbsp;|&nbsp; <a href="#" onclick="deconnexion()">Déconnexion</a>`;
+  }
+})();
+
+function deconnexion() {
+  localStorage.removeItem('eclairage_session');
+  location.reload();
 }
 </script>
 </body>
