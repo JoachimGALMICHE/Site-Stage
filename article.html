@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Article — Éclairage</title>
+<title>Article — L'Œil d'Euclide</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --beige:#F7F3EC;--beige2:#EEE8DC;--beige3:#E3DBCF;
-  --violet:#1E0F3C;--violet2:#2D1A55;--violet-m:#5B3E8F;
-  --violet-l:#A38DC4;--violet-xl:#D6C9E8;
-  --text:#1E0F3C;--text2:#4A3468;--text3:#9B8AB0;
-  --line:#DDD5E8;--line2:#C5B5D8;
+  --beige:#F2EDE4;--beige2:#EAE4D8;--beige3:#DED6C8;
+  --violet:#1C1C2E;--violet2:#2A2A3E;--violet-m:#B8956A;
+  --violet-l:#D4B896;--violet-xl:#EDE0CC;
+  --text:#1C1C2E;--text2:#3A3A4E;--text3:#8A8A9A;
+  --line:#D8D0C4;--line2:#C8BEB0;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'DM Sans',sans-serif;background:var(--beige);color:var(--text);-webkit-font-smoothing:antialiased;}
@@ -30,7 +30,7 @@ nav#cats::-webkit-scrollbar{display:none;}
 nav#cats a{display:inline-block;padding:13px 16px;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);border-bottom:2px solid transparent;transition:color .2s,border-color .2s;}
 nav#cats a:first-child{padding-left:0;}
 nav#cats a:hover{color:var(--violet);border-bottom-color:var(--line2);}
-nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet);}
+nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
 
 /* LAYOUT */
 .page-layout{max-width:1160px;margin:0 auto;padding:0 40px;display:grid;grid-template-columns:1fr 300px;gap:64px;padding-top:48px;padding-bottom:64px;}
@@ -111,7 +111,7 @@ footer{background:var(--violet);color:var(--violet-l);padding:32px 40px 20px;}
 </div>
 
 <header>
-  <a href="index.html" class="site-name">Éclairage</a>
+  <a href="index.html" class="site-name" style="display:flex;align-items:center;gap:10px"><svg width="44" height="44" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;display:inline-block;vertical-align:middle"><rect x="4" y="4" width="28" height="28" stroke="#B8956A" stroke-width="0.8" fill="none"/><circle cx="18" cy="18" r="14" stroke="#B8956A" stroke-width="0.8" fill="none"/><line x1="4" y1="18" x2="32" y2="18" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="18" y1="4" x2="18" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="32" y1="32" x2="44" y2="44" stroke="#B8956A" stroke-width="0.8" opacity="0.5"/></svg>L'Œil d'Euclide</a>
   <nav id="cats">
     <a href="index.html">Accueil</a>
     <a href="categorie.html?cat=Politique" class="active">Politique</a>
@@ -209,14 +209,14 @@ footer{background:var(--violet);color:var(--violet-l);padding:32px 40px 20px;}
 
 <footer>
   <div class="f-inner">
-    <a href="index.html" class="f-brand">Éclairage</a>
+    <a href="index.html" class="f-brand" style="display:flex;align-items:center;gap:8px"><svg width="44" height="44" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;display:inline-block;vertical-align:middle"><rect x="4" y="4" width="28" height="28" stroke="#B8956A" stroke-width="0.8" fill="none"/><circle cx="18" cy="18" r="14" stroke="#B8956A" stroke-width="0.8" fill="none"/><line x1="4" y1="18" x2="32" y2="18" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="18" y1="4" x2="18" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="32" y1="32" x2="44" y2="44" stroke="#B8956A" stroke-width="0.8" opacity="0.5"/></svg>L'Œil d'Euclide</a>
     <div class="f-links">
       <a href="#">À propos</a>
       <a href="#">Contact</a>
       <a href="connexion.html">Connexion</a>
     </div>
   </div>
-  <p class="f-copy">© 2026 Éclairage — Tous droits réservés</p>
+  <p class="f-copy">© 2026 L'Œil d'Euclide — Tous droits réservés</p>
 </footer>
 
 
@@ -234,22 +234,22 @@ footer{background:var(--violet);color:var(--violet-l);padding:32px 40px 20px;}
   };
   var WRITERS = ['super-admin','moderateur-redaction','redacteur'];
   try {
-    var raw = localStorage.getItem('eclairage_session');
+    var raw = localStorage.getItem('euclide_session');
     if (!raw) return;
     var s = JSON.parse(raw);
     var el = document.getElementById('topbar-right');
     if (!el) return;
     var adminBtn = s.role === 'super-admin'
-      ? '<a href="permissions.html" style="background:#5B3E8F;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">&#9881; Admin</a>'
+      ? '<a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">&#9881; Admin</a>'
       : '';
     var writeBtn = (WRITERS.indexOf(s.role) !== -1)
-      ? '<a href="creer-article.html" style="background:#2D1A55;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #A38DC4;">+ Article</a>'
+      ? '<a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>'
       : '';
     var sep = '<span style="opacity:.3;margin:0 5px">|</span>';
-    el.innerHTML = '<span style="color:#D6C9E8">' + (ROLES[s.role] || s.role) + '</span>'
+    el.innerHTML = '<span style="color:#EDE0CC">' + (ROLES[s.role] || s.role) + '</span>'
       + ' &mdash; <strong style="color:#fff">' + s.prenom + '</strong>'
       + writeBtn + adminBtn
-      + sep + '<a href="connexion.html" onclick="localStorage.removeItem(String.fromCharCode(101,99,108,97,105,114,97,103,101,95,115,101,115,115,105,111,110))" style="color:#D6C9E8;">D&eacute;connexion</a>';
+      + sep + '<a href="connexion.html" onclick="localStorage.removeItem(String.fromCharCode(101,99,108,97,105,114,97,103,101,95,115,101,115,115,105,111,110))" style="color:#EDE0CC;">D&eacute;connexion</a>';
   } catch(e) { console.log(e); }
 })();
 </script>

@@ -3,24 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Éclairage — Actualités & Analyses</title>
+<title>L'Œil d'Euclide — Actualités & Analyses</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --beige:    #F7F3EC;
-  --beige2:   #EEE8DC;
-  --beige3:   #E3DBCF;
-  --violet:   #1E0F3C;
-  --violet2:  #2D1A55;
-  --violet-m: #5B3E8F;
-  --violet-l: #A38DC4;
-  --violet-xl:#D6C9E8;
-  --text:     #1E0F3C;
-  --text2:    #4A3468;
-  --text3:    #9B8AB0;
-  --line:     #DDD5E8;
-  --line2:    #C5B5D8;
+  --beige:    #F2EDE4;
+  --beige2:   #EBE4D8;
+  --beige3:   #E0D8CB;
+  --violet:   #1C1F2E;
+  --violet2:  #1C1C2E;
+  --violet-m: #B8956A;
+  --violet-l: #D4B896;
+  --violet-xl:#EDE0CC;
+  --text:     #1C1F2E;
+  --text2:    #2E3347;
+  --text3:    #8A8070;
+  --line:     #E0D8CA;
+  --line2:    #CBBFA8;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html{font-size:16px;}
@@ -51,7 +51,7 @@ nav#cats::-webkit-scrollbar{display:none;}
 nav#cats a{display:inline-block;padding:13px 16px;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);border-bottom:2px solid transparent;transition:color .2s,border-color .2s;}
 nav#cats a:first-child{padding-left:0;}
 nav#cats a:hover{color:var(--violet);border-bottom-color:var(--line2);}
-nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet);}
+nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
 
 /* MAIN */
 main{max-width:1160px;margin:0 auto;padding:0 40px;}
@@ -157,8 +157,8 @@ footer li a:hover{color:#fff;}
 <header>
   <div class="header-top">
     <div>
-      <div class="site-name">Éclairage</div>
-      <p class="tagline">Analyses &amp; actualités indépendantes — par des experts, pour tous</p>
+      <div style="display:flex;align-items:center;gap:14px"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><rect x="4" y="4" width="28" height="28" stroke="#B8956A" stroke-width="0.8" fill="none"/><circle cx="18" cy="18" r="14" stroke="#B8956A" stroke-width="0.8" fill="none"/><line x1="4" y1="18" x2="32" y2="18" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="18" y1="4" x2="18" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="32" y1="32" x2="44" y2="44" stroke="#B8956A" stroke-width="0.8" opacity="0.5"/><line x1="32" y1="4" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/><line x1="4" y1="32" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/></svg><div class="site-name">L'Œil d'Euclide</div></div>
+      <p class="tagline">Regard critique &amp; analyses indépendantes — par des experts, pour tous</p>
     </div>
     <div class="header-right">
       <div class="search-wrap">
@@ -226,7 +226,7 @@ footer li a:hover{color:#fff;}
 
   <div id="newsletter">
     <div>
-      <p class="nl-title">La lettre d'Éclairage</p>
+      <p class="nl-title">La lettre d'L'Œil d'Euclide</p>
       <p class="nl-sub">Chaque semaine, les analyses qui comptent — directement dans votre boîte mail.</p>
     </div>
     <div class="nl-form">
@@ -252,7 +252,7 @@ footer li a:hover{color:#fff;}
 <footer>
   <div class="f-grid">
     <div class="f-brand">
-      <div class="f-brand-name">Éclairage</div>
+      <div class="f-brand-name">L'Œil d'Euclide</div>
       <p>Analyses indépendantes rédigées par des experts académiques et professionnels. Inspiré de <em>The Conversation</em>.</p>
     </div>
     <div>
@@ -286,7 +286,7 @@ footer li a:hover{color:#fff;}
       </ul>
     </div>
   </div>
-  <p class="f-copy">© 2026 Éclairage — Tous droits réservés</p>
+  <p class="f-copy">© 2026 L'Œil d'Euclide — Tous droits réservés</p>
 </footer>
 
 
@@ -304,22 +304,22 @@ footer li a:hover{color:#fff;}
   };
   var WRITERS = ['super-admin','moderateur-redaction','redacteur'];
   try {
-    var raw = localStorage.getItem('eclairage_session');
+    var raw = localStorage.getItem('euclide_session');
     if (!raw) return;
     var s = JSON.parse(raw);
     var el = document.getElementById('topbar-right');
     if (!el) return;
     var adminBtn = s.role === 'super-admin'
-      ? '<a href="permissions.html" style="background:#5B3E8F;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">&#9881; Admin</a>'
+      ? '<a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">&#9881; Admin</a>'
       : '';
     var writeBtn = (WRITERS.indexOf(s.role) !== -1)
-      ? '<a href="creer-article.html" style="background:#2D1A55;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #A38DC4;">+ Article</a>'
+      ? '<a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>'
       : '';
     var sep = '<span style="opacity:.3;margin:0 5px">|</span>';
-    el.innerHTML = '<span style="color:#D6C9E8">' + (ROLES[s.role] || s.role) + '</span>'
+    el.innerHTML = '<span style="color:#EDE0CC">' + (ROLES[s.role] || s.role) + '</span>'
       + ' &mdash; <strong style="color:#fff">' + s.prenom + '</strong>'
       + writeBtn + adminBtn
-      + sep + '<a href="connexion.html" onclick="localStorage.removeItem(String.fromCharCode(101,99,108,97,105,114,97,103,101,95,115,101,115,115,105,111,110))" style="color:#D6C9E8;">D&eacute;connexion</a>';
+      + sep + '<a href="connexion.html" onclick="localStorage.removeItem(String.fromCharCode(101,99,108,97,105,114,97,103,101,95,115,101,115,115,105,111,110))" style="color:#EDE0CC;">D&eacute;connexion</a>';
   } catch(e) { console.log(e); }
 })();
 </script>

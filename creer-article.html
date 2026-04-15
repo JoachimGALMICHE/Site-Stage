@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Créer un article — Éclairage</title>
+<title>Créer un article — L'Œil d'Euclide</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --beige:#F7F3EC;--beige2:#EEE8DC;--beige3:#E3DBCF;
-  --violet:#1E0F3C;--violet2:#2D1A55;--violet-m:#5B3E8F;
-  --violet-l:#A38DC4;--violet-xl:#D6C9E8;
-  --text:#1E0F3C;--text2:#4A3468;--text3:#9B8AB0;
-  --line:#DDD5E8;--line2:#C5B5D8;
+  --beige:#F2EDE4;--beige2:#EAE4D8;--beige3:#DED6C8;
+  --violet:#1C1C2E;--violet2:#2A2A3E;--violet-m:#B8956A;
+  --violet-l:#D4B896;--violet-xl:#EDE0CC;
+  --text:#1C1C2E;--text2:#3A3A4E;--text3:#8A8A9A;
+  --line:#D8D0C4;--line2:#C8BEB0;
   --green:#1A5C32;--green-bg:#EAF5EE;--green-bd:#B8DEC4;
   --orange:#7A3A10;--orange-bg:#FDF6F0;--orange-bd:#E8D0B8;
 }
@@ -178,7 +178,15 @@ footer a{color:var(--violet-l);}
 </div>
 
 <header>
-  <a href="index.html"><span class="site-name">Éclairage</span></a>
+  <a href="index.html"><div style="display:flex;align-items:center;"><svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:14px;flex-shrink:0;">
+  <rect x="4" y="4" width="28" height="28" stroke="#B8956A" stroke-width="0.8" fill="none"/>
+  <circle cx="18" cy="18" r="14" stroke="#B8956A" stroke-width="0.8" fill="none"/>
+  <line x1="4" y1="18" x2="32" y2="18" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/>
+  <line x1="18" y1="4" x2="18" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/>
+  <line x1="32" y1="32" x2="44" y2="44" stroke="#B8956A" stroke-width="0.8" opacity="0.5"/>
+  <line x1="32" y1="4" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/>
+  <line x1="4" y1="32" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/>
+</svg><svg width="32" height="32" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;margin-right:8px;opacity:.85"><rect x="4" y="4" width="28" height="28" stroke="#B8976A" stroke-width="0.8" fill="none"/><circle cx="18" cy="18" r="14" stroke="#B8976A" stroke-width="0.8" fill="none"/><line x1="4" y1="18" x2="32" y2="18" stroke="#B8976A" stroke-width="0.5" opacity="0.6"/><line x1="18" y1="4" x2="18" y2="32" stroke="#B8976A" stroke-width="0.5" opacity="0.6"/><line x1="32" y1="32" x2="44" y2="44" stroke="#B8976A" stroke-width="0.8" opacity="0.5"/></svg><span class="site-name">L'Œil d'Euclide</span></div></a>
   <div class="header-actions">
     <span id="save-label"><span class="status-dot" id="status-dot"></span>Brouillon</span>
     <button class="btn btn-ghost" onclick="saveDraft()">Sauvegarder</button>
@@ -333,7 +341,7 @@ footer a{color:var(--violet-l);}
 <div id="toast"></div>
 
 <footer>
-  <a href="index.html">Éclairage</a> — Interface rédacteur — © 2026
+  <a href="index.html">L'Œil d'Euclide</a> — Interface rédacteur — © 2026
 </footer>
 
 <script>
@@ -684,7 +692,7 @@ function removeTag(i) {
 // ── SAUVEGARDE ────────────────────────────────────────────────────────
 function saveDraft() {
   try {
-    localStorage.setItem('eclairage_draft', JSON.stringify({
+    localStorage.setItem('euclide_draft', JSON.stringify({
       titre: document.getElementById('f-titre').value,
       chapeau: document.getElementById('f-chapeau').value,
       auteur: document.getElementById('f-auteur').value,
@@ -704,7 +712,7 @@ function saveDraft() {
 
 function loadDraft() {
   try {
-    var raw = localStorage.getItem('eclairage_draft');
+    var raw = localStorage.getItem('euclide_draft');
     if (!raw) return;
     var d = JSON.parse(raw);
     document.getElementById('f-titre').value = d.titre || '';
@@ -741,7 +749,7 @@ function submitArticle() {
 
 function resetEditor() {
   blocks = []; tags = [];
-  try { localStorage.removeItem('eclairage_draft'); } catch(e) {}
+  try { localStorage.removeItem('euclide_draft'); } catch(e) {}
   document.getElementById('f-titre').value = '';
   document.getElementById('f-chapeau').value = '';
   document.getElementById('f-auteur').value = '';
@@ -776,18 +784,18 @@ if (blocks.length === 0) renderCanvas();
     'lecteur':'Lecteur'
   };
   try {
-    var raw = localStorage.getItem('eclairage_session');
+    var raw = localStorage.getItem('euclide_session');
     if (!raw) return;
     var s = JSON.parse(raw);
     var el = document.getElementById('topbar-right');
     if (!el) return;
     var admin = s.role === 'super-admin'
-      ? '<a href="permissions.html" style="background:#5B3E8F;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:8px;">&#9881; Admin</a>'
+      ? '<a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:8px;">&#9881; Admin</a>'
       : '';
-    el.innerHTML = '<span style="color:#D6C9E8">' + (ROLES[s.role]||s.role) + '</span>'
+    el.innerHTML = '<span style="color:#EDE0CC">' + (ROLES[s.role]||s.role) + '</span>'
       + ' &mdash; <strong style="color:#fff">' + s.prenom + '</strong>'
       + admin
-      + '<a href="connexion.html" onclick="localStorage.removeItem(\'eclairage_session\')" style="color:#D6C9E8;margin-left:8px;">| D&eacute;connexion</a>';
+      + '<a href="connexion.html" onclick="localStorage.removeItem(\'euclide_session\')" style="color:#EDE0CC;margin-left:8px;">| D&eacute;connexion</a>';
   } catch(e) {}
 })();
 </script>

@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Connexion — Éclairage</title>
+<title>Connexion — L'Œil d'Euclide</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --beige:#F7F3EC;--beige2:#EEE8DC;--beige3:#E3DBCF;
-  --violet:#1E0F3C;--violet2:#2D1A55;--violet-m:#5B3E8F;
-  --violet-l:#A38DC4;--violet-xl:#D6C9E8;
-  --text:#1E0F3C;--text2:#4A3468;--text3:#9B8AB0;
-  --line:#DDD5E8;--line2:#C5B5D8;
+  --beige:#F2EDE4;--beige2:#EAE4D8;--beige3:#DED6C8;
+  --violet:#1C1C2E;--violet2:#2A2A3E;--violet-m:#B8956A;
+  --violet-l:#D4B896;--violet-xl:#EDE0CC;
+  --text:#1C1C2E;--text2:#3A3A4E;--text3:#8A8A9A;
+  --line:#D8D0C4;--line2:#C8BEB0;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'DM Sans',sans-serif;background:var(--beige);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh;}
@@ -36,7 +36,7 @@ header{padding:32px 40px 28px;border-bottom:1px solid var(--line2);text-align:ce
 .tabs{display:flex;border-bottom:1px solid var(--line);margin-bottom:28px;}
 .tab-btn{flex:1;background:none;border:none;padding:12px 0;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s,border-color .2s;}
 .tab-btn:hover{color:var(--violet);}
-.tab-btn.active{color:var(--violet);border-bottom-color:var(--violet);}
+.tab-btn.active{color:var(--violet);border-bottom-color:var(--violet-m);}
 
 .form-section{display:none;}
 .form-section.active{display:block;}
@@ -87,8 +87,15 @@ footer a:hover{color:#fff;}
 </div>
 
 <header>
-  <a href="index.html">
-    <span class="site-name">Éclairage</span>
+  <a href="index.html"><div style="display:flex;align-items:center;"><svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:14px;flex-shrink:0;">
+  <rect x="4" y="4" width="28" height="28" stroke="#B8956A" stroke-width="0.8" fill="none"/>
+  <circle cx="18" cy="18" r="14" stroke="#B8956A" stroke-width="0.8" fill="none"/>
+  <line x1="4" y1="18" x2="32" y2="18" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/>
+  <line x1="18" y1="4" x2="18" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/>
+  <line x1="32" y1="32" x2="44" y2="44" stroke="#B8956A" stroke-width="0.8" opacity="0.5"/>
+  <line x1="32" y1="4" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/>
+  <line x1="4" y1="32" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/>
+</svg><svg width="32" height="32" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;margin-right:8px;opacity:.85"><rect x="4" y="4" width="28" height="28" stroke="#B8976A" stroke-width="0.8" fill="none"/><circle cx="18" cy="18" r="14" stroke="#B8976A" stroke-width="0.8" fill="none"/><line x1="4" y1="18" x2="32" y2="18" stroke="#B8976A" stroke-width="0.5" opacity="0.6"/><line x1="18" y1="4" x2="18" y2="32" stroke="#B8976A" stroke-width="0.5" opacity="0.6"/><line x1="32" y1="32" x2="44" y2="44" stroke="#B8976A" stroke-width="0.8" opacity="0.5"/></svg><span class="site-name">L'Œil d'Euclide</span></div>
   </a>
 </header>
 
@@ -143,7 +150,7 @@ footer a:hover{color:#fff;}
       </div>
       <div class="check-row">
         <input type="checkbox" id="newsletter-cb">
-        <label for="newsletter-cb">Recevoir la newsletter hebdomadaire d'Éclairage</label>
+        <label for="newsletter-cb">Recevoir la newsletter hebdomadaire d'L'Œil d'Euclide</label>
       </div>
       <div class="check-row">
         <input type="checkbox" id="cgu">
@@ -167,7 +174,7 @@ footer a:hover{color:#fff;}
     <span class="f-sep">|</span>
     <a href="#">Contact</a>
   </div>
-  <p class="f-copy">© 2026 Éclairage</p>
+  <p class="f-copy">© 2026 L'Œil d'Euclide</p>
 </footer>
 
 <script>
@@ -186,9 +193,9 @@ var ROLES_LABEL = {
 
 function getComptes() {
   try {
-    var raw = localStorage.getItem('eclairage_comptes');
+    var raw = localStorage.getItem('euclide_comptes');
     if (!raw) {
-      localStorage.setItem('eclairage_comptes', JSON.stringify(COMPTES_DEFAUT));
+      localStorage.setItem('euclide_comptes', JSON.stringify(COMPTES_DEFAUT));
       return JSON.parse(JSON.stringify(COMPTES_DEFAUT));
     }
     return JSON.parse(raw);
@@ -196,7 +203,7 @@ function getComptes() {
 }
 
 function saveComptes(liste) {
-  try { localStorage.setItem('eclairage_comptes', JSON.stringify(liste)); } catch(e) {}
+  try { localStorage.setItem('euclide_comptes', JSON.stringify(liste)); } catch(e) {}
 }
 
 function msg(elemId, texte, type) {
@@ -244,7 +251,7 @@ function handleLogin() {
   if (!compte) { msg('login-error', 'Email ou mot de passe incorrect.'); return; }
 
   try {
-    localStorage.setItem('eclairage_session', JSON.stringify({
+    localStorage.setItem('euclide_session', JSON.stringify({
       email: compte.email, prenom: compte.prenom, nom: compte.nom, role: compte.role
     }));
   } catch(e) {}
@@ -306,7 +313,7 @@ document.addEventListener('keydown', function(e) {
 // Badge session
 (function() {
   try {
-    var session = localStorage.getItem('eclairage_session');
+    var session = localStorage.getItem('euclide_session');
     if (!session) return;
     var s = JSON.parse(session);
     var topbar = document.querySelector('#topbar span:last-child');
@@ -319,7 +326,7 @@ document.addEventListener('keydown', function(e) {
 })();
 
 function deconnexion() {
-  try { localStorage.removeItem('eclairage_session'); } catch(e) {}
+  try { localStorage.removeItem('euclide_session'); } catch(e) {}
   location.reload();
 }
 </script>
@@ -338,22 +345,22 @@ function deconnexion() {
   };
   var WRITERS = ['super-admin','moderateur-redaction','redacteur'];
   try {
-    var raw = localStorage.getItem('eclairage_session');
+    var raw = localStorage.getItem('euclide_session');
     if (!raw) return;
     var s = JSON.parse(raw);
     var el = document.getElementById('topbar-right');
     if (!el) return;
     var adminBtn = s.role === 'super-admin'
-      ? '<a href="permissions.html" style="background:#5B3E8F;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">&#9881; Admin</a>'
+      ? '<a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">&#9881; Admin</a>'
       : '';
     var writeBtn = (WRITERS.indexOf(s.role) !== -1)
-      ? '<a href="creer-article.html" style="background:#2D1A55;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #A38DC4;">+ Article</a>'
+      ? '<a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>'
       : '';
     var sep = '<span style="opacity:.3;margin:0 5px">|</span>';
-    el.innerHTML = '<span style="color:#D6C9E8">' + (ROLES[s.role] || s.role) + '</span>'
+    el.innerHTML = '<span style="color:#EDE0CC">' + (ROLES[s.role] || s.role) + '</span>'
       + ' &mdash; <strong style="color:#fff">' + s.prenom + '</strong>'
       + writeBtn + adminBtn
-      + sep + '<a href="connexion.html" onclick="localStorage.removeItem(String.fromCharCode(101,99,108,97,105,114,97,103,101,95,115,101,115,115,105,111,110))" style="color:#D6C9E8;">D&eacute;connexion</a>';
+      + sep + '<a href="connexion.html" onclick="localStorage.removeItem(String.fromCharCode(101,99,108,97,105,114,97,103,101,95,115,101,115,115,105,111,110))" style="color:#EDE0CC;">D&eacute;connexion</a>';
   } catch(e) { console.log(e); }
 })();
 </script>
