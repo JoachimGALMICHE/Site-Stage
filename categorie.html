@@ -222,9 +222,13 @@ function init(){
   document.getElementById('cat-count').textContent=arts.length+' articles';
 
   // nav active
+  const originalCat = getParam('cat') || 'Politique';
   document.querySelectorAll('nav#cats a').forEach(a=>{
     a.classList.remove('active');
-    if(a.getAttribute('href')&&a.getAttribute('href').includes('cat='+cat)) a.classList.add('active');
+    const href = a.getAttribute('href') || '';
+    if(href.includes('cat='+originalCat)) a.classList.add('active');
+    // Cas spécial Économie & Entreprise
+    if((originalCat==='Économie'||originalCat==='Entreprise') && href.includes('cat=Économie')) a.classList.add('active');
   });
 
   const list=document.getElementById('article-list');
