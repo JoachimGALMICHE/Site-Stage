@@ -207,15 +207,28 @@ footer a{color:var(--violet-l);}
       <div class="meta-row full" style="margin-bottom:18px;">
         <textarea class="chapeau-input" id="f-chapeau" rows="2" placeholder="Chapeau — résumez l'article en 2-3 phrases…" oninput="markUnsaved();autoResize(this)"></textarea>
       </div>
-      <div class="meta-row">
-        <div>
-          <span class="f-label">Auteur(e)</span>
-          <input class="f-input" id="f-auteur" type="text" placeholder="Prénom Nom" oninput="markUnsaved()">
+      <!-- AUTEURS depuis la base -->
+      <div class="field" style="margin-bottom:14px;">
+        <span class="f-label">Auteur(e) principal(e) *</span>
+        <div style="display:flex;gap:8px;">
+          <select class="f-input" id="f-auteur-select" onchange="selectAuthor()" style="flex:1">
+            <option value="">Choisir un auteur validé…</option>
+          </select>
+          <a href="auteurs.html" target="_blank" style="padding:9px 12px;border:1px solid var(--line2);border-radius:2px;font-size:12px;color:var(--text3);white-space:nowrap;display:flex;align-items:center;">+ Gérer</a>
         </div>
-        <div>
-          <span class="f-label">Institution</span>
-          <input class="f-input" id="f-institution" type="text" placeholder="Université, CNRS…" oninput="markUnsaved()">
+        <div id="author-preview" style="display:none;margin-top:10px;padding:10px 14px;background:var(--beige2);border:1px solid var(--line);border-radius:2px;">
+          <div style="font-size:13px;font-weight:500;color:var(--violet)" id="ap-name"></div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px" id="ap-institutions"></div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px" id="ap-themes"></div>
         </div>
+      </div>
+      <!-- CO-AUTEURS -->
+      <div class="field" style="margin-bottom:14px;">
+        <span class="f-label">Co-auteur(s)</span>
+        <select class="f-input" id="f-coauteur-select" onchange="addCoauthor()">
+          <option value="">Ajouter un co-auteur…</option>
+        </select>
+        <div id="coauthors-list" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;"></div>
       </div>
       <div class="meta-row">
         <div>
@@ -237,21 +250,8 @@ footer a{color:var(--violet-l);}
           </select>
         </div>
       </div>
-      <!-- CONFLIT -->
-      <span class="f-label" style="margin-top:14px;display:block;">Conflit d'intérêt</span>
-      <div class="conflict-row">
-        <label class="c-opt no-c">
-          <input type="radio" name="conflict" value="none" checked onchange="toggleConflict(false)">
-          <div><span class="c-opt-title">Aucun conflit</span><span class="c-opt-desc">Pas de lien à déclarer</span></div>
-        </label>
-        <label class="c-opt yes-c">
-          <input type="radio" name="conflict" value="yes" onchange="toggleConflict(true)">
-          <div><span class="c-opt-title">Conflit déclaré</span><span class="c-opt-desc">Préciser ci-dessous</span></div>
-        </label>
-      </div>
-      <div id="conflict-detail">
-        <textarea class="f-input" id="f-conflict-txt" rows="2" placeholder="Décrivez votre lien…" style="margin-top:8px;resize:none;" oninput="markUnsaved()"></textarea>
-      </div>
+      <!-- CONFLIT — automatique depuis la base auteurs -->
+      <div id="conflict-banner" style="display:none;margin-top:14px;padding:12px 16px;border-radius:2px;border:1px solid;font-size:13px;display:flex;gap:10px;align-items:flex-start;"></div>
     </div>
 
     <!-- CANVAS BLOCS -->
@@ -772,6 +772,99 @@ setInterval(function(){ if (unsaved) saveDraft(); }, 30000);
 // Init
 loadDraft();
 if (blocks.length === 0) renderCanvas();
+populateAuthorSelects();
+
+// ── AUTEURS ──────────────────────────────────────────────────────────
+var selectedCoauthors = [];
+
+function getAuthors() {
+  try { return JSON.parse(localStorage.getItem('oeil_auteurs') || '[]'); } catch(e) { return []; }
+}
+
+function populateAuthorSelects() {
+  var authors = getAuthors();
+  var mainSel = document.getElementById('f-auteur-select');
+  var coSel = document.getElementById('f-coauteur-select');
+  // Vider les options sauf la première
+  while (mainSel.options.length > 1) mainSel.remove(1);
+  while (coSel.options.length > 1) coSel.remove(1);
+  authors.forEach(function(a) {
+    var label = a.prenom + ' ' + a.nom + ' (' + (a.institutions||[]).join(', ') + ')';
+    var o1 = new Option(label, a.id);
+    var o2 = new Option(label, a.id);
+    mainSel.appendChild(o1);
+    coSel.appendChild(o2);
+  });
+}
+
+function selectAuthor() {
+  var id = document.getElementById('f-auteur-select').value;
+  var preview = document.getElementById('author-preview');
+  var banner = document.getElementById('conflict-banner');
+  if (!id) {
+    preview.style.display = 'none';
+    banner.style.display = 'none';
+    return;
+  }
+  var a = getAuthors().find(function(x){ return x.id === id; });
+  if (!a) return;
+
+  // Preview auteur
+  preview.style.display = 'block';
+  document.getElementById('ap-name').textContent = a.prenom + ' ' + a.nom;
+  document.getElementById('ap-institutions').textContent = (a.institutions||[]).join(' · ');
+  document.getElementById('ap-themes').innerHTML = (a.themes||[]).map(function(t){
+    return '<span style="font-size:10px;color:#B8956A;background:#EDE0CC;padding:2px 7px;border-radius:2px;">' + t + '</span>';
+  }).join('');
+
+  // Bandeau conflit automatique
+  banner.style.display = 'flex';
+  if (a.conflict === 'none') {
+    banner.style.background = '#EAF5EE';
+    banner.style.borderColor = '#B8DEC4';
+    banner.style.color = '#1A5C32';
+    banner.innerHTML = '<span style="font-size:16px;flex-shrink:0">✓</span><span>' +
+      (a.prenom.slice(-1).toLowerCase() === 'e' ? "L'autrice" : "L'auteur") +
+      ' déclare ne pas avoir de conflit d'intérêts avec le sujet traité dans l'article.</span>';
+  } else {
+    banner.style.background = '#FDF3F0';
+    banner.style.borderColor = '#E8C4B8';
+    banner.style.color = '#5C2A1A';
+    banner.innerHTML = '<span style="font-size:16px;flex-shrink:0">⚠</span><span><strong>Conflit d'intérêt déclaré :</strong> ' + (a.conflictTxt || 'Voir fiche auteur') + '</span>';
+  }
+  markUnsaved();
+}
+
+function addCoauthor() {
+  var sel = document.getElementById('f-coauteur-select');
+  var id = sel.value;
+  if (!id) return;
+  if (selectedCoauthors.indexOf(id) !== -1) { sel.value = ''; return; }
+  // Ne pas ajouter l'auteur principal
+  if (id === document.getElementById('f-auteur-select').value) { sel.value = ''; return; }
+  selectedCoauthors.push(id);
+  sel.value = '';
+  renderCoauthors();
+  markUnsaved();
+}
+
+function removeCoauthor(id) {
+  selectedCoauthors = selectedCoauthors.filter(function(x){ return x !== id; });
+  renderCoauthors();
+  markUnsaved();
+}
+
+function renderCoauthors() {
+  var authors = getAuthors();
+  var list = document.getElementById('coauthors-list');
+  list.innerHTML = selectedCoauthors.map(function(id) {
+    var a = authors.find(function(x){ return x.id === id; });
+    if (!a) return '';
+    return '<span style="font-size:12px;background:var(--beige3);border:1px solid var(--line);border-radius:2px;padding:4px 10px;display:flex;align-items:center;gap:6px;">' +
+      a.prenom + ' ' + a.nom +
+      '<span onclick="removeCoauthor('' + id + '')" style="cursor:pointer;opacity:.5;font-size:14px;">×</span></span>';
+  }).join('');
+}
 </script>
 
 <script>

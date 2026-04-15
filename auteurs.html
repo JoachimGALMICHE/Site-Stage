@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Base d'auteurs — L'Œil d'Euclide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --beige:#F2EDE4;--beige2:#EAE4D8;--beige3:#DED6C8;
+  --violet:#1C1C2E;--violet2:#2A2A3E;--violet-m:#B8956A;
+  --violet-l:#D4B896;--violet-xl:#EDE0CC;
+  --text:#1C1C2E;--text2:#3A3A4E;--text3:#8A8A9A;
+  --line:#D8D0C4;--line2:#C8BEB0;
+  --green:#1A5C32;--green-bg:#EAF5EE;--green-bd:#B8DEC4;
+  --red:#5C2A1A;--red-bg:#FDF3F0;--red-bd:#E8C4B8;
+  --gold:#B8956A;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--beige);color:var(--text);-webkit-font-smoothing:antialiased;}
+a{color:inherit;text-decoration:none;}
+
+#topbar{background:var(--violet);color:var(--violet-l);padding:6px 40px;font-size:11px;letter-spacing:.07em;display:flex;justify-content:space-between;align-items:center;}
+#topbar a{color:var(--violet-xl);transition:color .2s;}
+#topbar a:hover{color:#fff;}
+
+header{padding:22px 40px;border-bottom:1px solid var(--line2);display:flex;align-items:center;justify-content:space-between;}
+.site-name{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:300;letter-spacing:-2px;color:var(--violet);display:flex;align-items:center;gap:10px;}
+.header-badge{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);background:var(--violet-xl);padding:4px 12px;border-radius:2px;}
+
+/* ACCESS DENIED */
+#access-denied{display:none;max-width:480px;margin:80px auto;text-align:center;padding:0 20px;}
+.denied-icon{font-size:40px;margin-bottom:16px;}
+.denied-title{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:var(--violet);margin-bottom:8px;}
+.denied-sub{font-size:14px;color:var(--text3);font-weight:300;line-height:1.6;}
+
+/* LAYOUT */
+#main-content{display:none;max-width:1100px;margin:0 auto;padding:36px 40px 80px;}
+
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:32px;gap:20px;}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;color:var(--violet);letter-spacing:-.3px;}
+.page-sub{font-size:13px;color:var(--text3);font-weight:300;margin-top:4px;}
+
+/* BOUTONS */
+.btn{padding:9px 20px;border-radius:2px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;letter-spacing:.05em;cursor:pointer;transition:all .2s;border:1px solid transparent;}
+.btn-primary{background:var(--violet);color:#fff;border-color:var(--violet);}
+.btn-primary:hover{background:var(--violet2);}
+.btn-gold{background:var(--gold);color:#fff;border-color:var(--gold);}
+.btn-gold:hover{opacity:.9;}
+.btn-ghost{background:none;border-color:var(--line2);color:var(--text2);}
+.btn-ghost:hover{border-color:var(--gold);color:var(--violet);}
+.btn-danger{background:none;border-color:var(--red-bd);color:var(--red);}
+.btn-danger:hover{background:var(--red-bg);}
+.btn-sm{padding:5px 12px;font-size:11px;}
+
+/* RECHERCHE */
+.search-bar{display:flex;gap:0;border:1px solid var(--line2);border-radius:2px;overflow:hidden;max-width:320px;}
+.search-bar input{border:none;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--beige);color:var(--text);outline:none;flex:1;}
+.search-bar input::placeholder{color:var(--text3);}
+
+/* STATS BARRE */
+.stats-bar{display:flex;gap:24px;padding:14px 20px;background:var(--beige2);border:1px solid var(--line);border-radius:3px;margin-bottom:24px;}
+.stat-item{font-size:12px;color:var(--text3);}
+.stat-item strong{color:var(--violet);font-weight:500;font-size:16px;font-family:'Cormorant Garamond',serif;margin-right:4px;}
+
+/* LISTE AUTEURS */
+.authors-grid{display:flex;flex-direction:column;gap:0;}
+.author-card{background:var(--beige);border:1px solid var(--line);border-radius:3px;margin-bottom:8px;overflow:hidden;transition:border-color .15s;}
+.author-card:hover{border-color:var(--line2);}
+.author-card-header{display:flex;align-items:center;gap:16px;padding:16px 20px;cursor:pointer;}
+.author-avatar{width:44px;height:44px;border-radius:50%;background:var(--violet);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;flex-shrink:0;}
+.author-main{flex:1;}
+.author-name{font-size:15px;font-weight:500;color:var(--violet);margin-bottom:2px;}
+.author-institutions{font-size:12px;color:var(--text3);font-weight:300;}
+.author-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;}
+.tag{font-size:10px;font-weight:500;letter-spacing:.07em;color:var(--gold);background:var(--violet-xl);padding:2px 7px;border-radius:2px;}
+.author-actions{display:flex;gap:6px;align-items:center;}
+.expand-icon{font-size:12px;color:var(--text3);margin-left:4px;transition:transform .2s;}
+.author-card.expanded .expand-icon{transform:rotate(180deg);}
+
+.author-card-body{display:none;padding:0 20px 18px;border-top:1px solid var(--line);}
+.author-card.expanded .author-card-body{display:block;}
+.author-desc{font-size:13px;line-height:1.65;color:var(--text2);font-weight:300;margin-top:14px;margin-bottom:14px;}
+.author-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;}
+.author-meta-item .lbl{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:4px;}
+.author-meta-item .val{font-size:13px;color:var(--text);}
+.conflict-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:4px 10px;border-radius:2px;font-weight:500;}
+.conflict-badge.none{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd);}
+.conflict-badge.declared{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd);}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(28,28,46,.5);z-index:100;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--beige);border-radius:4px;width:100%;max-width:580px;max-height:90vh;overflow-y:auto;border:1px solid var(--line2);}
+.modal-header{padding:24px 28px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--violet);}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3);padding:4px 8px;border-radius:2px;}
+.modal-close:hover{color:var(--violet);}
+.modal-body{padding:24px 28px;}
+.modal-footer{padding:16px 28px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;}
+
+/* FORMULAIRE */
+.field{margin-bottom:18px;}
+.f-label{display:block;font-size:10px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+.f-hint{font-size:11px;color:var(--text3);margin-bottom:6px;font-weight:300;}
+.f-input{display:block;width:100%;border:1px solid var(--line2);padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--beige);color:var(--text);outline:none;border-radius:2px;transition:border-color .2s;}
+.f-input:focus{border-color:var(--gold);}
+textarea.f-input{resize:vertical;min-height:80px;line-height:1.6;}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+/* TAGS INPUT */
+.tags-input-wrap{border:1px solid var(--line2);border-radius:2px;padding:6px 8px;background:var(--beige);display:flex;flex-wrap:wrap;gap:5px;min-height:40px;cursor:text;transition:border-color .2s;}
+.tags-input-wrap:focus-within{border-color:var(--gold);}
+.tag-chip{font-size:11px;color:var(--gold);background:var(--violet-xl);padding:2px 8px;border-radius:2px;display:flex;align-items:center;gap:4px;}
+.tag-chip-remove{cursor:pointer;opacity:.6;font-size:13px;line-height:1;}
+.tag-chip-remove:hover{opacity:1;}
+.tag-text-input{border:none;outline:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);min-width:120px;flex:1;}
+
+/* CONFLIT TOGGLE */
+.conflict-toggle{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.c-opt{border:1px solid var(--line2);border-radius:2px;padding:10px 12px;cursor:pointer;display:flex;gap:8px;align-items:flex-start;transition:border-color .15s,background .15s;}
+.c-opt input{accent-color:var(--gold);margin-top:2px;flex-shrink:0;}
+.c-opt:has(input:checked).no-c{border-color:var(--green-bd);background:var(--green-bg);}
+.c-opt:has(input:checked).yes-c{border-color:var(--red-bd);background:var(--red-bg);}
+.c-opt-title{font-size:12px;font-weight:500;display:block;}
+.c-opt-desc{font-size:11px;color:var(--text3);}
+#conflict-detail-field{display:none;margin-top:10px;}
+#conflict-detail-field.show{display:block;}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;right:24px;background:var(--violet);color:#fff;padding:10px 18px;border-radius:2px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:200;}
+#toast.show{opacity:1;}
+
+/* VIDE */
+.empty-state{text-align:center;padding:52px 20px;color:var(--text3);}
+.empty-state .empty-icon{font-size:36px;margin-bottom:12px;}
+.empty-state p{font-size:14px;font-weight:300;}
+
+footer{background:var(--violet);color:var(--violet-l);padding:18px 40px;text-align:center;font-size:11px;}
+footer a{color:var(--violet-l);}
+footer a:hover{color:#fff;}
+
+@media(max-width:700px){
+  #topbar,header,#main-content,footer{padding-left:20px;padding-right:20px;}
+  .page-header{flex-direction:column;}
+  .f-row{grid-template-columns:1fr;}
+  .author-meta-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <span><a href="index.html">← L'Œil d'Euclide</a></span>
+  <span id="topbar-right">Administration</span>
+</div>
+
+<header>
+  <div class="site-name">
+    <svg width="36" height="36" viewBox="0 0 52 52" fill="none"><rect x="4" y="4" width="28" height="28" stroke="#B8956A" stroke-width="0.8" fill="none"/><circle cx="18" cy="18" r="14" stroke="#B8956A" stroke-width="0.8" fill="none"/><line x1="4" y1="18" x2="32" y2="18" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="18" y1="4" x2="18" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="32" y1="32" x2="44" y2="44" stroke="#B8956A" stroke-width="0.8" opacity="0.5"/></svg>
+    L'Œil d'Euclide
+  </div>
+  <span class="header-badge">Base d'auteurs</span>
+</header>
+
+<div id="access-denied">
+  <div class="denied-icon">🔒</div>
+  <h2 class="denied-title">Accès restreint</h2>
+  <p class="denied-sub">Cette page est réservée aux administrateurs. <a href="connexion.html" style="color:var(--gold)">Connectez-vous</a> avec le bon compte.</p>
+</div>
+
+<div id="main-content">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Base d'auteurs</h1>
+      <p class="page-sub">Gérez les auteurs et co-auteurs validés disponibles lors de la création d'articles.</p>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Rechercher un auteur…" oninput="filterAuthors()">
+      </div>
+      <button class="btn btn-gold" onclick="openModal()">+ Nouvel auteur</button>
+    </div>
+  </div>
+
+  <div class="stats-bar" id="stats-bar">
+    <div class="stat-item"><strong id="stat-total">0</strong>auteurs validés</div>
+    <div class="stat-item"><strong id="stat-noconflict">0</strong>sans conflit</div>
+    <div class="stat-item"><strong id="stat-conflict">0</strong>avec conflit déclaré</div>
+  </div>
+
+  <div class="authors-grid" id="authors-grid">
+    <div class="empty-state" id="empty-state">
+      <div class="empty-icon">✍</div>
+      <p>Aucun auteur dans la base.<br>Cliquez sur "+ Nouvel auteur" pour commencer.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL AJOUT/ÉDITION -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modal-title">Nouvel auteur</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="f-row">
+        <div class="field">
+          <span class="f-label">Prénom *</span>
+          <input class="f-input" id="f-prenom" type="text" placeholder="Marie">
+        </div>
+        <div class="field">
+          <span class="f-label">Nom *</span>
+          <input class="f-input" id="f-nom" type="text" placeholder="Dupont">
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="f-label">Institutions *</span>
+        <p class="f-hint">Appuyez sur Entrée pour ajouter chaque institution.</p>
+        <div class="tags-input-wrap" id="institutions-wrap" onclick="document.getElementById('institution-input').focus()">
+          <input class="tag-text-input" id="institution-input" placeholder="ex. Université de Lyon…" onkeydown="handleTagInput(event,'institutions','institution-input')">
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="f-label">Thèmes d'expertise *</span>
+        <p class="f-hint">Appuyez sur Entrée pour ajouter chaque thème.</p>
+        <div class="tags-input-wrap" id="themes-wrap" onclick="document.getElementById('theme-input').focus()">
+          <input class="tag-text-input" id="theme-input" placeholder="ex. Sciences politiques…" onkeydown="handleTagInput(event,'themes','theme-input')">
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="f-label">Description (3 lignes max) *</span>
+        <textarea class="f-input" id="f-desc" rows="3" maxlength="400" placeholder="Courte biographie de l'auteur, ses spécialités, son parcours…"></textarea>
+      </div>
+
+      <div class="field">
+        <span class="f-label">Email de contact</span>
+        <input class="f-input" id="f-email" type="email" placeholder="auteur@institution.fr">
+      </div>
+
+      <div class="field">
+        <span class="f-label">Conflit d'intérêt</span>
+        <div class="conflict-toggle">
+          <label class="c-opt no-c">
+            <input type="radio" name="m-conflict" value="none" checked onchange="toggleConflictField(false)">
+            <div><span class="c-opt-title">Aucun conflit</span><span class="c-opt-desc">Bandeau automatique non modifiable</span></div>
+          </label>
+          <label class="c-opt yes-c">
+            <input type="radio" name="m-conflict" value="declared" onchange="toggleConflictField(true)">
+            <div><span class="c-opt-title">Conflit déclaré</span><span class="c-opt-desc">Préciser ci-dessous</span></div>
+          </label>
+        </div>
+        <div id="conflict-detail-field">
+          <textarea class="f-input" id="f-conflict-txt" rows="2" placeholder="Décrivez le lien financier ou institutionnel…" style="margin-top:8px;resize:none;"></textarea>
+        </div>
+      </div>
+
+      <div id="form-error" style="display:none;padding:10px 14px;background:var(--red-bg);border:1px solid var(--red-bd);border-radius:2px;font-size:13px;color:var(--red);margin-top:4px;"></div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveAuthor()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<footer>
+  <a href="index.html">L'Œil d'Euclide</a> &nbsp;—&nbsp; <a href="permissions.html">Permissions</a> &nbsp;—&nbsp; Administration
+  <p style="font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;color:#B8956A;text-align:right;margin-top:8px;">Mettre notre monde en perspective</p>
+</footer>
+
+<script>
+// ── STOCKAGE ─────────────────────────────────────────────────────────
+function getAuthors() {
+  try { return JSON.parse(localStorage.getItem('oeil_auteurs') || '[]'); } catch(e) { return []; }
+}
+function saveAuthors(list) {
+  try { localStorage.setItem('oeil_auteurs', JSON.stringify(list)); } catch(e) {}
+}
+function uid() { return 'a' + Date.now() + Math.random().toString(36).slice(2,6); }
+
+// ── ÉTAT MODAL ────────────────────────────────────────────────────────
+var currentTags = { institutions: [], themes: [] };
+var editingId = null;
+
+// ── RENDU ─────────────────────────────────────────────────────────────
+function render() {
+  var authors = getAuthors();
+  var q = document.getElementById('search-input').value.trim().toLowerCase();
+  var filtered = q ? authors.filter(function(a) {
+    return (a.prenom + ' ' + a.nom + ' ' + (a.institutions||[]).join(' ') + ' ' + (a.themes||[]).join(' ')).toLowerCase().includes(q);
+  }) : authors;
+
+  // Stats
+  document.getElementById('stat-total').textContent = authors.length;
+  document.getElementById('stat-noconflict').textContent = authors.filter(function(a){ return a.conflict === 'none'; }).length;
+  document.getElementById('stat-conflict').textContent = authors.filter(function(a){ return a.conflict === 'declared'; }).length;
+
+  var grid = document.getElementById('authors-grid');
+  var empty = document.getElementById('empty-state');
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    grid.appendChild(empty);
+    return;
+  }
+  empty.style.display = 'none';
+  grid.innerHTML = '';
+
+  filtered.forEach(function(a) {
+    var initials = (a.prenom[0] || '') + (a.nom[0] || '');
+    var conflictBadge = a.conflict === 'none'
+      ? '<span class="conflict-badge none">✓ Aucun conflit déclaré</span>'
+      : '<span class="conflict-badge declared">⚠ Conflit déclaré</span>';
+
+    var card = document.createElement('div');
+    card.className = 'author-card';
+    card.id = 'card-' + a.id;
+    card.innerHTML =
+      '<div class="author-card-header" onclick="toggleCard(\'' + a.id + '\')">' +
+        '<div class="author-avatar">' + initials.toUpperCase() + '</div>' +
+        '<div class="author-main">' +
+          '<div class="author-name">' + a.prenom + ' ' + a.nom + '</div>' +
+          '<div class="author-institutions">' + (a.institutions||[]).join(' · ') + '</div>' +
+          '<div class="author-tags">' +
+            (a.themes||[]).map(function(t){ return '<span class="tag">' + t + '</span>'; }).join('') +
+          '</div>' +
+        '</div>' +
+        '<div class="author-actions">' +
+          '<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();editAuthor(\'' + a.id + '\')">Modifier</button>' +
+          '<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteAuthor(\'' + a.id + '\')">Supprimer</button>' +
+          '<span class="expand-icon">▼</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="author-card-body">' +
+        '<p class="author-desc">' + (a.desc || '') + '</p>' +
+        '<div class="author-meta-grid">' +
+          '<div class="author-meta-item"><div class="lbl">Conflit d\'intérêt</div><div class="val">' + conflictBadge + '</div></div>' +
+          (a.conflictTxt ? '<div class="author-meta-item"><div class="lbl">Détail</div><div class="val" style="font-size:12px;color:var(--text2)">' + a.conflictTxt + '</div></div>' : '') +
+          (a.email ? '<div class="author-meta-item"><div class="lbl">Email</div><div class="val" style="color:var(--gold)">' + a.email + '</div></div>' : '') +
+        '</div>' +
+      '</div>';
+    grid.appendChild(card);
+  });
+}
+
+function toggleCard(id) {
+  var card = document.getElementById('card-' + id);
+  if (card) card.classList.toggle('expanded');
+}
+
+function filterAuthors() { render(); }
+
+// ── MODAL ─────────────────────────────────────────────────────────────
+function openModal(author) {
+  editingId = author ? author.id : null;
+  currentTags.institutions = author ? (author.institutions || []).slice() : [];
+  currentTags.themes = author ? (author.themes || []).slice() : [];
+
+  document.getElementById('modal-title').textContent = author ? 'Modifier l\'auteur' : 'Nouvel auteur';
+  document.getElementById('f-prenom').value = author ? author.prenom : '';
+  document.getElementById('f-nom').value = author ? author.nom : '';
+  document.getElementById('f-desc').value = author ? author.desc : '';
+  document.getElementById('f-email').value = author ? (author.email || '') : '';
+  document.getElementById('f-conflict-txt').value = author ? (author.conflictTxt || '') : '';
+  document.getElementById('form-error').style.display = 'none';
+
+  var conflict = author ? author.conflict : 'none';
+  document.querySelector('input[name="m-conflict"][value="' + conflict + '"]').checked = true;
+  toggleConflictField(conflict === 'declared');
+
+  renderTagsInModal('institutions');
+  renderTagsInModal('themes');
+  document.getElementById('modal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+  editingId = null;
+}
+
+function toggleConflictField(show) {
+  document.getElementById('conflict-detail-field').className = show ? 'show' : '';
+}
+
+// Tags dans modal
+function handleTagInput(e, type, inputId) {
+  if (e.key !== 'Enter' && e.key !== ',') return;
+  e.preventDefault();
+  var val = document.getElementById(inputId).value.trim();
+  if (!val) return;
+  if (currentTags[type].indexOf(val) === -1) currentTags[type].push(val);
+  document.getElementById(inputId).value = '';
+  renderTagsInModal(type);
+}
+
+function renderTagsInModal(type) {
+  var wrap = document.getElementById(type + '-wrap');
+  var input = document.getElementById(type === 'institutions' ? 'institution-input' : 'theme-input');
+  // Supprimer les chips existants
+  Array.from(wrap.querySelectorAll('.tag-chip')).forEach(function(el){ el.remove(); });
+  currentTags[type].forEach(function(t, i) {
+    var chip = document.createElement('span');
+    chip.className = 'tag-chip';
+    chip.innerHTML = t + '<span class="tag-chip-remove" onclick="removeTag(\'' + type + '\',' + i + ')">×</span>';
+    wrap.insertBefore(chip, input);
+  });
+}
+
+function removeTag(type, idx) {
+  currentTags[type].splice(idx, 1);
+  renderTagsInModal(type);
+}
+
+// ── SAVE ──────────────────────────────────────────────────────────────
+function saveAuthor() {
+  var prenom = document.getElementById('f-prenom').value.trim();
+  var nom = document.getElementById('f-nom').value.trim();
+  var desc = document.getElementById('f-desc').value.trim();
+  var email = document.getElementById('f-email').value.trim();
+  var conflict = document.querySelector('input[name="m-conflict"]:checked').value;
+  var conflictTxt = document.getElementById('f-conflict-txt').value.trim();
+  var errEl = document.getElementById('form-error');
+
+  if (!prenom || !nom) { errEl.textContent = 'Prénom et nom obligatoires.'; errEl.style.display = 'block'; return; }
+  if (currentTags.institutions.length === 0) { errEl.textContent = 'Ajoutez au moins une institution.'; errEl.style.display = 'block'; return; }
+  if (currentTags.themes.length === 0) { errEl.textContent = 'Ajoutez au moins un thème d\'expertise.'; errEl.style.display = 'block'; return; }
+  if (!desc) { errEl.textContent = 'La description est obligatoire.'; errEl.style.display = 'block'; return; }
+
+  var authors = getAuthors();
+  if (editingId) {
+    var idx = authors.findIndex(function(a){ return a.id === editingId; });
+    if (idx !== -1) {
+      authors[idx] = { id: editingId, prenom: prenom, nom: nom, institutions: currentTags.institutions.slice(), themes: currentTags.themes.slice(), desc: desc, email: email, conflict: conflict, conflictTxt: conflictTxt };
+    }
+    toast('✓ Auteur modifié');
+  } else {
+    authors.push({ id: uid(), prenom: prenom, nom: nom, institutions: currentTags.institutions.slice(), themes: currentTags.themes.slice(), desc: desc, email: email, conflict: conflict, conflictTxt: conflictTxt });
+    toast('✓ Auteur ajouté');
+  }
+  saveAuthors(authors);
+  closeModal();
+  render();
+}
+
+function editAuthor(id) {
+  var a = getAuthors().find(function(x){ return x.id === id; });
+  if (a) openModal(a);
+}
+
+function deleteAuthor(id) {
+  if (!confirm('Supprimer cet auteur de la base ?')) return;
+  var authors = getAuthors().filter(function(a){ return a.id !== id; });
+  saveAuthors(authors);
+  toast('Auteur supprimé');
+  render();
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────
+function toast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2200);
+}
+
+// ── ACCÈS ─────────────────────────────────────────────────────────────
+(function() {
+  var ROLES = {'super-admin':'Super-administrateur','moderateur-redaction':'Modérateur de rédaction','redacteur':'Rédacteur','moderateur-comments':'Modérateur de commentaires','lecteur-commentateur':'Lecteur-commentateur','lecteur':'Lecteur'};
+  var ADMIN_ROLES = ['super-admin'];
+  try {
+    var s = JSON.parse(localStorage.getItem('eclairage_session') || 'null');
+    var topbar = document.getElementById('topbar-right');
+    if (s && topbar) {
+      var adminBtn = s.role === 'super-admin' ? '<a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">⚙ Admin</a>' : '';
+      var writeBtn = ['super-admin','moderateur-redaction','redacteur'].indexOf(s.role) !== -1 ? '<a href="creer-article.html" style="background:#2A2A3E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>' : '';
+      topbar.innerHTML = '<span style="color:#EDE0CC">' + (ROLES[s.role]||s.role) + '</span> &mdash; <strong style="color:#fff">' + s.prenom + '</strong>' + writeBtn + adminBtn + ' <span style="opacity:.3;margin:0 5px">|</span><a href="connexion.html" onclick="localStorage.removeItem(\'eclairage_session\')" style="color:#EDE0CC;">Déconnexion</a>';
+    }
+    if (!s || ADMIN_ROLES.indexOf(s.role) === -1) {
+      document.getElementById('access-denied').style.display = 'block';
+      return;
+    }
+    document.getElementById('main-content').style.display = 'block';
+    render();
+  } catch(e) {
+    document.getElementById('access-denied').style.display = 'block';
+  }
+})();
+</script>
+</body>
+</html>

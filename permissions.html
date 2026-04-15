@@ -411,7 +411,7 @@ function deconnexion() {
     var el = document.getElementById('topbar-right');
     if (!el) return;
     var adminBtn = s.role === 'super-admin'
-      ? '<a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">&#9881; Admin</a>'
+      ? '<a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">✍ Auteurs</a><a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">&#9881; Admin</a>'
       : '';
     var writeBtn = (WRITERS.indexOf(s.role) !== -1)
       ? '<a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>'
