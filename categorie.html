@@ -115,7 +115,7 @@ footer{background:var(--violet);color:var(--violet-l);padding:40px 40px 24px;}
     <a href="categorie.html?cat=Économie">Économie</a>
     <a href="categorie.html?cat=Culture">Culture</a>
     <a href="categorie.html?cat=International">International</a>
-    <a href="categorie.html?cat=Entreprise">Entreprise</a>
+    
     <a href="categorie.html?cat=Éducation">Éducation &amp; Jeunesse</a>
     <a href="categorie.html?cat=Histoire">Histoire</a>
     <a href="categorie.html?cat=Critique">Critique litt. &amp; artistique</a>
@@ -181,7 +181,7 @@ const DATA={
     {titre:"Sécheresse : l'Espagne perd 40 % de ses réserves d'eau potable en un an",extrait:"La crise hydrique s'intensifie sur le pourtour méditerranéen avec des effets directs sur l'agriculture.",auteur:"Carla Ramos",date:"30 mars 2026",duree:"7 min"},
     {titre:"Biodiversité marine : un tiers des récifs coralliens menacés",extrait:"Le réchauffement des océans accélère le blanchissement des coraux à un rythme sans précédent.",auteur:"Marine Bel",date:"25 mars 2026",duree:"8 min"},
   ],
-  "Économie":[
+  "Économie & Entreprise":[
     {titre:"La BCE maintient ses taux face à une inflation persistante",extrait:"Les gouverneurs ont voté à l'unanimité pour le maintien des taux directeurs lors de la réunion de mars.",auteur:"Pierre Vidal",date:"28 mars 2026",duree:"5 min"},
     {titre:"Les PME françaises face à la hausse du coût de l'énergie",extrait:"Malgré les aides publiques, de nombreuses petites entreprises envisagent de délocaliser une partie de leur production.",auteur:"Thomas Martin",date:"30 mars 2026",duree:"6 min"},
   ],
@@ -193,7 +193,7 @@ const DATA={
     {titre:"Taïwan et la Chine : un statu quo de plus en plus fragile",extrait:"Les manœuvres militaires chinoises dans le détroit s'intensifient, testant la réponse diplomatique des États-Unis.",auteur:"Paul Chen",date:"29 mars 2026",duree:"9 min"},
     {titre:"Sommet G20 : les pays du Sud réclament une réforme du FMI",extrait:"Les économies émergentes dénoncent des règles de vote jugées archaïques et favorables aux puissances occidentales.",auteur:"Amara Diop",date:"25 mars 2026",duree:"8 min"},
   ],
-  "Entreprise":[
+  "Économie & Entreprise":[
     {titre:"Les PME françaises face à la hausse du coût de l'énergie industrielle",extrait:"Malgré les aides publiques, de nombreuses petites entreprises envisagent de délocaliser.",auteur:"Thomas Martin",date:"30 mars 2026",duree:"6 min"},
     {titre:"Startups françaises : le difficile accès aux grands marchés européens",extrait:"Les jeunes pousses hexagonales peinent à s'imposer face aux acteurs allemands et nordiques.",auteur:"Éléonore Baudin",date:"22 mars 2026",duree:"5 min"},
   ],
@@ -272,7 +272,7 @@ init();
     var el = document.getElementById('topbar-right');
     if (!el) return;
     var adminBtn = s.role === 'super-admin'
-      ? '<a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">&#9881; Admin</a>'
+      ? '<a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">✍ Auteurs</a><a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">&#9881; Admin</a>'
       : '';
     var writeBtn = (WRITERS.indexOf(s.role) !== -1)
       ? '<a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>'
