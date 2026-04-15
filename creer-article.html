@@ -23,8 +23,6 @@ a{color:inherit;text-decoration:none;}
 #topbar{background:var(--violet);color:var(--violet-l);padding:6px 40px;font-size:11px;letter-spacing:.07em;display:flex;justify-content:space-between;align-items:center;}
 #topbar a{color:var(--violet-xl);transition:color .2s;}
 
-header{padding:20px 40px;border-bottom:1px solid var(--line2);display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--beige);}
-.site-name{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;letter-spacing:-2px;color:var(--violet);}
 .header-actions{display:flex;gap:10px;align-items:center;}
 .btn{padding:8px 18px;border-radius:2px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;letter-spacing:.05em;cursor:pointer;transition:all .2s;}
 .btn-ghost{background:none;border:1px solid var(--line2);color:var(--text2);}
@@ -168,6 +166,22 @@ footer a{color:var(--violet-l);}
   .editor-sidebar{border-left:none;border-top:1px solid var(--line2);}
   header,#topbar,.editor-main,footer{padding-left:20px;padding-right:20px;}
 }
+header{padding:32px 40px 0;border-bottom:1px solid var(--line2);}
+.header-top{display:flex;align-items:flex-end;justify-content:space-between;padding-bottom:18px;}
+.site-name{font-family:'Cormorant Garamond',serif;font-size:74px;font-weight:300;letter-spacing:-3px;line-height:1;color:var(--violet);}
+.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px;}
+.tagline{font-size:11px;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;}
+.search-wrap{display:flex;border:1px solid var(--line2);border-radius:2px;overflow:hidden;}
+.search-wrap input{border:none;padding:7px 14px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--beige);color:var(--text);outline:none;width:220px;}
+.search-wrap input::placeholder{color:var(--text3);}
+.search-wrap button{background:var(--violet);color:#fff;border:none;padding:7px 14px;font-size:13px;cursor:pointer;transition:background .2s;}
+.search-wrap button:hover{background:var(--violet2);}
+nav#cats{overflow-x:auto;white-space:nowrap;scrollbar-width:none;}
+nav#cats::-webkit-scrollbar{display:none;}
+nav#cats a{display:inline-block;padding:13px 16px;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);border-bottom:2px solid transparent;transition:color .2s,border-color .2s;}
+nav#cats a:first-child{padding-left:0;}
+nav#cats a:hover{color:var(--violet);border-bottom-color:var(--line2);}
+nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
 </style>
 </head>
 <body>
@@ -178,20 +192,31 @@ footer a{color:var(--violet-l);}
 </div>
 
 <header>
-  <a href="index.html"><div style="display:flex;align-items:center;"><svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:14px;flex-shrink:0;">
-  <rect x="4" y="4" width="28" height="28" stroke="#B8956A" stroke-width="0.8" fill="none"/>
-  <circle cx="18" cy="18" r="14" stroke="#B8956A" stroke-width="0.8" fill="none"/>
-  <line x1="4" y1="18" x2="32" y2="18" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/>
-  <line x1="18" y1="4" x2="18" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/>
-  <line x1="32" y1="32" x2="44" y2="44" stroke="#B8956A" stroke-width="0.8" opacity="0.5"/>
-  <line x1="32" y1="4" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/>
-  <line x1="4" y1="32" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/>
-</svg><svg width="32" height="32" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;margin-right:8px;opacity:.85"><rect x="4" y="4" width="28" height="28" stroke="#B8976A" stroke-width="0.8" fill="none"/><circle cx="18" cy="18" r="14" stroke="#B8976A" stroke-width="0.8" fill="none"/><line x1="4" y1="18" x2="32" y2="18" stroke="#B8976A" stroke-width="0.5" opacity="0.6"/><line x1="18" y1="4" x2="18" y2="32" stroke="#B8976A" stroke-width="0.5" opacity="0.6"/><line x1="32" y1="32" x2="44" y2="44" stroke="#B8976A" stroke-width="0.8" opacity="0.5"/></svg><span class="site-name">L'Œil d'Euclide</span></div></a>
-  <div class="header-actions">
-    <span id="save-label"><span class="status-dot" id="status-dot"></span>Brouillon</span>
-    <button class="btn btn-ghost" onclick="saveDraft()">Sauvegarder</button>
-    <button class="btn btn-submit" onclick="submitArticle()">Soumettre →</button>
+  <div class="header-top">
+    <div>
+      <div style="display:flex;align-items:center;gap:14px"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><rect x="4" y="4" width="28" height="28" stroke="#B8956A" stroke-width="0.8" fill="none"/><circle cx="18" cy="18" r="14" stroke="#B8956A" stroke-width="0.8" fill="none"/><line x1="4" y1="18" x2="32" y2="18" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="18" y1="4" x2="18" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="32" y1="32" x2="44" y2="44" stroke="#B8956A" stroke-width="0.8" opacity="0.5"/><line x1="32" y1="4" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/><line x1="4" y1="32" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/></svg><div class="site-name">L'Œil d'Euclide</div></div>
+      <p class="tagline">Mettre notre monde en perspective</p>
+    </div>
+    <div class="header-right">
+      <div class="search-wrap">
+        <input type="text" placeholder="Rechercher un article…">
+        <button>→</button>
+      </div>
+    </div>
   </div>
+  <nav id="cats">
+    <a href="index.html">Accueil</a>
+    <a href="categorie.html?cat=Politique">Politique</a>
+    <a href="categorie.html?cat=Société">Société</a>
+    <a href="categorie.html?cat=Science">Science</a>
+    <a href="categorie.html?cat=Environnement">Environnement</a>
+    <a href="categorie.html?cat=Économie">Économie</a>
+    <a href="categorie.html?cat=Culture">Culture</a>
+    <a href="categorie.html?cat=International">International</a>
+    <a href="categorie.html?cat=Éducation">Éducation &amp; Jeunesse</a>
+    <a href="categorie.html?cat=Histoire">Histoire</a>
+    <a href="categorie.html?cat=Critique">Critique litt. &amp; artistique</a>
+  </nav>
 </header>
 
 <div class="editor-layout">
