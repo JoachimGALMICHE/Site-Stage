@@ -183,7 +183,8 @@ const DATA={
   ],
   "Économie & Entreprise":[
     {titre:"La BCE maintient ses taux face à une inflation persistante",extrait:"Les gouverneurs ont voté à l'unanimité pour le maintien des taux directeurs lors de la réunion de mars.",auteur:"Pierre Vidal",date:"28 mars 2026",duree:"5 min"},
-    {titre:"Les PME françaises face à la hausse du coût de l'énergie",extrait:"Malgré les aides publiques, de nombreuses petites entreprises envisagent de délocaliser une partie de leur production.",auteur:"Thomas Martin",date:"30 mars 2026",duree:"6 min"},
+    {titre:"Les PME françaises face à la hausse du coût de l'énergie industrielle",extrait:"Malgré les aides publiques, de nombreuses petites entreprises envisagent de délocaliser une partie de leur production.",auteur:"Thomas Martin",date:"30 mars 2026",duree:"6 min"},
+    {titre:"Startups françaises : le difficile accès aux grands marchés européens",extrait:"Les jeunes pousses hexagonales peinent à s'imposer face aux acteurs allemands et nordiques.",auteur:"Éléonore Baudin",date:"22 mars 2026",duree:"5 min"},
   ],
   "Culture":[
     {titre:"Le retour des librairies indépendantes face à Amazon",extrait:"Portées par un mouvement de consommation locale, les librairies de quartier résistent mieux qu'attendu.",auteur:"Julien Fabre",date:"26 mars 2026",duree:"5 min"},
@@ -192,10 +193,6 @@ const DATA={
   "International":[
     {titre:"Taïwan et la Chine : un statu quo de plus en plus fragile",extrait:"Les manœuvres militaires chinoises dans le détroit s'intensifient, testant la réponse diplomatique des États-Unis.",auteur:"Paul Chen",date:"29 mars 2026",duree:"9 min"},
     {titre:"Sommet G20 : les pays du Sud réclament une réforme du FMI",extrait:"Les économies émergentes dénoncent des règles de vote jugées archaïques et favorables aux puissances occidentales.",auteur:"Amara Diop",date:"25 mars 2026",duree:"8 min"},
-  ],
-  "Économie & Entreprise":[
-    {titre:"Les PME françaises face à la hausse du coût de l'énergie industrielle",extrait:"Malgré les aides publiques, de nombreuses petites entreprises envisagent de délocaliser.",auteur:"Thomas Martin",date:"30 mars 2026",duree:"6 min"},
-    {titre:"Startups françaises : le difficile accès aux grands marchés européens",extrait:"Les jeunes pousses hexagonales peinent à s'imposer face aux acteurs allemands et nordiques.",auteur:"Éléonore Baudin",date:"22 mars 2026",duree:"5 min"},
   ],
   "Éducation":[
     {titre:"Décrochage scolaire : que nous disent vraiment les chiffres officiels ?",extrait:"Les statistiques gouvernementales minimisent l'ampleur réelle du phénomène selon plusieurs chercheurs.",auteur:"Sophie Leclerc",date:"29 mars 2026",duree:"6 min"},
@@ -215,8 +212,9 @@ const DATA={
 function getParam(n){return new URLSearchParams(window.location.search).get(n);}
 
 function init(){
-  const cat=getParam('cat')||'Politique';
-  const display=cat==='Éducation'?'Éducation &amp; Jeunesse':cat;
+  let cat=getParam('cat')||'Politique';
+  if(cat==='Économie'||cat==='Entreprise') cat='Économie & Entreprise';
+  const display=cat==='Éducation'?'Éducation &amp; Jeunesse':cat==='Économie & Entreprise'?'Économie &amp; Entreprise':cat;
   document.title=cat+' — L'Œil d'Euclide';
   document.getElementById('cat-title').innerHTML=display;
   const arts=DATA[cat]||DATA['Politique'];
