@@ -250,8 +250,25 @@ footer a{color:var(--violet-l);}
           </select>
         </div>
       </div>
-      <!-- CONFLIT — automatique depuis la base auteurs -->
-      <div id="conflict-banner" style="display:none;margin-top:14px;padding:12px 16px;border-radius:2px;border:1px solid;font-size:13px;display:flex;gap:10px;align-items:flex-start;"></div>
+      <!-- CONFLIT — déclaration par article -->
+      <div id="conflict-section" style="margin-top:14px;display:none;">
+        <span class="f-label">Conflit d'intérêt pour cet article *</span>
+        <p style="font-size:12px;color:var(--text3);font-weight:300;margin-bottom:8px;">Le conflit d'intérêt est lié au sujet de l'article, pas à l'auteur en général.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <label style="border:1px solid var(--line2);border-radius:2px;padding:10px 12px;cursor:pointer;display:flex;gap:8px;align-items:flex-start;transition:border-color .15s,background .15s;" id="opt-no-conflict">
+            <input type="radio" name="article-conflict" value="none" checked onchange="updateConflictBanner()" style="accent-color:var(--gold);margin-top:2px;flex-shrink:0;">
+            <div><span style="font-size:12px;font-weight:500;display:block;">Aucun conflit</span><span style="font-size:11px;color:var(--text3);">Bandeau automatique non modifiable</span></div>
+          </label>
+          <label style="border:1px solid var(--line2);border-radius:2px;padding:10px 12px;cursor:pointer;display:flex;gap:8px;align-items:flex-start;transition:border-color .15s,background .15s;" id="opt-yes-conflict">
+            <input type="radio" name="article-conflict" value="declared" onchange="updateConflictBanner()" style="accent-color:var(--gold);margin-top:2px;flex-shrink:0;">
+            <div><span style="font-size:12px;font-weight:500;display:block;">Conflit déclaré</span><span style="font-size:11px;color:var(--text3);">Préciser ci-dessous</span></div>
+          </label>
+        </div>
+        <div id="conflict-detail-wrap" style="display:none;margin-top:8px;">
+          <textarea class="f-input" id="f-conflict-txt" rows="2" placeholder="Décrivez le lien financier, institutionnel ou personnel avec le sujet traité…" style="resize:none;" oninput="updateConflictBanner();markUnsaved()"></textarea>
+        </div>
+        <div id="conflict-preview" style="margin-top:10px;padding:12px 16px;border-radius:2px;border:1px solid;font-size:13px;display:flex;gap:10px;align-items:flex-start;"></div>
+      </div>
     </div>
 
     <!-- CANVAS BLOCS -->
@@ -380,10 +397,6 @@ function autoResize(el) {
   el.style.height = el.scrollHeight + 'px';
 }
 
-function toggleConflict(show) {
-  var el = document.getElementById('conflict-detail');
-  el.className = show ? 'show' : '';
-}
 
 // ── STATS ─────────────────────────────────────────────────────────────
 function updateStats() {
@@ -832,7 +845,47 @@ function selectAuthor() {
     banner.style.color = '#5C2A1A';
     banner.innerHTML = '<span style="font-size:16px;flex-shrink:0">⚠</span><span><strong>Conflit d'intérêt déclaré :</strong> ' + (a.conflictTxt || 'Voir fiche auteur') + '</span>';
   }
+  // Afficher la section conflit
+  document.getElementById('conflict-section').style.display = 'block';
+  updateConflictBanner();
   markUnsaved();
+}
+
+function updateConflictBanner() {
+  var authorId = document.getElementById('f-auteur-select').value;
+  var authors = getAuthors();
+  var a = authors.find(function(x){ return x.id === authorId; });
+  if (!a) return;
+
+  var conflict = document.querySelector('input[name="article-conflict"]:checked').value;
+  var conflictTxt = document.getElementById('f-conflict-txt').value.trim();
+  var detailWrap = document.getElementById('conflict-detail-wrap');
+  var preview = document.getElementById('conflict-preview');
+  var optNo = document.getElementById('opt-no-conflict');
+  var optYes = document.getElementById('opt-yes-conflict');
+
+  // Afficher/cacher le champ détail
+  detailWrap.style.display = conflict === 'declared' ? 'block' : 'none';
+
+  // Styles des options
+  optNo.style.borderColor = conflict === 'none' ? '#B8DEC4' : 'var(--line2)';
+  optNo.style.background = conflict === 'none' ? '#EAF5EE' : '';
+  optYes.style.borderColor = conflict === 'declared' ? '#E8C4B8' : 'var(--line2)';
+  optYes.style.background = conflict === 'declared' ? '#FDF3F0' : '';
+
+  // Bandeau preview
+  var genre = a.prenom.slice(-1).toLowerCase() === 'e' ? "L'autrice" : "L'auteur";
+  if (conflict === 'none') {
+    preview.style.background = '#EAF5EE';
+    preview.style.borderColor = '#B8DEC4';
+    preview.style.color = '#1A5C32';
+    preview.innerHTML = '<span style="font-size:16px;flex-shrink:0">✓</span><span>' + genre + ' déclare ne pas avoir de conflit d'intérêts avec le sujet traité dans l'article.</span>';
+  } else {
+    preview.style.background = '#FDF3F0';
+    preview.style.borderColor = '#E8C4B8';
+    preview.style.color = '#5C2A1A';
+    preview.innerHTML = '<span style="font-size:16px;flex-shrink:0">⚠</span><div><strong>Conflit d'intérêt déclaré</strong>' + (conflictTxt ? ' : ' + conflictTxt : ' — veuillez préciser ci-dessus.') + '</div>';
+  }
 }
 
 function addCoauthor() {
