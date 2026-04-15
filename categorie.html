@@ -215,7 +215,7 @@ function init(){
   let cat=getParam('cat')||'Politique';
   if(cat==='Économie'||cat==='Entreprise') cat='Économie & Entreprise';
   const display=cat==='Éducation'?'Éducation &amp; Jeunesse':cat==='Économie & Entreprise'?'Économie &amp; Entreprise':cat;
-  document.title=cat+' — L'Œil d'Euclide';
+  document.title=cat+' - Oeil Euclide';
   document.getElementById('cat-title').innerHTML=display;
   const arts=DATA[cat]||DATA['Politique'];
   document.getElementById('cat-count').textContent=arts.length+' articles';
