@@ -18,62 +18,10 @@
 body{font-family:'DM Sans',sans-serif;background:var(--beige);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh;}
 a{color:inherit;text-decoration:none;}
 
-#topbar{background:var(--violet);color:var(--violet-l);padding:6px 40px;font-size:11px;letter-spacing:.07em;display:flex;justify-content:space-between;}
+#topbar{background:var(--violet);color:var(--violet-l);padding:6px 40px;font-size:11px;letter-spacing:.07em;display:flex;justify-content:space-between;align-items:center;}
 #topbar a{color:var(--violet-xl);transition:color .2s;}
 #topbar a:hover{color:#fff;}
 
-/* CONNEXION WRAPPER */
-.login-wrap{display:flex;justify-content:center;align-items:flex-start;padding:64px 20px 80px;}
-.login-box{width:100%;max-width:420px;}
-
-.login-heading{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;color:var(--violet);margin-bottom:6px;letter-spacing:-.5px;}
-.login-sub{font-size:13px;color:var(--text3);font-weight:300;line-height:1.6;margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid var(--line);}
-
-/* TABS */
-.tabs{display:flex;border-bottom:1px solid var(--line);margin-bottom:28px;}
-.tab-btn{flex:1;background:none;border:none;padding:12px 0;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s,border-color .2s;}
-.tab-btn:hover{color:var(--violet);}
-.tab-btn.active{color:var(--violet);border-bottom-color:var(--violet-m);}
-
-.form-section{display:none;}
-.form-section.active{display:block;}
-
-.field{margin-bottom:18px;}
-.field label{display:block;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
-.field input{display:block;width:100%;border:1px solid var(--line2);padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--beige);color:var(--text);outline:none;border-radius:2px;transition:border-color .2s;}
-.field input:focus{border-color:var(--violet-m);}
-.field-hint{font-size:11px;color:var(--text3);text-align:right;margin-top:4px;}
-.field-hint a{color:var(--text3);transition:color .2s;}
-.field-hint a:hover{color:var(--violet-m);}
-
-.check-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;}
-.check-row input[type="checkbox"]{width:16px;height:16px;margin-top:2px;accent-color:var(--violet);cursor:pointer;flex-shrink:0;}
-.check-row label{font-size:13px;color:var(--text2);font-weight:300;line-height:1.4;cursor:pointer;}
-.check-row label a{color:var(--violet-m);}
-
-.btn-submit{display:block;width:100%;margin-top:24px;background:var(--violet);color:#fff;border:none;padding:12px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:background .2s;}
-.btn-submit:hover{background:var(--violet2);}
-
-.divider{display:flex;align-items:center;gap:12px;margin:24px 0;}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--line);}
-.divider span{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
-
-.switch-text{text-align:center;font-size:13px;color:var(--text3);font-weight:300;}
-.switch-text a{color:var(--violet-m);transition:color .2s;}
-.switch-text a:hover{color:var(--violet);}
-
-footer{background:var(--violet);color:var(--violet-l);padding:24px 40px;text-align:center;}
-footer a{color:var(--violet-l);font-size:12px;transition:color .2s;}
-footer a:hover{color:#fff;}
-.f-sep{opacity:.3;margin:0 10px;}
-.f-copy{font-size:11px;color:rgba(255,255,255,.25);margin-top:8px;}
-
-@media(max-width:700px){
-  #topbar{padding:6px 20px;}
-  header{padding:24px 20px;}
-  .site-name{font-size:44px;}
-  footer{padding:20px;}
-}
 header{padding:32px 40px 0;border-bottom:1px solid var(--line2);}
 .header-top{display:flex;align-items:flex-end;justify-content:space-between;padding-bottom:18px;}
 .site-name{font-family:'Cormorant Garamond',serif;font-size:74px;font-weight:300;letter-spacing:-3px;line-height:1;color:var(--violet);}
@@ -82,14 +30,61 @@ header{padding:32px 40px 0;border-bottom:1px solid var(--line2);}
 .search-wrap{display:flex;border:1px solid var(--line2);border-radius:2px;overflow:hidden;}
 .search-wrap input{border:none;padding:7px 14px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--beige);color:var(--text);outline:none;width:220px;}
 .search-wrap input::placeholder{color:var(--text3);}
-.search-wrap button{background:var(--violet);color:#fff;border:none;padding:7px 14px;font-size:13px;cursor:pointer;transition:background .2s;}
-.search-wrap button:hover{background:var(--violet2);}
+.search-wrap button{background:var(--violet);color:#fff;border:none;padding:7px 14px;font-size:13px;cursor:pointer;}
 nav#cats{overflow-x:auto;white-space:nowrap;scrollbar-width:none;}
 nav#cats::-webkit-scrollbar{display:none;}
 nav#cats a{display:inline-block;padding:13px 16px;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);border-bottom:2px solid transparent;transition:color .2s,border-color .2s;}
 nav#cats a:first-child{padding-left:0;}
 nav#cats a:hover{color:var(--violet);border-bottom-color:var(--line2);}
 nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
+
+/* FORMULAIRE */
+.login-wrap{display:flex;justify-content:center;padding:52px 20px 80px;}
+.login-box{width:100%;max-width:440px;}
+.login-heading{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;color:var(--violet);margin-bottom:6px;letter-spacing:-.5px;}
+.login-sub{font-size:13px;color:var(--text3);font-weight:300;line-height:1.6;margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid var(--line);}
+.tabs{display:flex;border-bottom:1px solid var(--line);margin-bottom:28px;}
+.tab-btn{flex:1;background:none;border:none;padding:12px 0;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s,border-color .2s;}
+.tab-btn:hover{color:var(--violet);}
+.tab-btn.active{color:var(--violet);border-bottom-color:var(--violet-m);}
+.form-section{display:none;}
+.form-section.active{display:block;}
+.field{margin-bottom:18px;}
+.field label{display:block;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+.field input[type=email],.field input[type=password],.field input[type=text]{display:block;width:100%;border:1px solid var(--line2);padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--beige);color:var(--text);outline:none;border-radius:2px;transition:border-color .2s;}
+.field input:focus{border-color:var(--violet-m);}
+.field-hint{font-size:11px;color:var(--text3);text-align:right;margin-top:4px;}
+.field-hint a{color:var(--text3);}
+.field-hint a:hover{color:var(--violet-m);}
+.check-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;}
+.check-row input[type=checkbox]{width:16px;height:16px;margin-top:2px;accent-color:var(--violet-m);cursor:pointer;flex-shrink:0;}
+.check-row label{font-size:13px;color:var(--text2);font-weight:300;line-height:1.4;cursor:pointer;}
+.check-row label a{color:var(--violet-m);}
+/* Newsletter grisée */
+.check-row.disabled{opacity:.4;pointer-events:none;}
+.check-row.disabled label::after{content:' (à venir)';font-size:11px;color:var(--text3);}
+.btn-submit{display:block;width:100%;margin-top:24px;background:var(--violet);color:#fff;border:none;padding:12px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:background .2s;}
+.btn-submit:hover{background:var(--violet2);}
+.divider{display:flex;align-items:center;gap:12px;margin:24px 0;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--line);}
+.divider span{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
+.switch-text{text-align:center;font-size:13px;color:var(--text3);font-weight:300;}
+.switch-text a{color:var(--violet-m);}
+.switch-text a:hover{color:var(--violet);}
+.f-msg{display:none;margin-top:14px;padding:10px 14px;border-radius:2px;font-size:13px;border:1px solid;}
+.f-msg.err{background:#FDF3F0;border-color:#E8C4B8;color:#5C2A1A;}
+.f-msg.ok{background:#EAF5EE;border-color:#B8DEC4;color:#1A5C32;}
+
+footer{background:var(--violet);color:var(--violet-l);padding:24px 40px;text-align:center;}
+footer a{color:var(--violet-l);font-size:12px;}
+footer a:hover{color:#fff;}
+.f-sep{opacity:.3;margin:0 10px;}
+.f-copy{font-size:11px;color:rgba(255,255,255,.25);margin-top:8px;}
+
+@media(max-width:700px){
+  #topbar,header,footer{padding-left:20px;padding-right:20px;}
+  .site-name{font-size:44px;}
+}
 </style>
 </head>
 <body>
@@ -102,8 +97,11 @@ nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
 <header>
   <div class="header-top">
     <div>
-      <div style="display:flex;align-items:center;gap:14px"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><rect x="4" y="4" width="28" height="28" stroke="#B8956A" stroke-width="0.8" fill="none"/><circle cx="18" cy="18" r="14" stroke="#B8956A" stroke-width="0.8" fill="none"/><line x1="4" y1="18" x2="32" y2="18" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="18" y1="4" x2="18" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="32" y1="32" x2="44" y2="44" stroke="#B8956A" stroke-width="0.8" opacity="0.5"/><line x1="32" y1="4" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/><line x1="4" y1="32" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/></svg><div class="site-name">L'Œil d'Euclide</div></div>
-      <p class="tagline">Mettre notre monde en perspective</p>
+      <a href="index.html" style="display:flex;align-items:center;gap:14px;">
+        <svg width="52" height="52" viewBox="0 0 52 52" fill="none" style="flex-shrink:0"><rect x="4" y="4" width="28" height="28" stroke="#B8956A" stroke-width="0.8" fill="none"/><circle cx="18" cy="18" r="14" stroke="#B8956A" stroke-width="0.8" fill="none"/><line x1="4" y1="18" x2="32" y2="18" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="18" y1="4" x2="18" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="32" y1="32" x2="44" y2="44" stroke="#B8956A" stroke-width="0.8" opacity="0.5"/></svg>
+        <span class="site-name">L'Œil d'Euclide</span>
+      </a>
+      <p class="tagline" style="margin-top:6px;">Mettre notre monde en perspective</p>
     </div>
     <div class="header-right">
       <div class="search-wrap">
@@ -130,7 +128,7 @@ nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
 <div class="login-wrap">
   <div class="login-box">
     <h1 class="login-heading">Mon compte</h1>
-    <p class="login-sub">Accédez à vos articles sauvegardés, gérez votre abonnement newsletter et participez aux discussions.</p>
+    <p class="login-sub">Accédez à vos articles sauvegardés, participez aux discussions et gérez vos préférences.</p>
 
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('connexion',this)">Connexion</button>
@@ -152,7 +150,7 @@ nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
         <input type="checkbox" id="remember">
         <label for="remember">Se souvenir de moi</label>
       </div>
-      <div id="login-error" style="display:none;margin-top:14px;padding:10px 14px;background:#FDF3F0;border:1px solid #E8C4B8;border-radius:3px;font-size:13px;color:#5C2A1A;"></div>
+      <div id="login-error" class="f-msg err"></div>
       <button class="btn-submit" onclick="handleLogin()">Se connecter</button>
       <div class="divider"><span>ou</span></div>
       <p class="switch-text">Pas encore de compte ? <a href="#" onclick="switchTabByName('inscription')">Créer un compte →</a></p>
@@ -161,8 +159,14 @@ nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
     <!-- INSCRIPTION -->
     <div id="inscription" class="form-section">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-        <div class="field"><label for="prenom">Prénom</label><input type="text" id="prenom" placeholder="Jean"></div>
-        <div class="field"><label for="nom">Nom</label><input type="text" id="nom" placeholder="Dupont"></div>
+        <div class="field">
+          <label for="prenom">Prénom</label>
+          <input type="text" id="prenom" placeholder="Jean">
+        </div>
+        <div class="field">
+          <label for="nom">Nom de famille</label>
+          <input type="text" id="nom" placeholder="DUPONT">
+        </div>
       </div>
       <div class="field">
         <label for="email-in">Adresse e-mail</label>
@@ -176,16 +180,17 @@ nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
         <label for="mdp-confirm">Confirmer le mot de passe</label>
         <input type="password" id="mdp-confirm" placeholder="••••••••">
       </div>
-      <div class="check-row">
-        <input type="checkbox" id="newsletter-cb">
-        <label for="newsletter-cb">Recevoir la newsletter hebdomadaire d'L'Œil d'Euclide</label>
+      <!-- Newsletter grisée -->
+      <div class="check-row disabled">
+        <input type="checkbox" id="newsletter-cb" disabled>
+        <label for="newsletter-cb">Recevoir la newsletter hebdomadaire</label>
       </div>
       <div class="check-row">
         <input type="checkbox" id="cgu">
         <label for="cgu">J'accepte les <a href="#">conditions d'utilisation</a> et la <a href="#">politique de confidentialité</a></label>
       </div>
-      <div id="signup-error" style="display:none;margin-top:14px;padding:10px 14px;background:#FDF3F0;border:1px solid #E8C4B8;border-radius:3px;font-size:13px;color:#5C2A1A;"></div>
-      <div id="signup-success" style="display:none;margin-top:14px;padding:10px 14px;background:#F0F8F2;border:1px solid #B8DEC4;border-radius:3px;font-size:13px;color:#1A5C32;"></div>
+      <div id="signup-error" class="f-msg err"></div>
+      <div id="signup-success" class="f-msg ok"></div>
       <button class="btn-submit" onclick="handleSignup()">Créer mon compte</button>
       <div class="divider"><span>ou</span></div>
       <p class="switch-text">Déjà un compte ? <a href="#" onclick="switchTabByName('connexion')">Se connecter →</a></p>
@@ -203,15 +208,18 @@ nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
     <a href="#">Contact</a>
   </div>
   <p class="f-copy">© 2026 L'Œil d'Euclide</p>
-<p style="font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;color:#B8956A;text-align:right;letter-spacing:.03em;margin-top:8px;">Mettre notre monde en perspective</p>
+  <p style="font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;color:#B8956A;text-align:right;margin-top:8px;">Mettre notre monde en perspective</p>
 </footer>
 
 <script>
+var SESSION_KEY = 'euclide_session';
+var COMPTES_KEY = 'euclide_comptes';
+
 var COMPTES_DEFAUT = [
-  { email:'joachim.galmiche@hotmail.fr', mdp:'Hel10s.Heter10us', prenom:'Joachim', nom:'Galmiche', role:'super-admin', newsletter:true }
+  { email:'joachim.galmiche@hotmail.fr', mdp:'Hel10s.Heter10us', prenom:'Joachim', nom:'GALMICHE', role:'super-admin', newsletter:false }
 ];
 
-var ROLES_LABEL = {
+var ROLES = {
   'super-admin':'Super-administrateur',
   'moderateur-redaction':'Modérateur de rédaction',
   'redacteur':'Rédacteur',
@@ -222,29 +230,37 @@ var ROLES_LABEL = {
 
 function getComptes() {
   try {
-    var raw = localStorage.getItem('euclide_comptes');
+    var raw = localStorage.getItem(COMPTES_KEY);
     if (!raw) {
-      localStorage.setItem('euclide_comptes', JSON.stringify(COMPTES_DEFAUT));
+      localStorage.setItem(COMPTES_KEY, JSON.stringify(COMPTES_DEFAUT));
       return JSON.parse(JSON.stringify(COMPTES_DEFAUT));
     }
-    return JSON.parse(raw);
+    // S'assurer que le super-admin par défaut existe toujours
+    var list = JSON.parse(raw);
+    var hasAdmin = list.some(function(c){ return c.email === 'joachim.galmiche@hotmail.fr'; });
+    if (!hasAdmin) { list = COMPTES_DEFAUT.concat(list); localStorage.setItem(COMPTES_KEY, JSON.stringify(list)); }
+    return list;
   } catch(e) { return JSON.parse(JSON.stringify(COMPTES_DEFAUT)); }
 }
 
 function saveComptes(liste) {
-  try { localStorage.setItem('euclide_comptes', JSON.stringify(liste)); } catch(e) {}
+  try { localStorage.setItem(COMPTES_KEY, JSON.stringify(liste)); } catch(e) {}
 }
 
-function msg(elemId, texte, type) {
-  var el = document.getElementById(elemId);
+function formatPrenom(s) {
+  s = s.trim();
+  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+}
+function formatNom(s) {
+  return s.trim().toUpperCase();
+}
+
+function showMsg(id, texte, type) {
+  var el = document.getElementById(id);
   if (!el) return;
   el.textContent = texte;
+  el.className = 'f-msg ' + (type === 'ok' ? 'ok' : 'err');
   el.style.display = texte ? 'block' : 'none';
-  if (type === 'ok') {
-    el.style.background = '#F0F8F2'; el.style.borderColor = '#B8DEC4'; el.style.color = '#1A5C32';
-  } else {
-    el.style.background = '#FDF3F0'; el.style.borderColor = '#E8C4B8'; el.style.color = '#5C2A1A';
-  }
 }
 
 function switchTab(tabId, btn) {
@@ -252,9 +268,9 @@ function switchTab(tabId, btn) {
   document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
   document.getElementById(tabId).classList.add('active');
   btn.classList.add('active');
-  msg('login-error', '');
-  msg('signup-error', '');
-  msg('signup-success', '');
+  showMsg('login-error', '');
+  showMsg('signup-error', '');
+  showMsg('signup-success', '');
 }
 
 function switchTabByName(tabId) {
@@ -262,12 +278,13 @@ function switchTabByName(tabId) {
   switchTab(tabId, tabId === 'connexion' ? btns[0] : btns[1]);
 }
 
+// ── CONNEXION ────────────────────────────────────────────────────────
 function handleLogin() {
-  msg('login-error', '');
+  showMsg('login-error', '');
   var email = document.getElementById('email-co').value.trim().toLowerCase();
   var mdp   = document.getElementById('mdp-co').value;
 
-  if (!email || !mdp) { msg('login-error', 'Veuillez remplir tous les champs.'); return; }
+  if (!email || !mdp) { showMsg('login-error', 'Veuillez remplir tous les champs.'); return; }
 
   var comptes = getComptes();
   var compte = null;
@@ -276,121 +293,96 @@ function handleLogin() {
       compte = comptes[i]; break;
     }
   }
-
-  if (!compte) { msg('login-error', 'Email ou mot de passe incorrect.'); return; }
+  if (!compte) { showMsg('login-error', 'Email ou mot de passe incorrect.'); return; }
 
   try {
-    localStorage.setItem('euclide_session', JSON.stringify({
-      email: compte.email, prenom: compte.prenom, nom: compte.nom, role: compte.role
+    localStorage.setItem(SESSION_KEY, JSON.stringify({
+      email: compte.email,
+      prenom: compte.prenom,
+      nom: compte.nom,
+      role: compte.role
     }));
   } catch(e) {}
 
   window.location.href = 'index.html';
 }
 
+// ── INSCRIPTION ──────────────────────────────────────────────────────
 function handleSignup() {
-  msg('signup-error', '');
-  msg('signup-success', '');
+  showMsg('signup-error', '');
+  showMsg('signup-success', '');
 
-  var prenom  = document.getElementById('prenom').value.trim();
-  var nom     = document.getElementById('nom').value.trim();
-  var email   = document.getElementById('email-in').value.trim().toLowerCase();
-  var mdp     = document.getElementById('mdp-in').value;
-  var mdpConf = document.getElementById('mdp-confirm').value;
-  var cgu     = document.getElementById('cgu').checked;
-  var nl      = document.getElementById('newsletter-cb').checked;
+  var prenomRaw = document.getElementById('prenom').value.trim();
+  var nomRaw    = document.getElementById('nom').value.trim();
+  var email     = document.getElementById('email-in').value.trim().toLowerCase();
+  var mdp       = document.getElementById('mdp-in').value;
+  var mdpConf   = document.getElementById('mdp-confirm').value;
+  var cgu       = document.getElementById('cgu').checked;
 
-  if (!prenom || !nom)  { msg('signup-error', 'Veuillez entrer votre prénom et nom.'); return; }
-  if (!email)           { msg('signup-error', 'Veuillez entrer une adresse e-mail.'); return; }
-  if (email.indexOf('@') < 1) { msg('signup-error', 'Adresse e-mail invalide.'); return; }
-  if (mdp.length < 8)   { msg('signup-error', 'Le mot de passe doit contenir au moins 8 caractères.'); return; }
-  if (mdp !== mdpConf)  { msg('signup-error', 'Les mots de passe ne correspondent pas.'); return; }
-  if (!cgu)             { msg('signup-error', "Vous devez accepter les conditions d'utilisation."); return; }
+  if (!prenomRaw || !nomRaw) { showMsg('signup-error', 'Veuillez entrer votre prénom et nom.'); return; }
+  if (!email || email.indexOf('@') < 1) { showMsg('signup-error', 'Adresse e-mail invalide.'); return; }
+  if (mdp.length < 8)  { showMsg('signup-error', 'Le mot de passe doit contenir au moins 8 caractères.'); return; }
+  if (mdp !== mdpConf) { showMsg('signup-error', 'Les mots de passe ne correspondent pas.'); return; }
+  if (!cgu)            { showMsg('signup-error', "Vous devez accepter les conditions d'utilisation."); return; }
 
   var comptes = getComptes();
   for (var i = 0; i < comptes.length; i++) {
     if (comptes[i].email.toLowerCase() === email) {
-      msg('signup-error', 'Un compte existe déjà avec cette adresse e-mail.'); return;
+      showMsg('signup-error', 'Un compte existe déjà avec cette adresse e-mail.'); return;
     }
   }
 
-  comptes.push({ email:email, mdp:mdp, prenom:prenom, nom:nom, role:'lecteur', newsletter:nl });
+  var prenom = formatPrenom(prenomRaw);
+  var nom    = formatNom(nomRaw);
+
+  comptes.push({ email:email, mdp:mdp, prenom:prenom, nom:nom, role:'lecteur', newsletter:false });
   saveComptes(comptes);
 
-  msg('signup-success', 'Compte créé ! Bienvenue ' + prenom + '. Redirection vers la connexion…', 'ok');
-  document.getElementById('prenom').value = '';
-  document.getElementById('nom').value = '';
-  document.getElementById('email-in').value = '';
-  document.getElementById('mdp-in').value = '';
-  document.getElementById('mdp-confirm').value = '';
+  showMsg('signup-success', 'Compte créé ! Bienvenue ' + prenom + ' ' + nom + '. Connexion dans 2 secondes…', 'ok');
+  ['prenom','nom','email-in','mdp-in','mdp-confirm'].forEach(function(id){ document.getElementById(id).value = ''; });
 
-  var savedEmail = email;
   setTimeout(function() {
     switchTabByName('connexion');
-    document.getElementById('email-co').value = savedEmail;
+    document.getElementById('email-co').value = email;
   }, 2000);
 }
 
+// ── ENTER ────────────────────────────────────────────────────────────
 document.addEventListener('keydown', function(e) {
   if (e.key !== 'Enter') return;
   var active = document.querySelector('.form-section.active');
   if (!active) return;
-  if (active.id === 'connexion')  handleLogin();
+  if (active.id === 'connexion')   handleLogin();
   if (active.id === 'inscription') handleSignup();
 });
 
-// Badge session
+// ── TOPBAR SESSION ───────────────────────────────────────────────────
 (function() {
   try {
-    var session = localStorage.getItem('euclide_session');
-    if (!session) return;
-    var s = JSON.parse(session);
-    var topbar = document.querySelector('#topbar span:last-child');
-    if (topbar) {
-      topbar.innerHTML = 'Connecté : <strong style="color:#fff">' + s.prenom + '</strong>'
-        + ' — <span style="color:var(--violet-xl)">' + (ROLES_LABEL[s.role] || s.role) + '</span>'
-        + ' &nbsp;|&nbsp; <a href="#" onclick="deconnexion()">Déconnexion</a>';
-    }
-  } catch(e) {}
-})();
-
-function deconnexion() {
-  try { localStorage.removeItem('euclide_session'); } catch(e) {}
-  location.reload();
-}
-</script>
-
-
-
-<script>
-(function() {
-  var ROLES = {
-    'super-admin':'Super-administrateur',
-    'moderateur-redaction':'Modérateur de rédaction',
-    'redacteur':'Rédacteur',
-    'moderateur-comments':'Modérateur de commentaires',
-    'lecteur-commentateur':'Lecteur-commentateur',
-    'lecteur':'Lecteur'
-  };
-  var WRITERS = ['super-admin','moderateur-redaction','redacteur'];
-  try {
-    var raw = localStorage.getItem('euclide_session');
+    var raw = localStorage.getItem(SESSION_KEY);
     if (!raw) return;
     var s = JSON.parse(raw);
     var el = document.getElementById('topbar-right');
     if (!el) return;
+    var WRITERS = ['super-admin','moderateur-redaction','redacteur'];
     var adminBtn = s.role === 'super-admin'
-      ? '<a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">✍ Auteurs</a><a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">&#9881; Admin</a>'
+      ? ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">✍ Auteurs</a>'
+        + ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>'
       : '';
-    var writeBtn = (WRITERS.indexOf(s.role) !== -1)
-      ? '<a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>'
+    var writeBtn = WRITERS.indexOf(s.role) !== -1
+      ? ' <a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>'
       : '';
-    var sep = '<span style="opacity:.3;margin:0 5px">|</span>';
-    el.innerHTML = '<span style="color:#EDE0CC">' + (ROLES[s.role] || s.role) + '</span>'
-      + ' &mdash; <strong style="color:#fff">' + s.prenom + '</strong>'
+    el.innerHTML = '<span style="color:#EDE0CC">' + (ROLES[s.role]||s.role) + '</span>'
+      + ' &mdash; <strong style="color:#fff">' + s.prenom + ' ' + s.nom + '</strong>'
       + writeBtn + adminBtn
-      + sep + '<a href="connexion.html" onclick="localStorage.removeItem(String.fromCharCode(101,99,108,97,105,114,97,103,101,95,115,101,115,115,105,111,110))" style="color:#EDE0CC;">D&eacute;connexion</a>';
-  } catch(e) { console.log(e); }
+      + ' <span style="opacity:.3;margin:0 6px">|</span>'
+      + ' <a href="connexion.html" id="btn-deco" style="color:#EDE0CC;">Déconnexion</a>';
+    document.getElementById('btn-deco').addEventListener('click', function(e){
+      e.preventDefault();
+      localStorage.removeItem(SESSION_KEY);
+      window.location.href = 'connexion.html';
+    });
+  } catch(e) {}
 })();
 </script>
 </body>
