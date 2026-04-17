@@ -17,11 +17,9 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'DM Sans',sans-serif;background:var(--beige);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh;}
 a{color:inherit;text-decoration:none;}
-
 #topbar{background:var(--violet);color:var(--violet-l);padding:6px 40px;font-size:11px;letter-spacing:.07em;display:flex;justify-content:space-between;align-items:center;}
 #topbar a{color:var(--violet-xl);transition:color .2s;}
 #topbar a:hover{color:#fff;}
-
 header{padding:32px 40px 0;border-bottom:1px solid var(--line2);}
 .header-top{display:flex;align-items:flex-end;justify-content:space-between;padding-bottom:18px;}
 .site-name{font-family:'Cormorant Garamond',serif;font-size:74px;font-weight:300;letter-spacing:-3px;line-height:1;color:var(--violet);}
@@ -29,7 +27,6 @@ header{padding:32px 40px 0;border-bottom:1px solid var(--line2);}
 .tagline{font-size:11px;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;}
 .search-wrap{display:flex;border:1px solid var(--line2);border-radius:2px;overflow:hidden;}
 .search-wrap input{border:none;padding:7px 14px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--beige);color:var(--text);outline:none;width:220px;}
-.search-wrap input::placeholder{color:var(--text3);}
 .search-wrap button{background:var(--violet);color:#fff;border:none;padding:7px 14px;font-size:13px;cursor:pointer;}
 nav#cats{overflow-x:auto;white-space:nowrap;scrollbar-width:none;}
 nav#cats::-webkit-scrollbar{display:none;}
@@ -37,8 +34,6 @@ nav#cats a{display:inline-block;padding:13px 16px;font-size:11px;font-weight:500
 nav#cats a:first-child{padding-left:0;}
 nav#cats a:hover{color:var(--violet);border-bottom-color:var(--line2);}
 nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
-
-/* FORMULAIRE */
 .login-wrap{display:flex;justify-content:center;padding:52px 20px 80px;}
 .login-box{width:100%;max-width:440px;}
 .login-heading{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;color:var(--violet);margin-bottom:6px;letter-spacing:-.5px;}
@@ -51,36 +46,31 @@ nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
 .form-section.active{display:block;}
 .field{margin-bottom:18px;}
 .field label{display:block;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
-.field input[type=email],.field input[type=password],.field input[type=text]{display:block;width:100%;border:1px solid var(--line2);padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--beige);color:var(--text);outline:none;border-radius:2px;transition:border-color .2s;}
+.field input{display:block;width:100%;border:1px solid var(--line2);padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--beige);color:var(--text);outline:none;border-radius:2px;transition:border-color .2s;}
 .field input:focus{border-color:var(--violet-m);}
 .field-hint{font-size:11px;color:var(--text3);text-align:right;margin-top:4px;}
-.field-hint a{color:var(--text3);}
-.field-hint a:hover{color:var(--violet-m);}
 .check-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;}
 .check-row input[type=checkbox]{width:16px;height:16px;margin-top:2px;accent-color:var(--violet-m);cursor:pointer;flex-shrink:0;}
 .check-row label{font-size:13px;color:var(--text2);font-weight:300;line-height:1.4;cursor:pointer;}
 .check-row label a{color:var(--violet-m);}
-/* Newsletter grisée */
 .check-row.disabled{opacity:.4;pointer-events:none;}
 .check-row.disabled label::after{content:' (à venir)';font-size:11px;color:var(--text3);}
 .btn-submit{display:block;width:100%;margin-top:24px;background:var(--violet);color:#fff;border:none;padding:12px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:background .2s;}
 .btn-submit:hover{background:var(--violet2);}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed;}
 .divider{display:flex;align-items:center;gap:12px;margin:24px 0;}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--line);}
 .divider span{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}
 .switch-text{text-align:center;font-size:13px;color:var(--text3);font-weight:300;}
 .switch-text a{color:var(--violet-m);}
-.switch-text a:hover{color:var(--violet);}
 .f-msg{display:none;margin-top:14px;padding:10px 14px;border-radius:2px;font-size:13px;border:1px solid;}
 .f-msg.err{background:#FDF3F0;border-color:#E8C4B8;color:#5C2A1A;}
 .f-msg.ok{background:#EAF5EE;border-color:#B8DEC4;color:#1A5C32;}
-
 footer{background:var(--violet);color:var(--violet-l);padding:24px 40px;text-align:center;}
 footer a{color:var(--violet-l);font-size:12px;}
 footer a:hover{color:#fff;}
 .f-sep{opacity:.3;margin:0 10px;}
 .f-copy{font-size:11px;color:rgba(255,255,255,.25);margin-top:8px;}
-
 @media(max-width:700px){
   #topbar,header,footer{padding-left:20px;padding-right:20px;}
   .site-name{font-size:44px;}
@@ -151,7 +141,7 @@ footer a:hover{color:#fff;}
         <label for="remember">Se souvenir de moi</label>
       </div>
       <div id="login-error" class="f-msg err"></div>
-      <button class="btn-submit" onclick="handleLogin()">Se connecter</button>
+      <button class="btn-submit" id="btn-login" onclick="handleLogin()">Se connecter</button>
       <div class="divider"><span>ou</span></div>
       <p class="switch-text">Pas encore de compte ? <a href="#" onclick="switchTabByName('inscription')">Créer un compte →</a></p>
     </div>
@@ -180,7 +170,6 @@ footer a:hover{color:#fff;}
         <label for="mdp-confirm">Confirmer le mot de passe</label>
         <input type="password" id="mdp-confirm" placeholder="••••••••">
       </div>
-      <!-- Newsletter grisée -->
       <div class="check-row disabled">
         <input type="checkbox" id="newsletter-cb" disabled>
         <label for="newsletter-cb">Recevoir la newsletter hebdomadaire</label>
@@ -191,11 +180,10 @@ footer a:hover{color:#fff;}
       </div>
       <div id="signup-error" class="f-msg err"></div>
       <div id="signup-success" class="f-msg ok"></div>
-      <button class="btn-submit" onclick="handleSignup()">Créer mon compte</button>
+      <button class="btn-submit" id="btn-signup" onclick="handleSignup()">Créer mon compte</button>
       <div class="divider"><span>ou</span></div>
       <p class="switch-text">Déjà un compte ? <a href="#" onclick="switchTabByName('connexion')">Se connecter →</a></p>
     </div>
-
   </div>
 </div>
 
@@ -211,15 +199,25 @@ footer a:hover{color:#fff;}
   <p style="font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;color:#B8956A;text-align:right;margin-top:8px;">Mettre notre monde en perspective</p>
 </footer>
 
-<script>
-var SESSION_KEY = 'euclide_session';
-var COMPTES_KEY = 'euclide_comptes';
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-var COMPTES_DEFAUT = [
-  { email:'joachim.galmiche@hotmail.fr', mdp:'Hel10s.Heter10us', prenom:'Joachim', nom:'GALMICHE', role:'super-admin', newsletter:false }
-];
+const firebaseConfig = {
+  apiKey: "AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",
+  authDomain: "l-oeil-d-euclyde.firebaseapp.com",
+  projectId: "l-oeil-d-euclyde",
+  storageBucket: "l-oeil-d-euclyde.firebasestorage.app",
+  messagingSenderId: "179241004963",
+  appId: "1:179241004963:web:c7c7afa926e03032653416"
+};
 
-var ROLES = {
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const ROLES = {
   'super-admin':'Super-administrateur',
   'moderateur-redaction':'Modérateur de rédaction',
   'redacteur':'Rédacteur',
@@ -228,32 +226,8 @@ var ROLES = {
   'lecteur':'Lecteur'
 };
 
-function getComptes() {
-  try {
-    var raw = localStorage.getItem(COMPTES_KEY);
-    if (!raw) {
-      localStorage.setItem(COMPTES_KEY, JSON.stringify(COMPTES_DEFAUT));
-      return JSON.parse(JSON.stringify(COMPTES_DEFAUT));
-    }
-    // S'assurer que le super-admin par défaut existe toujours
-    var list = JSON.parse(raw);
-    var hasAdmin = list.some(function(c){ return c.email === 'joachim.galmiche@hotmail.fr'; });
-    if (!hasAdmin) { list = COMPTES_DEFAUT.concat(list); localStorage.setItem(COMPTES_KEY, JSON.stringify(list)); }
-    return list;
-  } catch(e) { return JSON.parse(JSON.stringify(COMPTES_DEFAUT)); }
-}
-
-function saveComptes(liste) {
-  try { localStorage.setItem(COMPTES_KEY, JSON.stringify(liste)); } catch(e) {}
-}
-
-function formatPrenom(s) {
-  s = s.trim();
-  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
-}
-function formatNom(s) {
-  return s.trim().toUpperCase();
-}
+function formatPrenom(s){ return s.trim().charAt(0).toUpperCase()+s.trim().slice(1).toLowerCase(); }
+function formatNom(s){ return s.trim().toUpperCase(); }
 
 function showMsg(id, texte, type) {
   var el = document.getElementById(id);
@@ -263,52 +237,74 @@ function showMsg(id, texte, type) {
   el.style.display = texte ? 'block' : 'none';
 }
 
-function switchTab(tabId, btn) {
-  document.querySelectorAll('.form-section').forEach(function(s){ s.classList.remove('active'); });
-  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
-  document.getElementById(tabId).classList.add('active');
-  btn.classList.add('active');
-  showMsg('login-error', '');
-  showMsg('signup-error', '');
-  showMsg('signup-success', '');
+// Vérifier si déjà connecté
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    if (snap.exists()) {
+      const data = snap.data();
+      updateTopbar(data);
+    }
+  }
+});
+
+function updateTopbar(profile) {
+  var el = document.getElementById('topbar-right');
+  if (!el) return;
+  var WRITERS = ['super-admin','moderateur-redaction','redacteur'];
+  var adminBtn = profile.role === 'super-admin'
+    ? ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">✍ Auteurs</a>'
+      + ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>'
+    : '';
+  var writeBtn = WRITERS.indexOf(profile.role) !== -1
+    ? ' <a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>'
+    : '';
+  el.innerHTML = '<span style="color:#EDE0CC">' + (ROLES[profile.role]||profile.role) + '</span>'
+    + ' &mdash; <strong style="color:#fff">' + profile.prenom + ' ' + profile.nom + '</strong>'
+    + writeBtn + adminBtn
+    + ' <span style="opacity:.3;margin:0 6px">|</span>'
+    + ' <a href="#" id="btn-deco" style="color:#EDE0CC;">Déconnexion</a>';
+  document.getElementById('btn-deco').addEventListener('click', async (e) => {
+    e.preventDefault();
+    await signOut(auth);
+    window.location.reload();
+  });
 }
 
-function switchTabByName(tabId) {
-  var btns = document.querySelectorAll('.tab-btn');
-  switchTab(tabId, tabId === 'connexion' ? btns[0] : btns[1]);
-}
-
-// ── CONNEXION ────────────────────────────────────────────────────────
-function handleLogin() {
+// ── CONNEXION ─────────────────────────────────────────────────────────
+window.handleLogin = async function() {
   showMsg('login-error', '');
   var email = document.getElementById('email-co').value.trim().toLowerCase();
   var mdp   = document.getElementById('mdp-co').value;
-
   if (!email || !mdp) { showMsg('login-error', 'Veuillez remplir tous les champs.'); return; }
 
-  var comptes = getComptes();
-  var compte = null;
-  for (var i = 0; i < comptes.length; i++) {
-    if (comptes[i].email.toLowerCase() === email && comptes[i].mdp === mdp) {
-      compte = comptes[i]; break;
-    }
-  }
-  if (!compte) { showMsg('login-error', 'Email ou mot de passe incorrect.'); return; }
+  var btn = document.getElementById('btn-login');
+  btn.disabled = true; btn.textContent = 'Connexion…';
 
   try {
-    localStorage.setItem(SESSION_KEY, JSON.stringify({
-      email: compte.email,
-      prenom: compte.prenom,
-      nom: compte.nom,
-      role: compte.role
-    }));
-  } catch(e) {}
+    var cred = await signInWithEmailAndPassword(auth, email, mdp);
+    var snap = await getDoc(doc(db, 'users', cred.user.uid));
+    if (snap.exists()) {
+      window.location.href = 'index.html';
+    } else {
+      showMsg('login-error', 'Profil introuvable. Contactez l\'administrateur.');
+      btn.disabled = false; btn.textContent = 'Se connecter';
+    }
+  } catch(e) {
+    var msgs = {
+      'auth/user-not-found': 'Aucun compte avec cet email.',
+      'auth/wrong-password': 'Mot de passe incorrect.',
+      'auth/invalid-credential': 'Email ou mot de passe incorrect.',
+      'auth/too-many-requests': 'Trop de tentatives. Réessayez plus tard.',
+      'auth/invalid-email': 'Adresse e-mail invalide.'
+    };
+    showMsg('login-error', msgs[e.code] || 'Erreur : ' + e.message);
+    btn.disabled = false; btn.textContent = 'Se connecter';
+  }
+};
 
-  window.location.href = 'index.html';
-}
-
-// ── INSCRIPTION ──────────────────────────────────────────────────────
-function handleSignup() {
+// ── INSCRIPTION ───────────────────────────────────────────────────────
+window.handleSignup = async function() {
   showMsg('signup-error', '');
   showMsg('signup-success', '');
 
@@ -319,71 +315,67 @@ function handleSignup() {
   var mdpConf   = document.getElementById('mdp-confirm').value;
   var cgu       = document.getElementById('cgu').checked;
 
-  if (!prenomRaw || !nomRaw) { showMsg('signup-error', 'Veuillez entrer votre prénom et nom.'); return; }
-  if (!email || email.indexOf('@') < 1) { showMsg('signup-error', 'Adresse e-mail invalide.'); return; }
-  if (mdp.length < 8)  { showMsg('signup-error', 'Le mot de passe doit contenir au moins 8 caractères.'); return; }
+  if (!prenomRaw || !nomRaw) { showMsg('signup-error', 'Prénom et nom obligatoires.'); return; }
+  if (!email || email.indexOf('@') < 1) { showMsg('signup-error', 'Email invalide.'); return; }
+  if (mdp.length < 8)  { showMsg('signup-error', 'Mot de passe trop court (8 car. min).'); return; }
   if (mdp !== mdpConf) { showMsg('signup-error', 'Les mots de passe ne correspondent pas.'); return; }
-  if (!cgu)            { showMsg('signup-error', "Vous devez accepter les conditions d'utilisation."); return; }
+  if (!cgu)            { showMsg('signup-error', "Acceptez les conditions d'utilisation."); return; }
 
-  var comptes = getComptes();
-  for (var i = 0; i < comptes.length; i++) {
-    if (comptes[i].email.toLowerCase() === email) {
-      showMsg('signup-error', 'Un compte existe déjà avec cette adresse e-mail.'); return;
-    }
+  var btn = document.getElementById('btn-signup');
+  btn.disabled = true; btn.textContent = 'Création…';
+
+  try {
+    var prenom = formatPrenom(prenomRaw);
+    var nom    = formatNom(nomRaw);
+    var cred = await createUserWithEmailAndPassword(auth, email, mdp);
+
+    // Créer le profil Firestore
+    await setDoc(doc(db, 'users', cred.user.uid), {
+      uid: cred.user.uid,
+      email: email,
+      prenom: prenom,
+      nom: nom,
+      role: 'lecteur',
+      newsletter: false,
+      createdAt: new Date()
+    });
+
+    showMsg('signup-success', 'Compte créé ! Bienvenue ' + prenom + ' ' + nom + '. Redirection…', 'ok');
+    setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+
+  } catch(e) {
+    var msgs = {
+      'auth/email-already-in-use': 'Un compte existe déjà avec cet email.',
+      'auth/invalid-email': 'Email invalide.',
+      'auth/weak-password': 'Mot de passe trop faible.'
+    };
+    showMsg('signup-error', msgs[e.code] || 'Erreur : ' + e.message);
+    btn.disabled = false; btn.textContent = 'Créer mon compte';
   }
+};
 
-  var prenom = formatPrenom(prenomRaw);
-  var nom    = formatNom(nomRaw);
+// ── ONGLETS ───────────────────────────────────────────────────────────
+window.switchTab = function(tabId, btn) {
+  document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  btn.classList.add('active');
+  showMsg('login-error', '');
+  showMsg('signup-error', '');
+  showMsg('signup-success', '');
+};
+window.switchTabByName = function(tabId) {
+  var btns = document.querySelectorAll('.tab-btn');
+  window.switchTab(tabId, tabId === 'connexion' ? btns[0] : btns[1]);
+};
 
-  comptes.push({ email:email, mdp:mdp, prenom:prenom, nom:nom, role:'lecteur', newsletter:false });
-  saveComptes(comptes);
-
-  showMsg('signup-success', 'Compte créé ! Bienvenue ' + prenom + ' ' + nom + '. Connexion dans 2 secondes…', 'ok');
-  ['prenom','nom','email-in','mdp-in','mdp-confirm'].forEach(function(id){ document.getElementById(id).value = ''; });
-
-  setTimeout(function() {
-    switchTabByName('connexion');
-    document.getElementById('email-co').value = email;
-  }, 2000);
-}
-
-// ── ENTER ────────────────────────────────────────────────────────────
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', e => {
   if (e.key !== 'Enter') return;
   var active = document.querySelector('.form-section.active');
   if (!active) return;
-  if (active.id === 'connexion')   handleLogin();
-  if (active.id === 'inscription') handleSignup();
+  if (active.id === 'connexion')   window.handleLogin();
+  if (active.id === 'inscription') window.handleSignup();
 });
-
-// ── TOPBAR SESSION ───────────────────────────────────────────────────
-(function() {
-  try {
-    var raw = localStorage.getItem(SESSION_KEY);
-    if (!raw) return;
-    var s = JSON.parse(raw);
-    var el = document.getElementById('topbar-right');
-    if (!el) return;
-    var WRITERS = ['super-admin','moderateur-redaction','redacteur'];
-    var adminBtn = s.role === 'super-admin'
-      ? ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">✍ Auteurs</a>'
-        + ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>'
-      : '';
-    var writeBtn = WRITERS.indexOf(s.role) !== -1
-      ? ' <a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>'
-      : '';
-    el.innerHTML = '<span style="color:#EDE0CC">' + (ROLES[s.role]||s.role) + '</span>'
-      + ' &mdash; <strong style="color:#fff">' + s.prenom + ' ' + s.nom + '</strong>'
-      + writeBtn + adminBtn
-      + ' <span style="opacity:.3;margin:0 6px">|</span>'
-      + ' <a href="connexion.html" id="btn-deco" style="color:#EDE0CC;">Déconnexion</a>';
-    document.getElementById('btn-deco').addEventListener('click', function(e){
-      e.preventDefault();
-      localStorage.removeItem(SESSION_KEY);
-      window.location.href = 'connexion.html';
-    });
-  } catch(e) {}
-})();
 </script>
 </body>
 </html>

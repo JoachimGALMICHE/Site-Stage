@@ -257,44 +257,52 @@ init();
 
 
 
-<script>
-(function() {
-  var SESSION_KEY = 'euclide_session';
-  var ROLES = {
-    'super-admin':'Super-administrateur',
-    'moderateur-redaction':'Modérateur de rédaction',
-    'redacteur':'Rédacteur',
-    'moderateur-comments':'Modérateur de commentaires',
-    'lecteur-commentateur':'Lecteur-commentateur',
-    'lecteur':'Lecteur'
-  };
-  var WRITERS = ['super-admin','moderateur-redaction','redacteur'];
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const _app = initializeApp({
+  apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",
+  authDomain:"l-oeil-d-euclyde.firebaseapp.com",
+  projectId:"l-oeil-d-euclyde",
+  storageBucket:"l-oeil-d-euclyde.firebasestorage.app",
+  messagingSenderId:"179241004963",
+  appId:"1:179241004963:web:c7c7afa926e03032653416"
+});
+const _auth = getAuth(_app);
+const _db = getFirestore(_app);
+const _ROLES = {'super-admin':'Super-administrateur','moderateur-redaction':'Modérateur de rédaction','redacteur':'Rédacteur','moderateur-comments':'Modérateur de commentaires','lecteur-commentateur':'Lecteur-commentateur','lecteur':'Lecteur'};
+const _WRITERS = ['super-admin','moderateur-redaction','redacteur'];
+onAuthStateChanged(_auth, async (user) => {
+  var el = document.getElementById('topbar-right');
+  if (!el) return;
+  if (!user) {
+    el.innerHTML = '<a href="connexion.html" style="color:#EDE0CC;">Connexion</a>';
+    return;
+  }
   try {
-    var raw = localStorage.getItem(SESSION_KEY);
-    if (!raw) return;
-    var s = JSON.parse(raw);
-    var el = document.getElementById('topbar-right');
-    if (!el) return;
-    var adminBtn = s.role === 'super-admin'
+    var snap = await getDoc(doc(_db, 'users', user.uid));
+    if (!snap.exists()) return;
+    var p = snap.data();
+    var adminBtn = p.role === 'super-admin'
       ? ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">✍ Auteurs</a>'
         + ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>'
       : '';
-    var writeBtn = WRITERS.indexOf(s.role) !== -1
+    var writeBtn = _WRITERS.indexOf(p.role) !== -1
       ? ' <a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>'
       : '';
-    el.innerHTML = '<span style="color:#EDE0CC">' + (ROLES[s.role]||s.role) + '</span>'
-      + ' &mdash; <strong style="color:#fff">' + s.prenom + ' ' + s.nom + '</strong>'
-      + writeBtn + adminBtn
-      + ' <span style="opacity:.3;margin:0 6px">|</span>'
-      + ' <a href="connexion.html" id="btn-deco" style="color:#EDE0CC;">Déconnexion</a>';
-    var d = document.getElementById('btn-deco');
-    if (d) d.addEventListener('click', function(e){
+    el.innerHTML = '<span style="color:#EDE0CC">'+(_ROLES[p.role]||p.role)+'</span>'
+      +' &mdash; <strong style="color:#fff">'+p.prenom+' '+p.nom+'</strong>'
+      +writeBtn+adminBtn
+      +' <span style="opacity:.3;margin:0 6px">|</span>'
+      +' <a href="#" id="_deco" style="color:#EDE0CC;">Déconnexion</a>';
+    document.getElementById('_deco').addEventListener('click', async e => {
       e.preventDefault();
-      localStorage.removeItem(SESSION_KEY);
+      await signOut(_auth);
       window.location.href = 'connexion.html';
     });
-  } catch(e) {}
-})();
+  } catch(e) { console.error(e); }
+});
 </script>
 </body>
 </html>
