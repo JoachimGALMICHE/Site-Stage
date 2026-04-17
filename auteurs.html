@@ -325,8 +325,31 @@ function uid() { return 'a' + Date.now() + Math.random().toString(36).slice(2,6)
 // ── CHARGEMENT ────────────────────────────────────────────────────────
 async function loadAuthors() {
   try {
+    // Charger la collection auteurs
     var snap = await getDocs(collection(db, 'auteurs'));
-    allAuthors = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    allAuthors = snap.docs.map(d => ({ id: d.id, source:'auteurs', ...d.data() }));
+
+    // Charger aussi les super-admins depuis users
+    var adminSnap = await getDocs(collection(db, 'users'));
+    adminSnap.forEach(d => {
+      const u = d.data();
+      if (u.role === 'super-admin') {
+        // Vérifier qu'il n'est pas déjà dans auteurs
+        const exists = allAuthors.find(a => a.prenom===u.prenom && a.nom===u.nom);
+        if (!exists) {
+          allAuthors.push({
+            id: 'admin_'+d.id,
+            source: 'admin',
+            prenom: u.prenom,
+            nom: u.nom,
+            institutions: ["L'Œil d'Euclide"],
+            themes: ['Administration'],
+            desc: 'Super-administrateur du site L'Œil d'Euclide.',
+            email: u.email
+          });
+        }
+      }
+    });
     render();
   } catch(e) {
     console.error('Erreur chargement auteurs:', e);
@@ -362,20 +385,24 @@ function render() {
 
   filtered.forEach(function(a) {
     var initials = (a.prenom[0]||'')+(a.nom[0]||'');
+    var isAdmin = a.source === 'admin';
     var card = document.createElement('div');
     card.className = 'author-card';
     card.id = 'card-'+a.id;
     card.innerHTML =
       '<div class="author-card-header" onclick="toggleCard(''+a.id+'')">'
-      +'<div class="author-avatar">'+initials.toUpperCase()+'</div>'
+      +'<div class="author-avatar" style="'+(isAdmin?'background:var(--violet-m)':'')+'">'+initials.toUpperCase()+'</div>'
       +'<div class="author-main">'
-        +'<div class="author-name">'+a.prenom+' '+a.nom+'</div>'
+        +'<div class="author-name">'+a.prenom+' '+a.nom+(isAdmin?' <span style="font-size:10px;background:var(--violet);color:#fff;padding:1px 6px;border-radius:2px;margin-left:6px;vertical-align:middle;">Super-admin</span>':'')+'</div>'
         +'<div class="author-institutions">'+(a.institutions||[]).join(' · ')+'</div>'
         +'<div class="author-tags">'+(a.themes||[]).map(t=>'<span class="tag">'+t+'</span>').join('')+'</div>'
       +'</div>'
       +'<div class="author-actions">'
-        +'<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();editAuthor(''+a.id+'')">Modifier</button>'
-        +'<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteAuthor(''+a.id+'')">Supprimer</button>'
+        +(isAdmin
+          ? '<span style="font-size:11px;color:var(--text3);padding:0 8px;">Compte administrateur</span>'
+          : '<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();editAuthor(''+a.id+'')">Modifier</button>'
+            +'<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteAuthor(''+a.id+'')">Supprimer</button>'
+        )
         +'<span class="expand-icon">▼</span>'
       +'</div>'
       +'</div>'

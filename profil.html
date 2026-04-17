@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon profil — L'Œil d'Euclide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --beige:#F2EDE4;--beige2:#EAE4D8;--beige3:#DED6C8;
+  --violet:#1C1C2E;--violet2:#2A2A3E;--violet-m:#B8956A;
+  --violet-l:#D4B896;--violet-xl:#EDE0CC;
+  --text:#1C1C2E;--text2:#3A3A4E;--text3:#8A8A9A;
+  --line:#D8D0C4;--line2:#C8BEB0;
+  --green:#1A5C32;--green-bg:#EAF5EE;--green-bd:#B8DEC4;
+  --red:#5C2A1A;--red-bg:#FDF3F0;--red-bd:#E8C4B8;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--beige);color:var(--text);-webkit-font-smoothing:antialiased;}
+a{color:inherit;text-decoration:none;}
+#topbar{background:var(--violet);color:var(--violet-l);padding:6px 40px;font-size:11px;letter-spacing:.07em;display:flex;justify-content:space-between;align-items:center;}
+#topbar a{color:var(--violet-xl);transition:color .2s;}
+header{padding:32px 40px 0;border-bottom:1px solid var(--line2);}
+.header-top{display:flex;align-items:flex-end;justify-content:space-between;padding-bottom:18px;}
+.site-name{font-family:'Cormorant Garamond',serif;font-size:74px;font-weight:300;letter-spacing:-3px;line-height:1;color:var(--violet);}
+.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px;}
+.tagline{font-size:11px;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;}
+.search-wrap{display:flex;border:1px solid var(--line2);border-radius:2px;overflow:hidden;}
+.search-wrap input{border:none;padding:7px 14px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--beige);color:var(--text);outline:none;width:220px;}
+.search-wrap button{background:var(--violet);color:#fff;border:none;padding:7px 14px;font-size:13px;cursor:pointer;}
+nav#cats{overflow-x:auto;white-space:nowrap;scrollbar-width:none;}
+nav#cats::-webkit-scrollbar{display:none;}
+nav#cats a{display:inline-block;padding:13px 16px;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);border-bottom:2px solid transparent;transition:color .2s,border-color .2s;}
+nav#cats a:first-child{padding-left:0;}
+nav#cats a:hover{color:var(--violet);}
+
+#loader{text-align:center;padding:80px;color:var(--text3);}
+.page-wrap{display:none;max-width:680px;margin:0 auto;padding:52px 40px 80px;}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;color:var(--violet);margin-bottom:32px;letter-spacing:-.5px;}
+
+/* CARTE PROFIL */
+.profile-card{background:var(--beige2);border:1px solid var(--line);border-radius:4px;padding:28px;margin-bottom:24px;display:flex;align-items:center;gap:20px;}
+.avatar{width:64px;height:64px;border-radius:50%;background:var(--violet);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;flex-shrink:0;}
+.profile-info{}
+.profile-name{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--violet);margin-bottom:3px;}
+.profile-email{font-size:13px;color:var(--text3);}
+.profile-role{display:inline-block;font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;background:var(--violet);color:#fff;padding:3px 9px;border-radius:2px;margin-top:6px;}
+
+/* SECTIONS */
+.section{background:var(--beige);border:1px solid var(--line);border-radius:4px;padding:24px;margin-bottom:16px;}
+.section-title{font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid var(--line);}
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+.field input{display:block;width:100%;border:1px solid var(--line2);padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--beige);color:var(--text);outline:none;border-radius:2px;transition:border-color .2s;}
+.field input:focus{border-color:var(--violet-m);}
+.field input:disabled{background:var(--beige3);color:var(--text3);cursor:not-allowed;opacity:.6;}
+
+/* MDP FORCE */
+.pwd-strength{height:4px;border-radius:2px;margin-top:6px;background:var(--line);overflow:hidden;}
+.pwd-strength-bar{height:100%;border-radius:2px;transition:width .3s,background .3s;}
+.pwd-hint{font-size:11px;color:var(--text3);margin-top:4px;}
+
+.btn-primary{background:var(--violet);color:#fff;border:none;padding:10px 24px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:background .2s;}
+.btn-primary:hover{background:var(--violet2);}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;}
+.f-msg{display:none;margin-top:12px;padding:10px 14px;border-radius:2px;font-size:13px;border:1px solid;}
+.f-msg.ok{background:var(--green-bg);border-color:var(--green-bd);color:var(--green);}
+.f-msg.err{background:var(--red-bg);border-color:var(--red-bd);color:var(--red);}
+
+/* NEWSLETTER */
+.nl-section{display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.nl-info{}
+.nl-label{font-size:14px;font-weight:500;color:var(--text);}
+.nl-sub{font-size:12px;color:var(--text3);margin-top:2px;}
+.nl-badge{font-size:11px;color:var(--text3);background:var(--beige3);border:1px solid var(--line);padding:3px 8px;border-radius:2px;}
+
+/* DANGER ZONE */
+.danger-section{border-color:var(--red-bd);background:var(--red-bg);}
+.danger-section .section-title{color:var(--red);}
+
+footer{background:var(--violet);color:var(--violet-l);padding:18px 40px;text-align:center;font-size:11px;}
+footer a{color:var(--violet-l);}
+footer a:hover{color:#fff;}
+@media(max-width:700px){
+  #topbar,header,.page-wrap,footer{padding-left:20px;padding-right:20px;}
+  .site-name{font-size:44px;}
+  .profile-card{flex-direction:column;text-align:center;}
+}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <span><a href="index.html">← Retour au site</a></span>
+  <span id="topbar-right"></span>
+</div>
+
+<header>
+  <div class="header-top">
+    <div>
+      <a href="index.html" style="display:flex;align-items:center;gap:14px;">
+        <svg width="52" height="52" viewBox="0 0 52 52" fill="none" style="flex-shrink:0"><rect x="4" y="4" width="28" height="28" stroke="#B8956A" stroke-width="0.8" fill="none"/><circle cx="18" cy="18" r="14" stroke="#B8956A" stroke-width="0.8" fill="none"/><line x1="4" y1="18" x2="32" y2="18" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="18" y1="4" x2="18" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="32" y1="32" x2="44" y2="44" stroke="#B8956A" stroke-width="0.8" opacity="0.5"/></svg>
+        <span class="site-name">L'Œil d'Euclide</span>
+      </a>
+      <p class="tagline" style="margin-top:6px;">Mettre notre monde en perspective</p>
+    </div>
+    <div class="header-right">
+      <div class="search-wrap">
+        <input type="text" placeholder="Rechercher un article…">
+        <button>→</button>
+      </div>
+    </div>
+  </div>
+  <nav id="cats">
+    <a href="index.html">Accueil</a>
+    <a href="categorie.html?cat=Politique">Politique</a>
+    <a href="categorie.html?cat=Société">Société</a>
+    <a href="categorie.html?cat=Science">Science</a>
+    <a href="categorie.html?cat=Environnement">Environnement</a>
+    <a href="categorie.html?cat=Économie">Économie</a>
+    <a href="categorie.html?cat=Culture">Culture</a>
+    <a href="categorie.html?cat=International">International</a>
+    <a href="categorie.html?cat=Éducation">Éducation &amp; Jeunesse</a>
+    <a href="categorie.html?cat=Histoire">Histoire</a>
+    <a href="categorie.html?cat=Critique">Critique litt. &amp; artistique</a>
+  </nav>
+</header>
+
+<div id="loader">Chargement du profil…</div>
+
+<div class="page-wrap" id="page-wrap">
+  <h1 class="page-title">Mon profil</h1>
+
+  <!-- CARTE IDENTITÉ -->
+  <div class="profile-card">
+    <div class="avatar" id="avatar">??</div>
+    <div class="profile-info">
+      <div class="profile-name" id="profile-name">—</div>
+      <div class="profile-email" id="profile-email">—</div>
+      <div class="profile-role" id="profile-role">—</div>
+    </div>
+  </div>
+
+  <!-- INFOS PERSONNELLES -->
+  <div class="section">
+    <p class="section-title">Informations personnelles</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div class="field">
+        <label>Prénom</label>
+        <input type="text" id="info-prenom" disabled>
+      </div>
+      <div class="field">
+        <label>Nom</label>
+        <input type="text" id="info-nom" disabled>
+      </div>
+    </div>
+    <div class="field">
+      <label>Adresse e-mail</label>
+      <input type="email" id="info-email" disabled>
+    </div>
+    <p style="font-size:11px;color:var(--text3);margin-top:4px;">Pour modifier vos informations, contactez un administrateur.</p>
+  </div>
+
+  <!-- CHANGER MOT DE PASSE -->
+  <div class="section">
+    <p class="section-title">Changer le mot de passe</p>
+    <div class="field">
+      <label for="mdp-actuel">Mot de passe actuel</label>
+      <input type="password" id="mdp-actuel" placeholder="••••••••">
+    </div>
+    <div class="field">
+      <label for="mdp-new">Nouveau mot de passe</label>
+      <input type="password" id="mdp-new" placeholder="8 caractères minimum" oninput="checkStrength()">
+      <div class="pwd-strength"><div class="pwd-strength-bar" id="pwd-bar" style="width:0%;background:var(--red-bd)"></div></div>
+      <p class="pwd-hint" id="pwd-hint">Entrez un mot de passe</p>
+    </div>
+    <div class="field">
+      <label for="mdp-confirm">Confirmer le nouveau mot de passe</label>
+      <input type="password" id="mdp-confirm" placeholder="••••••••">
+    </div>
+    <div id="mdp-msg" class="f-msg"></div>
+    <button class="btn-primary" id="btn-mdp" onclick="changeMdp()">Mettre à jour le mot de passe</button>
+  </div>
+
+  <!-- NEWSLETTER -->
+  <div class="section">
+    <p class="section-title">Newsletter</p>
+    <div class="nl-section">
+      <div class="nl-info">
+        <div class="nl-label">Lettre d'Euclide</div>
+        <div class="nl-sub">Analyses hebdomadaires dans votre boîte mail.</div>
+      </div>
+      <span class="nl-badge">Implémentation à venir</span>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <a href="index.html">L'Œil d'Euclide</a>
+  <p style="font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;color:#B8956A;text-align:right;margin-top:8px;">Mettre notre monde en perspective</p>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",
+  authDomain:"l-oeil-d-euclyde.firebaseapp.com",
+  projectId:"l-oeil-d-euclyde",
+  storageBucket:"l-oeil-d-euclyde.firebasestorage.app",
+  messagingSenderId:"179241004963",
+  appId:"1:179241004963:web:c7c7afa926e03032653416"
+});
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+const ROLES = {
+  'super-admin':'Super-administrateur','moderateur-redaction':'Modérateur de rédaction',
+  'redacteur':'Rédacteur','moderateur-comments':'Modérateur de commentaires',
+  'lecteur-commentateur':'Lecteur-commentateur','lecteur':'Lecteur'
+};
+const WRITERS = ['super-admin','moderateur-redaction','redacteur'];
+
+function showMsg(id, txt, type) {
+  const el = document.getElementById(id);
+  el.textContent = txt;
+  el.className = 'f-msg ' + type;
+  el.style.display = txt ? 'block' : 'none';
+}
+
+// ── FORCE MOT DE PASSE ────────────────────────────────────────────────
+window.checkStrength = function() {
+  const v = document.getElementById('mdp-new').value;
+  const bar = document.getElementById('pwd-bar');
+  const hint = document.getElementById('pwd-hint');
+  let score = 0;
+  if (v.length >= 8) score++;
+  if (v.length >= 12) score++;
+  if (/[A-Z]/.test(v)) score++;
+  if (/[0-9]/.test(v)) score++;
+  if (/[^A-Za-z0-9]/.test(v)) score++;
+  const levels = [
+    {w:'0%', c:'var(--red-bd)', t:'Trop court'},
+    {w:'25%', c:'#E8A87C', t:'Faible'},
+    {w:'50%', c:'#E8C87C', t:'Moyen'},
+    {w:'75%', c:'#9BC87C', t:'Bon'},
+    {w:'100%', c:'var(--green-bd)', t:'Excellent'},
+  ];
+  const l = levels[Math.min(score, 4)];
+  bar.style.width = l.w;
+  bar.style.background = l.c;
+  hint.textContent = v.length === 0 ? 'Entrez un mot de passe' : l.t;
+};
+
+// ── CHANGEMENT MDP ────────────────────────────────────────────────────
+window.changeMdp = async function() {
+  showMsg('mdp-msg', '', 'ok');
+  const actuel  = document.getElementById('mdp-actuel').value;
+  const newMdp  = document.getElementById('mdp-new').value;
+  const confirm = document.getElementById('mdp-confirm').value;
+  const btn     = document.getElementById('btn-mdp');
+
+  if (!actuel)           { showMsg('mdp-msg', 'Entrez votre mot de passe actuel.', 'err'); return; }
+  if (newMdp.length < 8) { showMsg('mdp-msg', 'Le nouveau mot de passe doit faire au moins 8 caractères.', 'err'); return; }
+  if (newMdp !== confirm) { showMsg('mdp-msg', 'Les mots de passe ne correspondent pas.', 'err'); return; }
+  if (newMdp === actuel)  { showMsg('mdp-msg', 'Le nouveau mot de passe doit être différent de l\'actuel.', 'err'); return; }
+
+  btn.disabled = true; btn.textContent = 'Mise à jour…';
+  try {
+    const user = auth.currentUser;
+    // Ré-authentifier d'abord
+    const cred = EmailAuthProvider.credential(user.email, actuel);
+    await reauthenticateWithCredential(user, cred);
+    // Changer le mot de passe
+    await updatePassword(user, newMdp);
+    showMsg('mdp-msg', '✓ Mot de passe mis à jour avec succès.', 'ok');
+    document.getElementById('mdp-actuel').value = '';
+    document.getElementById('mdp-new').value = '';
+    document.getElementById('mdp-confirm').value = '';
+    document.getElementById('pwd-bar').style.width = '0%';
+    document.getElementById('pwd-hint').textContent = 'Entrez un mot de passe';
+  } catch(e) {
+    const msgs = {
+      'auth/wrong-password': 'Mot de passe actuel incorrect.',
+      'auth/weak-password':  'Nouveau mot de passe trop faible.',
+      'auth/requires-recent-login': 'Session expirée, reconnectez-vous.'
+    };
+    showMsg('mdp-msg', msgs[e.code] || 'Erreur : ' + e.message, 'err');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Mettre à jour le mot de passe';
+  }
+};
+
+// ── SESSION ───────────────────────────────────────────────────────────
+onAuthStateChanged(auth, async (user) => {
+  document.getElementById('loader').style.display = 'none';
+  if (!user) { window.location.href = 'connexion.html'; return; }
+
+  try {
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    if (!snap.exists()) { window.location.href = 'connexion.html'; return; }
+    const p = snap.data();
+
+    // Remplir le profil
+    document.getElementById('avatar').textContent = ((p.prenom||'?')[0]+(p.nom||'?')[0]).toUpperCase();
+    document.getElementById('profile-name').textContent = (p.prenom||'') + ' ' + (p.nom||'');
+    document.getElementById('profile-email').textContent = p.email || user.email;
+    document.getElementById('profile-role').textContent = ROLES[p.role] || p.role;
+    document.getElementById('info-prenom').value = p.prenom || '';
+    document.getElementById('info-nom').value = p.nom || '';
+    document.getElementById('info-email').value = p.email || user.email;
+    document.getElementById('page-wrap').style.display = 'block';
+
+    // Topbar
+    const el = document.getElementById('topbar-right');
+    const adminBtn = p.role === 'super-admin'
+      ? ' <a href="gestion-comptes.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">👥 Comptes</a>'
+        + ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✍ Auteurs</a>'
+        + ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>'
+      : '';
+    const writeBtn = WRITERS.indexOf(p.role) !== -1
+      ? ' <a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>' : '';
+    el.innerHTML = '<span style="color:#EDE0CC">'+(ROLES[p.role]||p.role)+'</span>'
+      +' &mdash; <strong style="color:#fff">'+p.prenom+' '+p.nom+'</strong>'
+      +writeBtn+adminBtn
+      +' <span style="opacity:.3;margin:0 6px">|</span>'
+      +' <a href="profil.html" style="color:#EDE0CC;">Mon profil</a>'
+      +' <span style="opacity:.3;margin:0 4px">|</span>'
+      +' <a href="#" id="btn-deco" style="color:#EDE0CC;">Déconnexion</a>';
+    document.getElementById('btn-deco').addEventListener('click', async e => {
+      e.preventDefault(); await signOut(auth); window.location.href = 'connexion.html';
+    });
+  } catch(e) { console.error(e); }
+});
+</script>
+</body>
+</html>
