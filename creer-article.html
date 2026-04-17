@@ -813,19 +813,13 @@ populateAuthorSelects();
 
 // ── AUTEURS ──────────────────────────────────────────────────────────
 var selectedCoauthors = [];
-
-function getAuthors() {
-  try { return JSON.parse(localStorage.getItem('oeil_auteurs') || '[]'); } catch(e) { return []; }
-}
+var _allAuthors = [];
 
 async function populateAuthorSelects() {
-  var authors = getAuthors();
-  var mainSel = document.getElementById('f-auteur-select');
-  var coSel = document.getElementById('f-coauteur-select');
+  const mainSel = document.getElementById('f-auteur-select');
+  const coSel   = document.getElementById('f-coauteur-select');
   while (mainSel.options.length > 1) mainSel.remove(1);
-  while (coSel.options.length > 1) coSel.remove(1);
-
-  // Charger aussi les super-admins depuis Firebase users
+  while (coSel.options.length > 1)  coSel.remove(1);
   try {
     const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
     const { getFirestore, getDocs, collection, query, where } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
@@ -838,20 +832,28 @@ async function populateAuthorSelects() {
       appId:"1:179241004963:web:c7c7afa926e03032653416"
     });
     const db = getFirestore(fbApp);
-    const adminSnap = await getDocs(query(collection(db,'users'), where('role','==','super-admin')));
-    adminSnap.forEach(d => {
+    // Auteurs validés
+    const aSnap = await getDocs(collection(db,'auteurs'));
+    _allAuthors = aSnap.docs.map(d => ({id:d.id,...d.data()}));
+    // Super-admins
+    const uSnap = await getDocs(query(collection(db,'users'),where('role','==','super-admin')));
+    uSnap.forEach(d => {
       const u = d.data();
-      const adminAuthor = { id:'admin_'+d.id, prenom:u.prenom, nom:u.nom, institutions:['L'Œil d'Euclide'], themes:['Administration'], desc:'Super-administrateur du site.' };
-      if (!authors.find(a => a.prenom===u.prenom && a.nom===u.nom)) authors.push(adminAuthor);
+      if (!_allAuthors.find(a => a.prenom===u.prenom && a.nom===u.nom)) {
+        _allAuthors.push({id:'admin_'+d.id, prenom:u.prenom, nom:u.nom,
+          institutions:["L'Oeil d'Euclide"], themes:['Administration'],
+          desc:"Super-administrateur du site."});
+      }
     });
-  } catch(e) { console.warn('Impossible de charger les admins:', e); }
-
-  authors.forEach(function(a) {
-    var label = a.prenom + ' ' + a.nom + (a.institutions&&a.institutions.length ? ' (' + a.institutions[0] + ')' : '');
+  } catch(e) { console.warn('Erreur chargement auteurs:', e); _allAuthors=[]; }
+  _allAuthors.forEach(a => {
+    const label = a.prenom+' '+a.nom+(a.institutions&&a.institutions.length?' ('+a.institutions[0]+')':'');
     mainSel.appendChild(new Option(label, a.id));
     coSel.appendChild(new Option(label, a.id));
   });
 }
+
+function getAuthorById(id) { return _allAuthors.find(a=>a.id===id)||null; }
 
 function selectAuthor() {
   var id = document.getElementById('f-auteur-select').value;
@@ -862,7 +864,7 @@ function selectAuthor() {
     banner.style.display = 'none';
     return;
   }
-  var a = getAuthors().find(function(x){ return x.id === id; });
+  var a = getAuthorById(id);
   if (!a) return;
 
   // Preview auteur
@@ -896,8 +898,7 @@ function selectAuthor() {
 
 function updateConflictBanner() {
   var authorId = document.getElementById('f-auteur-select').value;
-  var authors = getAuthors();
-  var a = authors.find(function(x){ return x.id === authorId; });
+  var a = getAuthorById(authorId);
   if (!a) return;
 
   var conflict = document.querySelector('input[name="article-conflict"]:checked').value;
@@ -951,7 +952,7 @@ function removeCoauthor(id) {
 }
 
 function renderCoauthors() {
-  var authors = getAuthors();
+  var authors = _allAuthors;
   var list = document.getElementById('coauthors-list');
   list.innerHTML = selectedCoauthors.map(function(id) {
     var a = authors.find(function(x){ return x.id === id; });
