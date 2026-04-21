@@ -119,7 +119,7 @@ nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
 <header>
   <div class="header-top">
     <div>
-      <div style="display:flex;align-items:center;gap:14px"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><rect x="4" y="4" width="28" height="28" stroke="#B8956A" stroke-width="0.8" fill="none"/><circle cx="18" cy="18" r="14" stroke="#B8956A" stroke-width="0.8" fill="none"/><line x1="4" y1="18" x2="32" y2="18" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="18" y1="4" x2="18" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="32" y1="32" x2="44" y2="44" stroke="#B8956A" stroke-width="0.8" opacity="0.5"/><line x1="32" y1="4" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/><line x1="4" y1="32" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/></svg><div class="site-name">L'Œil d'Euclide</div></div>
+      <a href="index.html" style="display:flex;align-items:center;gap:14px;text-decoration:none;"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><rect x="4" y="4" width="28" height="28" stroke="#B8956A" stroke-width="0.8" fill="none"/><circle cx="18" cy="18" r="14" stroke="#B8956A" stroke-width="0.8" fill="none"/><line x1="4" y1="18" x2="32" y2="18" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="18" y1="4" x2="18" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="32" y1="32" x2="44" y2="44" stroke="#B8956A" stroke-width="0.8" opacity="0.5"/><line x1="32" y1="4" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/><line x1="4" y1="32" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/></svg><div class="site-name">L'Œil d'Euclide</div></a>
       <p class="tagline">Mettre notre monde en perspective</p>
     </div>
     <div class="header-right">
@@ -170,7 +170,7 @@ nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
       </div>
     </div>
     <figure>
-      <div class="img-box r169">[Image principale]</div>
+      <div class="img-box r169" style="background-image:url('https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=1200&auto=format&fit=crop');background-size:cover;background-position:center;"></div>
       <figcaption>Manifestation devant le ministère du Travail, Paris, 28 mars 2026. Crédit : X</figcaption>
     </figure>
 
@@ -239,44 +239,53 @@ nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
 
 
 
-<script>
-(function() {
-  var SESSION_KEY = 'euclide_session';
-  var ROLES = {
-    'super-admin':'Super-administrateur',
-    'moderateur-redaction':'Modérateur de rédaction',
-    'redacteur':'Rédacteur',
-    'moderateur-comments':'Modérateur de commentaires',
-    'lecteur-commentateur':'Lecteur-commentateur',
-    'lecteur':'Lecteur'
-  };
-  var WRITERS = ['super-admin','moderateur-redaction','redacteur'];
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const _app = initializeApp({
+  apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",
+  authDomain:"l-oeil-d-euclyde.firebaseapp.com",
+  projectId:"l-oeil-d-euclyde",
+  storageBucket:"l-oeil-d-euclyde.firebasestorage.app",
+  messagingSenderId:"179241004963",
+  appId:"1:179241004963:web:c7c7afa926e03032653416"
+});
+const _auth = getAuth(_app);
+const _db = getFirestore(_app);
+const _ROLES = {'super-admin':'Super-administrateur','moderateur-redaction':'Modérateur de rédaction','redacteur':'Rédacteur','moderateur-comments':'Modérateur de commentaires','lecteur-commentateur':'Lecteur-commentateur','lecteur':'Lecteur'};
+const _WRITERS = ['super-admin','moderateur-redaction','redacteur'];
+onAuthStateChanged(_auth, async (user) => {
+  var el = document.getElementById('topbar-right');
+  if (!el) return;
+  if (!user) {
+    el.innerHTML = '<a href="connexion.html" style="color:#EDE0CC;">Connexion</a>';
+    return;
+  }
   try {
-    var raw = localStorage.getItem(SESSION_KEY);
-    if (!raw) return;
-    var s = JSON.parse(raw);
-    var el = document.getElementById('topbar-right');
-    if (!el) return;
-    var adminBtn = s.role === 'super-admin'
-      ? ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">✍ Auteurs</a>'
+    var snap = await getDoc(doc(_db, 'users', user.uid));
+    if (!snap.exists()) return;
+    var p = snap.data();
+    var adminBtn = p.role === 'super-admin'
+      ? ' <a href="gestion-comptes.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">👥 Comptes</a>'
+        + ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✍ Auteurs</a>'
         + ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>'
       : '';
-    var writeBtn = WRITERS.indexOf(s.role) !== -1
+    var writeBtn = _WRITERS.indexOf(p.role) !== -1
       ? ' <a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>'
       : '';
-    el.innerHTML = '<span style="color:#EDE0CC">' + (ROLES[s.role]||s.role) + '</span>'
-      + ' &mdash; <strong style="color:#fff">' + s.prenom + ' ' + s.nom + '</strong>'
-      + writeBtn + adminBtn
-      + ' <span style="opacity:.3;margin:0 6px">|</span>'
-      + ' <a href="connexion.html" id="btn-deco" style="color:#EDE0CC;">Déconnexion</a>';
-    var d = document.getElementById('btn-deco');
-    if (d) d.addEventListener('click', function(e){
+    el.innerHTML = '<span style="color:#EDE0CC">'+(_ROLES[p.role]||p.role)+'</span>'
+      +' &mdash; <strong style="color:#fff">'+p.prenom+' '+p.nom+'</strong>'
+      +writeBtn+adminBtn
+      +' <span style="opacity:.3;margin:0 6px">|</span>'
+      +' <a href="#" id="_deco" style="color:#EDE0CC;">Déconnexion</a>';
+    document.getElementById('_deco').addEventListener('click', async e => {
       e.preventDefault();
-      localStorage.removeItem(SESSION_KEY);
+      await signOut(_auth);
       window.location.href = 'connexion.html';
     });
-  } catch(e) {}
-})();
+  } catch(e) { console.error(e); }
+});
 </script>
 </body>
 </html>

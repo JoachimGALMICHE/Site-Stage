@@ -98,7 +98,7 @@ footer{background:var(--violet);color:var(--violet-l);padding:40px 40px 24px;}
 <header>
   <div class="header-top">
     <div>
-      <div style="display:flex;align-items:center;gap:14px"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><rect x="4" y="4" width="28" height="28" stroke="#B8956A" stroke-width="0.8" fill="none"/><circle cx="18" cy="18" r="14" stroke="#B8956A" stroke-width="0.8" fill="none"/><line x1="4" y1="18" x2="32" y2="18" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="18" y1="4" x2="18" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="32" y1="32" x2="44" y2="44" stroke="#B8956A" stroke-width="0.8" opacity="0.5"/><line x1="32" y1="4" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/><line x1="4" y1="32" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/></svg><div class="site-name">L'Œil d'Euclide</div></div>
+      <a href="index.html" style="display:flex;align-items:center;gap:14px;text-decoration:none;"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><rect x="4" y="4" width="28" height="28" stroke="#B8956A" stroke-width="0.8" fill="none"/><circle cx="18" cy="18" r="14" stroke="#B8956A" stroke-width="0.8" fill="none"/><line x1="4" y1="18" x2="32" y2="18" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="18" y1="4" x2="18" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="32" y1="32" x2="44" y2="44" stroke="#B8956A" stroke-width="0.8" opacity="0.5"/><line x1="32" y1="4" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/><line x1="4" y1="32" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/></svg><div class="site-name">L'Œil d'Euclide</div></a>
       <p class="tagline">Mettre notre monde en perspective</p>
     </div>
     <div class="header-right">
@@ -285,7 +285,8 @@ onAuthStateChanged(_auth, async (user) => {
     if (!snap.exists()) return;
     var p = snap.data();
     var adminBtn = p.role === 'super-admin'
-      ? ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">✍ Auteurs</a>'
+      ? ' <a href="gestion-comptes.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">👥 Comptes</a>'
+        + ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✍ Auteurs</a>'
         + ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>'
       : '';
     var writeBtn = _WRITERS.indexOf(p.role) !== -1

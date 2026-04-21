@@ -398,14 +398,18 @@ function uid() { return 'b' + Math.random().toString(36).slice(2,8); }
 
 function markUnsaved() {
   unsaved = true;
-  document.getElementById('status-dot').classList.remove('saved');
-  document.getElementById('save-label').innerHTML = '<span class="status-dot" id="status-dot"></span>Non sauvegardé';
+  var dot = document.getElementById('status-dot');
+  var lbl = document.getElementById('save-label');
+  if (dot) dot.classList.remove('saved');
+  if (lbl) lbl.innerHTML = '<span class="status-dot" id="status-dot"></span>Non sauvegardé';
 }
 
 function markSaved() {
   unsaved = false;
-  document.getElementById('status-dot').className = 'status-dot saved';
-  document.getElementById('save-label').innerHTML = '<span class="status-dot saved" id="status-dot"></span>Sauvegardé';
+  var dot = document.getElementById('status-dot');
+  var lbl = document.getElementById('save-label');
+  if (dot) dot.className = 'status-dot saved';
+  if (lbl) lbl.innerHTML = '<span class="status-dot saved" id="status-dot"></span>Sauvegardé';
 }
 
 function toast(msg) {
