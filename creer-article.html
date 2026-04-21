@@ -747,24 +747,26 @@ function removeTag(i) {
 }
 
 // ── SAUVEGARDE ────────────────────────────────────────────────────────
-function saveDraft() {
+function saveDraft(silent) {
+  saveBlockContents(); // toujours sauvegarder le contenu des inputs d'abord
   try {
+    var conflictEl = document.querySelector('input[name="article-conflict"]:checked');
     localStorage.setItem('euclide_draft', JSON.stringify({
-      titre: document.getElementById('f-titre').value,
-      chapeau: document.getElementById('f-chapeau').value,
-      auteur: document.getElementById('f-auteur').value,
-      institution: document.getElementById('f-institution').value,
-      rubrique: document.getElementById('f-rubrique').value,
-      duree: document.getElementById('f-duree').value,
-      importance: document.getElementById('f-importance').value,
-      conflict: document.querySelector('input[name=conflict]:checked').value,
-      conflictTxt: document.getElementById('f-conflict-txt').value,
-      tags: tags,
-      blocks: blocks
+      titre:       document.getElementById('f-titre').value,
+      chapeau:     document.getElementById('f-chapeau').value,
+      auteurId:    document.getElementById('f-auteur-select') ? document.getElementById('f-auteur-select').value : '',
+      rubrique:    document.getElementById('f-rubrique').value,
+      duree:       document.getElementById('f-duree').value,
+      importance:  document.getElementById('f-importance').value,
+      conflict:    conflictEl ? conflictEl.value : 'none',
+      conflictTxt: document.getElementById('f-conflict-txt') ? document.getElementById('f-conflict-txt').value : '',
+      tags:        tags,
+      blocks:      blocks,
+      coauthors:   selectedCoauthors
     }));
   } catch(e) {}
   markSaved();
-  toast('✓ Brouillon sauvegardé');
+  if (!silent) toast('✓ Brouillon sauvegardé');
 }
 
 function loadDraft() {
@@ -772,26 +774,32 @@ function loadDraft() {
     var raw = localStorage.getItem('euclide_draft');
     if (!raw) return;
     var d = JSON.parse(raw);
-    document.getElementById('f-titre').value = d.titre || '';
-    document.getElementById('f-chapeau').value = d.chapeau || '';
-    document.getElementById('f-auteur').value = d.auteur || '';
-    document.getElementById('f-institution').value = d.institution || '';
-    if (d.rubrique) document.getElementById('f-rubrique').value = d.rubrique;
-    if (d.duree) document.getElementById('f-duree').value = d.duree;
-    if (d.importance) document.getElementById('f-importance').value = d.importance;
-    if (d.conflict === 'yes') {
-      document.querySelector('input[name=conflict][value=yes]').checked = true;
-      toggleConflict(true);
-    }
-    document.getElementById('f-conflict-txt').value = d.conflictTxt || '';
-    tags = d.tags || [];
-    blocks = d.blocks || [];
+    if (document.getElementById('f-titre'))    document.getElementById('f-titre').value = d.titre || '';
+    if (document.getElementById('f-chapeau'))  { document.getElementById('f-chapeau').value = d.chapeau || ''; autoResize(document.getElementById('f-chapeau')); }
+    if (d.rubrique && document.getElementById('f-rubrique'))   document.getElementById('f-rubrique').value = d.rubrique;
+    if (d.duree    && document.getElementById('f-duree'))      document.getElementById('f-duree').value = d.duree;
+    if (d.importance && document.getElementById('f-importance')) document.getElementById('f-importance').value = d.importance;
+    if (d.conflictTxt && document.getElementById('f-conflict-txt')) document.getElementById('f-conflict-txt').value = d.conflictTxt;
+    tags             = d.tags       || [];
+    blocks           = d.blocks     || [];
+    selectedCoauthors = d.coauthors || [];
     renderTags();
     renderCanvas();
-    autoResize(document.getElementById('f-chapeau'));
+    renderCoauthors();
     markSaved();
+    if (blocks.length > 0 || d.titre) toast('Brouillon restauré ✓');
   } catch(e) {}
 }
+
+// Autosauvegarde toutes les 15 secondes si modifications non sauvegardées
+setInterval(function() {
+  if (unsaved) saveDraft(true);
+}, 15000);
+
+// Sauvegarder avant de quitter la page
+window.addEventListener('beforeunload', function() {
+  if (unsaved) saveDraft(true);
+});
 
 function submitArticle() {
   if (!document.getElementById('f-titre').value.trim()) {
@@ -822,8 +830,7 @@ function resetEditor() {
   markSaved();
 }
 
-// Autosave toutes les 30s
-setInterval(function(){ if (unsaved) saveDraft(); }, 30000);
+// Autosave géré plus haut (toutes les 15s + beforeunload)
 
 // Init
 loadDraft();
