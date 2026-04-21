@@ -125,9 +125,8 @@ select.f-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg x
 
 /* PALETTE DE BLOCS */
 .block-palette{display:flex;flex-direction:column;gap:6px;}
-.palette-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line2);border-radius:3px;cursor:grab;background:var(--beige);transition:border-color .15s,background .15s;user-select:none;}
+.palette-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line2);border-radius:3px;cursor:pointer;background:var(--beige);transition:border-color .15s,background .15s;user-select:none;}
 .palette-item:hover{border-color:var(--violet-m);background:#fff;}
-.palette-item:active{cursor:grabbing;}
 .palette-icon{font-size:16px;width:24px;text-align:center;flex-shrink:0;}
 .palette-label{font-size:13px;color:var(--text);font-weight:400;}
 .palette-desc{font-size:11px;color:var(--text3);font-weight:300;}
@@ -188,13 +187,13 @@ nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
 
 <div id="topbar">
   <span><a href="index.html">← Retour au site</a></span>
-  <span id="topbar-right">Interface rédacteur</span>
+  <span id="topbar-right"></span>
 </div>
 
 <header>
   <div class="header-top">
     <div>
-      <div style="display:flex;align-items:center;gap:14px"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><rect x="4" y="4" width="28" height="28" stroke="#B8956A" stroke-width="0.8" fill="none"/><circle cx="18" cy="18" r="14" stroke="#B8956A" stroke-width="0.8" fill="none"/><line x1="4" y1="18" x2="32" y2="18" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="18" y1="4" x2="18" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="32" y1="32" x2="44" y2="44" stroke="#B8956A" stroke-width="0.8" opacity="0.5"/><line x1="32" y1="4" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/><line x1="4" y1="32" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/></svg><div class="site-name">L'Œil d'Euclide</div></div>
+      <a href="index.html" style="display:flex;align-items:center;gap:14px;text-decoration:none;"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><rect x="4" y="4" width="28" height="28" stroke="#B8956A" stroke-width="0.8" fill="none"/><circle cx="18" cy="18" r="14" stroke="#B8956A" stroke-width="0.8" fill="none"/><line x1="4" y1="18" x2="32" y2="18" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="18" y1="4" x2="18" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="32" y1="32" x2="44" y2="44" stroke="#B8956A" stroke-width="0.8" opacity="0.5"/><line x1="32" y1="4" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/><line x1="4" y1="32" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/></svg><div class="site-name">L'Œil d'Euclide</div></a>
       <p class="tagline">Mettre notre monde en perspective</p>
     </div>
     <div class="header-right">
@@ -310,32 +309,32 @@ nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
     <div class="sidebar-section">
       <p class="sidebar-title">Ajouter un bloc</p>
       <div class="block-palette">
-        <div class="palette-item" draggable="true" data-type="title" ondragstart="paletteDragStart(event)">
+        <div class="palette-item" onclick="addBlock('title')">
           <span class="palette-icon">H</span>
           <div><div class="palette-label">Titre de section</div><div class="palette-desc">Grand titre entre paragraphes</div></div>
         </div>
-        <div class="palette-item" draggable="true" data-type="subtitle" ondragstart="paletteDragStart(event)">
+        <div class="palette-item" onclick="addBlock('subtitle')">
           <span class="palette-icon">h</span>
           <div><div class="palette-label">Sous-titre</div><div class="palette-desc">Titre secondaire, italique</div></div>
         </div>
-        <div class="palette-item" draggable="true" data-type="text" ondragstart="paletteDragStart(event)">
+        <div class="palette-item" onclick="addBlock('text')">
           <span class="palette-icon">¶</span>
           <div><div class="palette-label">Paragraphe</div><div class="palette-desc">Bloc de texte principal</div></div>
         </div>
-        <div class="palette-item" draggable="true" data-type="quote" ondragstart="paletteDragStart(event)">
+        <div class="palette-item" onclick="addBlock('quote')">
           <span class="palette-icon">"</span>
           <div><div class="palette-label">Citation</div><div class="palette-desc">Mise en avant d'une phrase</div></div>
         </div>
-        <div class="palette-item" draggable="true" data-type="image" ondragstart="paletteDragStart(event)">
+        <div class="palette-item" onclick="addBlock('image')">
           <span class="palette-icon">🖼</span>
           <div><div class="palette-label">Image</div><div class="palette-desc">Photo + légende optionnelle</div></div>
         </div>
-        <div class="palette-item" draggable="true" data-type="separator" ondragstart="paletteDragStart(event)">
+        <div class="palette-item" onclick="addBlock('separator')">
           <span class="palette-icon">—</span>
           <div><div class="palette-label">Séparateur</div><div class="palette-desc">Ligne de séparation</div></div>
         </div>
       </div>
-      <p style="font-size:11px;color:var(--text3);margin-top:10px;text-align:center;">ou cliquez sur un bloc pour l'ajouter directement</p>
+      <p style="font-size:11px;color:var(--text3);margin-top:10px;text-align:center;">Cliquez sur un bloc pour l'ajouter</p>
     </div>
 
     <div class="sidebar-section">
@@ -809,7 +808,7 @@ setInterval(function(){ if (unsaved) saveDraft(); }, 30000);
 // Init
 loadDraft();
 if (blocks.length === 0) renderCanvas();
-populateAuthorSelects();
+// populateAuthorSelects est appelé depuis onAuthStateChanged
 
 // ── AUTEURS ──────────────────────────────────────────────────────────
 var selectedCoauthors = [];
@@ -819,8 +818,7 @@ async function populateAuthorSelects() {
   const mainSel = document.getElementById('f-auteur-select');
   const coSel   = document.getElementById('f-coauteur-select');
   while (mainSel.options.length > 1) mainSel.remove(1);
-  while (coSel.options.length > 1)  coSel.remove(1);
-  try {
+  while (coSel.options.length > 1)  coSel.remove(1);  try {
     const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
     const { getFirestore, getDocs, collection, query, where } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
     const fbApp = getApps().length ? getApps()[0] : initializeApp({
@@ -854,6 +852,7 @@ async function populateAuthorSelects() {
 }
 
 function getAuthorById(id) { return _allAuthors.find(a=>a.id===id)||null; }
+window.populateAuthorSelects = populateAuthorSelects;
 
 function selectAuthor() {
   var id = document.getElementById('f-auteur-select').value;
@@ -922,12 +921,12 @@ function updateConflictBanner() {
     preview.style.background = '#EAF5EE';
     preview.style.borderColor = '#B8DEC4';
     preview.style.color = '#1A5C32';
-    preview.innerHTML = '<span style="font-size:16px;flex-shrink:0">✓</span><span>' + genre + ' déclare ne pas avoir de conflit d'intérêts avec le sujet traité dans l'article.</span>';
+    preview.innerHTML = '<span style="font-size:16px;flex-shrink:0">\u2713</span><span>' + genre + ' d\u00e9clare ne pas avoir de conflit d\u2019int\u00e9r\u00eats avec le sujet trait\u00e9 dans l\u2019article.</span>';
   } else {
     preview.style.background = '#FDF3F0';
     preview.style.borderColor = '#E8C4B8';
     preview.style.color = '#5C2A1A';
-    preview.innerHTML = '<span style="font-size:16px;flex-shrink:0">⚠</span><div><strong>Conflit d'intérêt déclaré</strong>' + (conflictTxt ? ' : ' + conflictTxt : ' — veuillez préciser ci-dessus.') + '</div>';
+    preview.innerHTML = '<span style="font-size:16px;flex-shrink:0">\u26a0</span><div><strong>Conflit d\u2019int\u00e9r\u00eat d\u00e9clar\u00e9</strong>' + (conflictTxt ? ' : ' + conflictTxt : ' \u2014 veuillez pr\u00e9ciser ci-dessus.') + '</div>';
   }
 }
 
@@ -958,7 +957,7 @@ function renderCoauthors() {
     if (!a) return '';
     return '<span style="font-size:12px;background:var(--beige3);border:1px solid var(--line);border-radius:2px;padding:4px 10px;display:flex;align-items:center;gap:6px;">' +
       a.prenom + ' ' + a.nom +
-      '<span onclick="removeCoauthor('' + id + '')" style="cursor:pointer;opacity:.5;font-size:14px;">×</span></span>';
+      '<span onclick="removeCoauthor(\'' + id + '\')" style="cursor:pointer;opacity:.5;font-size:14px;">\u00d7</span></span>';
   }).join('');
 }
 </script>
@@ -1002,12 +1001,16 @@ onAuthStateChanged(_auth, async (user) => {
       +' &mdash; <strong style="color:#fff">'+p.prenom+' '+p.nom+'</strong>'
       +writeBtn+adminBtn
       +' <span style="opacity:.3;margin:0 6px">|</span>'
+      +' <a href="profil.html" style="color:#EDE0CC;">Mon profil</a>'
+      +' <span style="opacity:.3;margin:0 4px">|</span>'
       +' <a href="#" id="_deco" style="color:#EDE0CC;">Déconnexion</a>';
     document.getElementById('_deco').addEventListener('click', async e => {
       e.preventDefault();
       await signOut(_auth);
       window.location.href = 'connexion.html';
     });
+    // Charger les auteurs maintenant que Firebase est prêt
+    if (window.populateAuthorSelects) window.populateAuthorSelects();
   } catch(e) { console.error(e); }
 });
 </script>
