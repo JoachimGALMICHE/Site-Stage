@@ -447,21 +447,21 @@ function updateStats() {
 // ── RENDU CANVAS ──────────────────────────────────────────────────────
 function renderCanvas() {
   var canvas = document.getElementById('canvas');
-  var empty = document.getElementById('canvas-empty');
+
+  // Toujours vider proprement
+  canvas.innerHTML = '';
 
   if (blocks.length === 0) {
-    canvas.innerHTML = '';
-    canvas.appendChild(empty);
-    empty.style.display = 'block';
+    var emptyDiv = document.createElement('div');
+    emptyDiv.className = 'canvas-empty';
+    emptyDiv.id = 'canvas-empty';
+    emptyDiv.textContent = 'Cliquez sur un bloc à droite pour construire votre article';
+    canvas.appendChild(emptyDiv);
     updateStats();
     return;
   }
-  empty.style.display = 'none';
-  canvas.innerHTML = '';
 
-  // Drop zone au début
   canvas.appendChild(makeDropSep(0));
-
   blocks.forEach(function(block, idx) {
     canvas.appendChild(makeBlockEl(block, idx));
     canvas.appendChild(makeDropSep(idx + 1));
