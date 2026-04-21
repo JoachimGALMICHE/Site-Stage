@@ -638,12 +638,63 @@ function addBlock(type, insertAt) {
   if (insertAt === undefined) insertAt = blocks.length;
   blocks.splice(insertAt, 0, b);
   markUnsaved();
-  renderCanvas();
-  // Focus
+
+  var canvas = document.getElementById('canvas');
+  var empty = document.getElementById('canvas-empty');
+  empty.style.display = 'none';
+
+  // Ajouter juste le nouveau bloc sans tout recréer
+  var newEl = makeBlockEl(b, insertAt);
+  var newSep = makeDropSep(insertAt + 1);
+
+  if (blocks.length === 1) {
+    // Premier bloc — vider le canvas et ajouter
+    canvas.innerHTML = '';
+    canvas.appendChild(makeDropSep(0));
+    canvas.appendChild(newEl);
+    canvas.appendChild(newSep);
+  } else {
+    // Insérer après le séparateur correspondant
+    // Plus simple : reconstruire uniquement les index (pas le contenu)
+    // On rafraîchit juste les index des toolbars existants
+    var existingBlocks = canvas.querySelectorAll('.block');
+    if (insertAt >= existingBlocks.length) {
+      // Ajouter à la fin
+      canvas.appendChild(newEl);
+      canvas.appendChild(newSep);
+    } else {
+      // Insérer avant le bloc à l'index insertAt
+      canvas.insertBefore(newSep, existingBlocks[insertAt]);
+      canvas.insertBefore(newEl, newSep);
+    }
+    // Mettre à jour les index des boutons dans tous les blocs
+    updateBlockIndexes();
+  }
+
+  updateStats();
+  // Focus sur le nouveau bloc
   setTimeout(function(){
     var el = document.getElementById('input-' + b.id);
     if (el) el.focus();
   }, 50);
+}
+
+function updateBlockIndexes() {
+  // Mettre à jour les index dans les boutons toolbar de chaque bloc
+  var allBlocks = document.querySelectorAll('#canvas .block');
+  allBlocks.forEach(function(el, idx) {
+    var btns = el.querySelectorAll('.block-toolbar .tb-btn:not(.drag-handle)');
+    // Recréer la toolbar avec le bon index
+    var tb = el.querySelector('.block-toolbar');
+    if (tb) {
+      tb.innerHTML =
+        '<span class="tb-btn drag-handle" title="Déplacer">⠿</span>' +
+        '<button class="tb-btn" title="Monter" onclick="moveBlock(' + idx + ',-1)">↑</button>' +
+        '<button class="tb-btn" title="Descendre" onclick="moveBlock(' + idx + ',1)">↓</button>' +
+        '<button class="tb-btn" title="Dupliquer" onclick="duplicateBlock(' + idx + ')">⎘</button>' +
+        '<button class="tb-btn" title="Supprimer" onclick="removeBlock(' + idx + ')" style="color:#c44">✕</button>';
+    }
+  });
 }
 
 function removeBlock(idx) {
