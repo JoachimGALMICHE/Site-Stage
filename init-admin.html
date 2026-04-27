@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Initialisation Admin — L'Œil d'Euclide</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--beige:#F2EDE4;--violet:#1C1C2E;--gold:#B8956A;--line:#D8D0C4;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--beige);color:var(--violet);min-height:100vh;display:flex;align-items:center;justify-content:center;}
+.box{max-width:480px;width:100%;padding:0 20px;}
+.logo{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;letter-spacing:-2px;color:var(--violet);margin-bottom:8px;}
+.sub{font-size:12px;color:#8A8A9A;text-transform:uppercase;letter-spacing:.08em;margin-bottom:40px;}
+.warn{background:#FDF6F0;border:1px solid #E8D0B8;border-radius:3px;padding:14px 16px;font-size:13px;color:#7A3A10;margin-bottom:28px;line-height:1.6;}
+.warn strong{display:block;margin-bottom:4px;}
+label{display:block;font-size:11px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:#8A8A9A;margin-bottom:6px;}
+input{display:block;width:100%;border:1px solid var(--line);padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:14px;background:var(--beige);color:var(--violet);outline:none;border-radius:2px;transition:border-color .2s;margin-bottom:20px;}
+input:focus{border-color:var(--gold);}
+button{width:100%;background:var(--violet);color:#fff;border:none;padding:12px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:background .2s;}
+button:hover{background:#2A2A3E;}
+button:disabled{opacity:.5;cursor:not-allowed;}
+.msg{display:none;margin-top:16px;padding:12px 16px;border-radius:3px;font-size:13px;border:1px solid;line-height:1.6;}
+.msg.ok{background:#EAF5EE;border-color:#B8DEC4;color:#1A5C32;}
+.msg.err{background:#FDF3F0;border-color:#E8C4B8;color:#5C2A1A;}
+.delete-note{margin-top:24px;font-size:12px;color:#8A8A9A;text-align:center;line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="logo">L'Œil d'Euclide</div>
+  <div class="sub">Page d'initialisation — usage unique</div>
+
+  <div class="warn">
+    <strong>⚠ Page à usage unique</strong>
+    Cette page permet de définir le premier super-administrateur du site.
+    Supprimez ce fichier après utilisation.
+  </div>
+
+  <label for="email">Email du compte à promouvoir super-admin</label>
+  <input type="email" id="email" placeholder="joachim.galmiche@hotmail.fr">
+
+  <button id="btn" onclick="promoteAdmin()">Définir comme super-administrateur</button>
+
+  <div class="msg" id="msg"></div>
+
+  <p class="delete-note">
+    Après utilisation, supprimez le fichier <strong>init-admin.html</strong><br>
+    de votre serveur pour des raisons de sécurité.
+  </p>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, query, where, getDocs, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",
+  authDomain:"l-oeil-d-euclyde.firebaseapp.com",
+  projectId:"l-oeil-d-euclyde",
+  storageBucket:"l-oeil-d-euclyde.firebasestorage.app",
+  messagingSenderId:"179241004963",
+  appId:"1:179241004963:web:c7c7afa926e03032653416"
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+function showMsg(text, type) {
+  var el = document.getElementById('msg');
+  el.textContent = text;
+  el.className = 'msg ' + type;
+  el.style.display = 'block';
+}
+
+window.promoteAdmin = async function() {
+  var email = document.getElementById('email').value.trim().toLowerCase();
+  if (!email) { showMsg('Entrez un email.', 'err'); return; }
+
+  var btn = document.getElementById('btn');
+  btn.disabled = true;
+  btn.textContent = 'Recherche en cours…';
+
+  try {
+    // Chercher le document user par email
+    var q = query(collection(db, 'users'), where('email', '==', email));
+    var snap = await getDocs(q);
+
+    if (snap.empty) {
+      // Le compte n'existe pas encore dans Firestore — on le crée avec super-admin
+      // L'utilisateur doit d'abord s'être inscrit via connexion.html
+      showMsg(
+        'Aucun profil trouvé pour cet email.\n\nAssure-toi d\'avoir d\'abord créé le compte via la page Connexion → Inscription, puis réessaie.',
+        'err'
+      );
+      btn.disabled = false;
+      btn.textContent = 'Définir comme super-administrateur';
+      return;
+    }
+
+    // Mettre à jour le rôle
+    var userDoc = snap.docs[0];
+    await updateDoc(doc(db, 'users', userDoc.id), {
+      role: 'super-admin'
+    });
+
+    showMsg(
+      '✓ ' + email + ' est maintenant super-administrateur !\n\nTu peux maintenant te connecter sur connexion.html et accéder à toutes les fonctions d\'administration.\n\nPense à supprimer ce fichier init-admin.html.',
+      'ok'
+    );
+    btn.textContent = 'Fait ✓';
+
+  } catch(e) {
+    showMsg('Erreur Firebase : ' + e.message, 'err');
+    btn.disabled = false;
+    btn.textContent = 'Définir comme super-administrateur';
+  }
+};
+</script>
+</body>
+</html>

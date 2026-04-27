@@ -131,7 +131,7 @@ nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
 <header>
   <div class="header-top">
     <div>
-      <div style="display:flex;align-items:center;gap:14px"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><rect x="4" y="4" width="28" height="28" stroke="#B8956A" stroke-width="0.8" fill="none"/><circle cx="18" cy="18" r="14" stroke="#B8956A" stroke-width="0.8" fill="none"/><line x1="4" y1="18" x2="32" y2="18" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="18" y1="4" x2="18" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="32" y1="32" x2="44" y2="44" stroke="#B8956A" stroke-width="0.8" opacity="0.5"/><line x1="32" y1="4" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/><line x1="4" y1="32" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/></svg><div class="site-name">L'Œil d'Euclide</div></div>
+      <a href="index.html" style="display:flex;align-items:center;gap:14px;text-decoration:none;"><svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><rect x="4" y="4" width="28" height="28" stroke="#B8956A" stroke-width="0.8" fill="none"/><circle cx="18" cy="18" r="14" stroke="#B8956A" stroke-width="0.8" fill="none"/><line x1="4" y1="18" x2="32" y2="18" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="18" y1="4" x2="18" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="32" y1="32" x2="44" y2="44" stroke="#B8956A" stroke-width="0.8" opacity="0.5"/><line x1="32" y1="4" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/><line x1="4" y1="32" x2="32" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.4"/></svg><div class="site-name">L'Œil d'Euclide</div></a>
       <p class="tagline">Mettre notre monde en perspective</p>
     </div>
     <div class="header-right">
@@ -226,7 +226,7 @@ var GROUPES = [
       { id:'read_categories',  label:'Naviguer par catégorie',              desc:'Filtrer les articles par rubrique',                             vals:[true,true,true,true,true,true] },
       { id:'save_articles',    label:'Sauvegarder des articles',            desc:'Mettre des articles en favoris',                                vals:[true,true,true,true,true,false] },
       { id:'follow_categories',label:'Suivre des catégories',               desc:'Recevoir les nouveautés d\'une rubrique',                       vals:[true,true,true,true,false,false] },
-      { id:'newsletter',       label:'S\'abonner à la newsletter',          desc:'Recevoir la lettre hebdomadaire',                               vals:[true,true,true,true,true,true] },
+      { id:'newsletter',       label:'S\'abonner à la newsletter',          desc:'Recevoir la Lettre d'Euclide',                               vals:[true,true,true,true,true,true] },
     ]
   },
   {
@@ -445,9 +445,13 @@ onAuthStateChanged(_auth, async (user) => {
     var snap = await getDoc(doc(_db, 'users', user.uid));
     if (!snap.exists()) return;
     var p = snap.data();
+    var modBtn = ['super-admin','moderateur-redaction'].indexOf(p.role) !== -1
+      ? ' <a href="moderation.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">📋 Modération</a>'
+      : '';
     var adminBtn = p.role === 'super-admin'
       ? ' <a href="gestion-comptes.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">👥 Comptes</a>'
         + ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✍ Auteurs</a>'
+        + ' <a href="disposition.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✏ Disposition</a>'
         + ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>'
       : '';
     var writeBtn = _WRITERS.indexOf(p.role) !== -1
@@ -455,7 +459,7 @@ onAuthStateChanged(_auth, async (user) => {
       : '';
     el.innerHTML = '<span style="color:#EDE0CC">'+(_ROLES[p.role]||p.role)+'</span>'
       +' &mdash; <strong style="color:#fff">'+p.prenom+' '+p.nom+'</strong>'
-      +writeBtn+adminBtn
+      +writeBtn+modBtn+adminBtn
       +' <span style="opacity:.3;margin:0 6px">|</span>'
       +' <a href="#" id="_deco" style="color:#EDE0CC;">Déconnexion</a>';
     document.getElementById('_deco').addEventListener('click', async e => {
