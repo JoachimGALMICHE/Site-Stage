@@ -970,8 +970,60 @@ function submitArticle() {
   if (!document.getElementById('f-rubrique').value) {
     toast('\u26a0 Veuillez choisir une rubrique'); return;
   }
-  saveDraft();
-  document.getElementById('success-overlay').classList.add('show');
+  saveBlockContents();
+
+  // Récupérer les données
+  var titre    = document.getElementById('f-titre').value.trim();
+  var chapeau  = document.getElementById('f-chapeau').value.trim();
+  var rubrique = document.getElementById('f-rubrique').value;
+  var duree    = document.getElementById('f-duree').value;
+  var importance = document.getElementById('f-importance').value;
+  var legende  = document.getElementById('f-img-legende') ? document.getElementById('f-img-legende').value : '';
+  var conflictEl = document.querySelector('input[name="article-conflict"]:checked');
+  var conflict   = conflictEl ? conflictEl.value : 'none';
+  var conflictTxt = document.getElementById('f-conflict-txt') ? document.getElementById('f-conflict-txt').value : '';
+  var auteurSel  = document.getElementById('f-auteur-select');
+  var auteurId   = auteurSel ? auteurSel.value : '';
+  var auteurNom  = auteurSel && auteurSel.selectedIndex > 0 ? auteurSel.options[auteurSel.selectedIndex].text.split(' (')[0] : '';
+
+  var articleData = {
+    titre, chapeau, rubrique, duree, importance,
+    imageTitre: titreImgData,
+    imageLegende: legende,
+    auteurId, auteurNom,
+    coauteurs: selectedCoauthors,
+    conflict, conflictTxt,
+    tags: tags,
+    blocks: blocks,
+    statut: 'soumis',
+    soumisLe: new Date()
+  };
+
+  // Sauvegarder dans Firestore
+  var btn = document.querySelector('.btn-submit');
+  if (btn) { btn.disabled = true; btn.textContent = 'Envoi…'; }
+
+  // Utiliser le module Firebase déjà chargé
+  if (window._db && window._addDoc && window._collection) {
+    window._addDoc(window._collection(window._db, 'articles'), articleData)
+      .then(function() {
+        if (btn) { btn.disabled = false; btn.textContent = 'Soumettre →'; }
+        saveDraft(true);
+        try { localStorage.removeItem('euclide_draft'); } catch(e) {}
+        document.getElementById('success-overlay').classList.add('show');
+        toast('✓ Article soumis à la rédaction !');
+      })
+      .catch(function(e) {
+        if (btn) { btn.disabled = false; btn.textContent = 'Soumettre →'; }
+        toast('⚠ Erreur : ' + e.message);
+      });
+  } else {
+    // Firebase pas encore prêt, réessayer dans 1s
+    setTimeout(function() {
+      if (btn) { btn.disabled = false; btn.textContent = 'Soumettre →'; }
+      toast('⚠ Firebase non prêt, réessayez');
+    }, 1000);
+  }
 }
 
 function resetEditor() {
@@ -1165,6 +1217,9 @@ const _app = initializeApp({
 });
 const _auth = getAuth(_app);
 const _db = getFirestore(_app);
+window._db = _db; // Rendre disponible au script principal
+window._addDoc = addDoc;
+window._collection = collection;
 const _ROLES = {'super-admin':'Super-administrateur','moderateur-redaction':'Modérateur de rédaction','redacteur':'Rédacteur','moderateur-comments':'Modérateur de commentaires','lecteur-commentateur':'Lecteur-commentateur','lecteur':'Lecteur'};
 const _WRITERS = ['super-admin','moderateur-redaction','redacteur'];
 onAuthStateChanged(_auth, async (user) => {
@@ -1178,9 +1233,13 @@ onAuthStateChanged(_auth, async (user) => {
     var snap = await getDoc(doc(_db, 'users', user.uid));
     if (!snap.exists()) return;
     var p = snap.data();
+    var modBtn = ['super-admin','moderateur-redaction'].indexOf(p.role) !== -1
+      ? ' <a href="moderation.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">📋 Modération</a>'
+      : '';
     var adminBtn = p.role === 'super-admin'
       ? ' <a href="gestion-comptes.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">👥 Comptes</a>'
         + ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✍ Auteurs</a>'
+        + ' <a href="disposition.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✏ Disposition</a>'
         + ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>'
       : '';
     var writeBtn = _WRITERS.indexOf(p.role) !== -1
@@ -1188,7 +1247,7 @@ onAuthStateChanged(_auth, async (user) => {
       : '';
     el.innerHTML = '<span style="color:#EDE0CC">'+(_ROLES[p.role]||p.role)+'</span>'
       +' &mdash; <strong style="color:#fff">'+p.prenom+' '+p.nom+'</strong>'
-      +writeBtn+adminBtn
+      +writeBtn+modBtn+adminBtn
       +' <span style="opacity:.3;margin:0 6px">|</span>'
       +' <a href="profil.html" style="color:#EDE0CC;">Mon profil</a>'
       +' <span style="opacity:.3;margin:0 4px">|</span>'
