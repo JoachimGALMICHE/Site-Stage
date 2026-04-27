@@ -222,7 +222,7 @@ footer a{color:var(--violet-l);}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, getDocs, updateDoc, collection, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, getDocs, updateDoc, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const app = initializeApp({
   apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",
@@ -283,20 +283,18 @@ function updateTopbar(p) {
 // ── CHARGEMENT ────────────────────────────────────────────────────────
 async function loadArticles() {
   try {
-    const snap = await getDocs(query(collection(db, 'articles'), orderBy('soumisLe', 'desc')));
+    const snap = await getDocs(collection(db, 'articles'));
     allArticles = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    // Trier côté client par date de soumission
+    allArticles.sort((a, b) => {
+      const da = a.soumisLe ? (a.soumisLe.seconds || 0) : 0;
+      const db2 = b.soumisLe ? (b.soumisLe.seconds || 0) : 0;
+      return db2 - da;
+    });
     updateStats();
     renderList();
   } catch(e) {
-    // Si collection vide ou pas de champ soumisLe, charger sans orderBy
-    try {
-      const snap2 = await getDocs(collection(db, 'articles'));
-      allArticles = snap2.docs.map(d => ({ id: d.id, ...d.data() }));
-      updateStats();
-      renderList();
-    } catch(e2) {
-      document.getElementById('articles-list').innerHTML = '<p class="empty-state">Erreur de chargement : ' + e2.message + '</p>';
-    }
+    document.getElementById('articles-list').innerHTML = '<p class="empty-state">Erreur : ' + e.message + '</p>';
   }
 }
 

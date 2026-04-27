@@ -409,7 +409,9 @@ async function loadDispo() {
 
 window.saveDispo = async function(silent) {
   try {
-    await setDoc(doc(db, 'config', 'disposition'), { bandeaux, updatedAt: new Date() });
+    // Nettoyer les undefined pour Firestore
+    const clean = JSON.parse(JSON.stringify(bandeaux, (k, v) => v === undefined ? null : v));
+    await setDoc(doc(db, 'config', 'disposition'), { bandeaux: clean, updatedAt: new Date() });
     if (!silent) toast('✓ Disposition sauvegardée');
   } catch(e) { toast('Erreur : ' + e.message); }
 };
