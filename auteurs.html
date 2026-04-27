@@ -165,10 +165,7 @@ nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
 </head>
 <body>
 
-<div id="topbar">
-  <span><a href="index.html">← L'Œil d'Euclide</a></span>
-  <span id="topbar-right">Administration</span>
-</div>
+<div id="topbar"><span id="topbar-date"></span><span id="topbar-right"></span></div>
 
 <header>
   <div class="header-top">
@@ -300,245 +297,10 @@ nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
 </footer>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const app = initializeApp({
-  apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",
-  authDomain:"l-oeil-d-euclyde.firebaseapp.com",
-  projectId:"l-oeil-d-euclyde",
-  storageBucket:"l-oeil-d-euclyde.firebasestorage.app",
-  messagingSenderId:"179241004963",
-  appId:"1:179241004963:web:c7c7afa926e03032653416"
-});
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// ── ÉTAT ─────────────────────────────────────────────────────────────
-var currentTags = { institutions: [], themes: [] };
-var editingId = null;
-var allAuthors = [];
-
-function uid() { return 'a' + Date.now() + Math.random().toString(36).slice(2,6); }
-
-// ── CHARGEMENT ────────────────────────────────────────────────────────
-async function loadAuthors() {
-  try {
-    // Charger la collection auteurs
-    var snap = await getDocs(collection(db, 'auteurs'));
-    allAuthors = snap.docs.map(d => ({ id: d.id, source:'auteurs', ...d.data() }));
-
-    // Charger aussi les super-admins depuis users
-    var adminSnap = await getDocs(collection(db, 'users'));
-    adminSnap.forEach(d => {
-      const u = d.data();
-      if (u.role === 'super-admin') {
-        // Vérifier qu'il n'est pas déjà dans auteurs
-        const exists = allAuthors.find(a => a.prenom===u.prenom && a.nom===u.nom);
-        if (!exists) {
-          allAuthors.push({
-            id: 'admin_'+d.id,
-            source: 'admin',
-            prenom: u.prenom,
-            nom: u.nom,
-            institutions: ["L'Oeil d'Euclide"],
-            themes: ['Administration'],
-            desc: "Super-administrateur du site L'Oeil d'Euclide.",
-            email: u.email
-          });
-        }
-      }
-    });
-    render();
-  } catch(e) {
-    console.error('Erreur chargement auteurs:', e);
-    allAuthors = [];
-    render();
-  }
-}
-
-// ── RENDU ─────────────────────────────────────────────────────────────
-function render() {
-  var q = document.getElementById('search-input').value.trim().toLowerCase();
-  var filtered = q ? allAuthors.filter(function(a) {
-    return (a.prenom+' '+a.nom+' '+(a.institutions||[]).join(' ')+' '+(a.themes||[]).join(' ')).toLowerCase().includes(q);
-  }) : allAuthors;
-
-  document.getElementById('stat-total').textContent = allAuthors.length;
-  var allInst = new Set(); var allTh = new Set();
-  allAuthors.forEach(function(a){ (a.institutions||[]).forEach(i=>allInst.add(i)); (a.themes||[]).forEach(t=>allTh.add(t)); });
-  document.getElementById('stat-institutions').textContent = allInst.size;
-  document.getElementById('stat-themes').textContent = allTh.size;
-
-  var grid = document.getElementById('authors-grid');
-  var empty = document.getElementById('empty-state');
-
-  if (filtered.length === 0) {
-    grid.innerHTML = '';
-    empty.style.display = 'block';
-    grid.appendChild(empty);
-    return;
-  }
-  empty.style.display = 'none';
-  grid.innerHTML = '';
-
-  filtered.forEach(function(a) {
-    var initials = (a.prenom[0]||'')+(a.nom[0]||'');
-    var isAdmin = a.source === 'admin';
-    var card = document.createElement('div');
-    card.className = 'author-card';
-    card.id = 'card-'+a.id;
-    card.innerHTML =
-      '<div class="author-card-header" onclick="toggleCard(''+a.id+'')">'
-      +'<div class="author-avatar" style="'+(isAdmin?'background:var(--violet-m)':'')+'">'+initials.toUpperCase()+'</div>'
-      +'<div class="author-main">'
-        +'<div class="author-name">'+a.prenom+' '+a.nom+(isAdmin?' <span style="font-size:10px;background:var(--violet);color:#fff;padding:1px 6px;border-radius:2px;margin-left:6px;vertical-align:middle;">Super-admin</span>':'')+'</div>'
-        +'<div class="author-institutions">'+(a.institutions||[]).join(' · ')+'</div>'
-        +'<div class="author-tags">'+(a.themes||[]).map(t=>'<span class="tag">'+t+'</span>').join('')+'</div>'
-      +'</div>'
-      +'<div class="author-actions">'
-        +(isAdmin
-          ? '<span style="font-size:11px;color:var(--text3);padding:0 8px;">Compte administrateur</span>'
-          : '<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();editAuthor(''+a.id+'')">Modifier</button>'
-            +'<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteAuthor(''+a.id+'')">Supprimer</button>'
-        )
-        +'<span class="expand-icon">▼</span>'
-      +'</div>'
-      +'</div>'
-      +'<div class="author-card-body">'
-        +'<p class="author-desc">'+(a.desc||'')+'</p>'
-        +'<div class="author-meta-grid">'
-          +(a.email?'<div class="author-meta-item"><div class="lbl">Email</div><div class="val" style="color:var(--gold)">'+a.email+'</div></div>':'')
-        +'</div>'
-      +'</div>';
-    grid.appendChild(card);
-  });
-}
-
-window.toggleCard = function(id) {
-  var card = document.getElementById('card-'+id);
-  if (card) card.classList.toggle('expanded');
-};
-window.filterAuthors = function() { render(); };
-
-// ── MODAL ─────────────────────────────────────────────────────────────
-window.openModal = function(author) {
-  editingId = author ? author.id : null;
-  currentTags.institutions = author ? (author.institutions||[]).slice() : [];
-  currentTags.themes = author ? (author.themes||[]).slice() : [];
-  document.getElementById('modal-title').textContent = author ? "Modifier l'auteur" : 'Nouvel auteur';
-  document.getElementById('f-prenom').value = author ? author.prenom : '';
-  document.getElementById('f-nom').value = author ? author.nom : '';
-  document.getElementById('f-desc').value = author ? author.desc : '';
-  document.getElementById('f-email').value = author ? (author.email||'') : '';
-  document.getElementById('form-error').style.display = 'none';
-  renderTagsInModal('institutions');
-  renderTagsInModal('themes');
-  document.getElementById('modal').classList.add('show');
-};
-window.closeModal = function() { document.getElementById('modal').classList.remove('show'); editingId = null; };
-
-window.handleTagInput = function(e, type, inputId) {
-  if (e.key !== 'Enter' && e.key !== ',') return;
-  e.preventDefault();
-  var val = document.getElementById(inputId).value.trim();
-  if (!val) return;
-  if (currentTags[type].indexOf(val) === -1) currentTags[type].push(val);
-  document.getElementById(inputId).value = '';
-  renderTagsInModal(type);
-};
-
-function renderTagsInModal(type) {
-  var wrap = document.getElementById(type+'-wrap');
-  var inputId = type === 'institutions' ? 'institution-input' : 'theme-input';
-  var input = document.getElementById(inputId);
-  Array.from(wrap.querySelectorAll('.tag-chip')).forEach(el=>el.remove());
-  currentTags[type].forEach(function(t,i){
-    var chip = document.createElement('span');
-    chip.className = 'tag-chip';
-    chip.innerHTML = t+'<span class="tag-chip-remove" onclick="removeTag(''+type+'','+i+')">×</span>';
-    wrap.insertBefore(chip, input);
-  });
-}
-window.removeTag = function(type, idx) { currentTags[type].splice(idx,1); renderTagsInModal(type); };
-
-// ── SAVE ──────────────────────────────────────────────────────────────
-window.saveAuthor = async function() {
-  var prenomRaw = document.getElementById('f-prenom').value.trim();
-  var nomRaw    = document.getElementById('f-nom').value.trim();
-  var desc      = document.getElementById('f-desc').value.trim();
-  var email     = document.getElementById('f-email').value.trim();
-  var errEl     = document.getElementById('form-error');
-
-  if (!prenomRaw||!nomRaw) { errEl.textContent='Prénom et nom obligatoires.'; errEl.style.display='block'; return; }
-  if (currentTags.institutions.length===0) { errEl.textContent='Ajoutez au moins une institution.'; errEl.style.display='block'; return; }
-  if (currentTags.themes.length===0) { errEl.textContent="Ajoutez au moins un thème d'expertise."; errEl.style.display='block'; return; }
-  if (!desc) { errEl.textContent='La description est obligatoire.'; errEl.style.display='block'; return; }
-
-  var prenom = prenomRaw.charAt(0).toUpperCase()+prenomRaw.slice(1).toLowerCase();
-  var nom = nomRaw.toUpperCase();
-
-  var data = { prenom, nom, institutions: currentTags.institutions.slice(), themes: currentTags.themes.slice(), desc, email };
-
-  try {
-    if (editingId) {
-      await updateDoc(doc(db,'auteurs',editingId), data);
-      var idx = allAuthors.findIndex(a=>a.id===editingId);
-      if (idx !== -1) allAuthors[idx] = { id:editingId, ...data };
-      toast('✓ Auteur modifié');
-    } else {
-      var ref = await addDoc(collection(db,'auteurs'), data);
-      allAuthors.push({ id:ref.id, ...data });
-      toast('✓ Auteur ajouté');
-    }
-    window.closeModal();
-    render();
-  } catch(e) {
-    errEl.textContent = 'Erreur Firebase : '+e.message;
-    errEl.style.display = 'block';
-  }
-};
-
-window.editAuthor = function(id) {
-  var a = allAuthors.find(x=>x.id===id);
-  if (a) window.openModal(a);
-};
-
-window.deleteAuthor = async function(id) {
-  if (!confirm('Supprimer cet auteur ?')) return;
-  try {
-    await deleteDoc(doc(db,'auteurs',id));
-    allAuthors = allAuthors.filter(a=>a.id!==id);
-    toast('Auteur supprimé');
-    render();
-  } catch(e) { toast('Erreur: '+e.message); }
-};
-
-function toast(msg) {
-  var t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2200);
-}
-
-// ── ACCÈS ─────────────────────────────────────────────────────────────
-onAuthStateChanged(auth, async (user) => {
-  if (!user) { document.getElementById('access-denied').style.display='block'; return; }
-  try {
-    var snap = await getDoc(doc(db,'users',user.uid));
-    if (!snap.exists() || snap.data().role !== 'super-admin') {
-      document.getElementById('access-denied').style.display='block'; return;
-    }
-    document.getElementById('main-content').style.display='block';
-    await loadAuthors();
-  } catch(e) { document.getElementById('access-denied').style.display='block'; }
-});
-</script>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-const _app = initializeApp({
+const _app = getApps().length ? getApps()[0] : initializeApp({
   apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",
   authDomain:"l-oeil-d-euclyde.firebaseapp.com",
   projectId:"l-oeil-d-euclyde",
@@ -548,8 +310,15 @@ const _app = initializeApp({
 });
 const _auth = getAuth(_app);
 const _db = getFirestore(_app);
+// Exposer pour les autres scripts
+window._db = _db; window._auth = _auth;
 const _ROLES = {'super-admin':'Super-administrateur','moderateur-redaction':'Modérateur de rédaction','redacteur':'Rédacteur','moderateur-comments':'Modérateur de commentaires','lecteur-commentateur':'Lecteur-commentateur','lecteur':'Lecteur'};
 const _WRITERS = ['super-admin','moderateur-redaction','redacteur'];
+const _MODS = ['super-admin','moderateur-redaction'];
+// Date
+var _d = new Date();
+var _dt = document.getElementById('topbar-date');
+if (_dt) _dt.textContent = _d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).replace(/^./,function(c){return c.toUpperCase();});
 onAuthStateChanged(_auth, async (user) => {
   var el = document.getElementById('topbar-right');
   if (!el) return;
@@ -561,27 +330,25 @@ onAuthStateChanged(_auth, async (user) => {
     var snap = await getDoc(doc(_db, 'users', user.uid));
     if (!snap.exists()) return;
     var p = snap.data();
-    var modBtn = ['super-admin','moderateur-redaction'].indexOf(p.role) !== -1
-      ? ' <a href="moderation.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">📋 Modération</a>'
-      : '';
-    var adminBtn = p.role === 'super-admin'
-      ? ' <a href="gestion-comptes.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">👥 Comptes</a>'
-        + ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✍ Auteurs</a>'
-        + ' <a href="disposition.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✏ Disposition</a>'
-        + ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>'
-      : '';
-    var writeBtn = _WRITERS.indexOf(p.role) !== -1
-      ? ' <a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>'
-      : '';
+    var isSA  = p.role === 'super-admin';
+    var isMod = _MODS.indexOf(p.role) !== -1;
+    var isWriter = _WRITERS.indexOf(p.role) !== -1;
+    var btns = '';
+    if (isWriter) btns += ' <a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>';
+    if (isMod)   btns += ' <a href="moderation.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;border:1px solid #D4B896;">📋 Modération</a>';
+    if (isSA)    btns += ' <a href="gestion-comptes.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">👥 Comptes</a>';
+    if (isSA)    btns += ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✍ Auteurs</a>';
+    if (isSA||isMod) btns += ' <a href="disposition.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✏ Disposition</a>';
+    if (isSA)    btns += ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>';
     el.innerHTML = '<span style="color:#EDE0CC">'+(_ROLES[p.role]||p.role)+'</span>'
-      +' &mdash; <strong style="color:#fff">'+p.prenom+' '+p.nom+'</strong>'
-      +writeBtn+modBtn+adminBtn
+      +' — <strong style="color:#fff">'+p.prenom+' '+p.nom+'</strong>'
+      +btns
       +' <span style="opacity:.3;margin:0 6px">|</span>'
+      +' <a href="profil.html" style="color:#EDE0CC;">Mon profil</a>'
+      +' <span style="opacity:.3;margin:0 4px">|</span>'
       +' <a href="#" id="_deco" style="color:#EDE0CC;">Déconnexion</a>';
     document.getElementById('_deco').addEventListener('click', async e => {
-      e.preventDefault();
-      await signOut(_auth);
-      window.location.href = 'connexion.html';
+      e.preventDefault(); await signOut(_auth); window.location.href = 'connexion.html';
     });
   } catch(e) { console.error(e); }
 });

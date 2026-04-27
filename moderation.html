@@ -138,10 +138,7 @@ footer a{color:var(--violet-l);}
 </head>
 <body>
 
-<div id="topbar">
-  <span><a href="index.html">← L'Œil d'Euclide</a></span>
-  <span id="topbar-right"></span>
-</div>
+<div id="topbar"><span id="topbar-date"></span><span id="topbar-right"></span></div>
 
 <header>
   <div class="header-top">
@@ -152,9 +149,7 @@ footer a{color:var(--violet-l);}
       </a>
       <p class="tagline" style="margin-top:6px;">Modération des articles soumis</p>
     </div>
-    <div class="header-right">
-      <a href="creer-article.html" class="btn btn-ghost" style="font-size:12px;padding:7px 14px;border:1px solid var(--line2);border-radius:2px;color:var(--text2);">+ Nouvel article</a>
-    </div>
+    
   </div>
   <nav id="cats">
     <a href="index.html">Accueil</a>
@@ -220,11 +215,10 @@ footer a{color:var(--violet-l);}
 </footer>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, getDocs, updateDoc, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const app = initializeApp({
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const _app = getApps().length ? getApps()[0] : initializeApp({
   apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",
   authDomain:"l-oeil-d-euclyde.firebaseapp.com",
   projectId:"l-oeil-d-euclyde",
@@ -232,301 +226,50 @@ const app = initializeApp({
   messagingSenderId:"179241004963",
   appId:"1:179241004963:web:c7c7afa926e03032653416"
 });
-const auth = getAuth(app);
-const db   = getFirestore(app);
-
-const ROLES = {'super-admin':'Super-administrateur','moderateur-redaction':'Modérateur de rédaction','redacteur':'Rédacteur','moderateur-comments':'Modérateur de commentaires','lecteur-commentateur':'Lecteur-commentateur','lecteur':'Lecteur'};
-const MODERATEURS = ['super-admin','moderateur-redaction'];
-const WRITERS = ['super-admin','moderateur-redaction','redacteur'];
-
-let allArticles = [];
-let currentFilter = 'all';
-let currentUser = null;
-
-// ── ACCÈS ─────────────────────────────────────────────────────────────
-onAuthStateChanged(auth, async (user) => {
-  document.getElementById('loader').style.display = 'none';
-  if (!user) { document.getElementById('access-denied').style.display = 'block'; return; }
-  try {
-    const snap = await getDoc(doc(db, 'users', user.uid));
-    if (!snap.exists()) { document.getElementById('access-denied').style.display = 'block'; return; }
-    const p = snap.data();
-    if (!MODERATEURS.includes(p.role)) { document.getElementById('access-denied').style.display = 'block'; return; }
-    currentUser = { ...p, uid: user.uid };
-    updateTopbar(p);
-    document.getElementById('main-content').style.display = 'block';
-    await loadArticles();
-  } catch(e) { document.getElementById('access-denied').style.display = 'block'; }
-});
-
-function updateTopbar(p) {
-  const el = document.getElementById('topbar-right');
-  const adminBtn = p.role === 'super-admin'
-    ? ' <a href="gestion-comptes.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">👥 Comptes</a>'
-      + ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✍ Auteurs</a>'
-      + ' <a href="disposition.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✏ Disposition</a>'
-      + ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>'
-    : '';
-  el.innerHTML = '<span style="color:#EDE0CC">'+(ROLES[p.role]||p.role)+'</span>'
-    +' &mdash; <strong style="color:#fff">'+p.prenom+' '+p.nom+'</strong>'
-    +' <a href="moderation.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">📋 Modération</a>'
-    +adminBtn
-    +' <span style="opacity:.3;margin:0 6px">|</span>'
-    +' <a href="profil.html" style="color:#EDE0CC;">Mon profil</a>'
-    +' <span style="opacity:.3;margin:0 4px">|</span>'
-    +' <a href="#" id="btn-deco" style="color:#EDE0CC;">Déconnexion</a>';
-  document.getElementById('btn-deco').addEventListener('click', async e => {
-    e.preventDefault(); await signOut(auth); window.location.href = 'connexion.html';
-  });
-}
-
-// ── CHARGEMENT ────────────────────────────────────────────────────────
-async function loadArticles() {
-  try {
-    const snap = await getDocs(collection(db, 'articles'));
-    allArticles = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    // Trier côté client par date de soumission
-    allArticles.sort((a, b) => {
-      const da = a.soumisLe ? (a.soumisLe.seconds || 0) : 0;
-      const db2 = b.soumisLe ? (b.soumisLe.seconds || 0) : 0;
-      return db2 - da;
-    });
-    updateStats();
-    renderList();
-  } catch(e) {
-    document.getElementById('articles-list').innerHTML = '<p class="empty-state">Erreur : ' + e.message + '</p>';
-  }
-}
-
-function updateStats() {
-  document.getElementById('stat-total').textContent   = allArticles.length;
-  document.getElementById('stat-pending').textContent  = allArticles.filter(a => a.statut === 'soumis' || !a.statut).length;
-  document.getElementById('stat-approved').textContent = allArticles.filter(a => a.statut === 'publie').length;
-  document.getElementById('stat-rejected').textContent = allArticles.filter(a => a.statut === 'refuse').length;
-}
-
-// ── FILTRES ───────────────────────────────────────────────────────────
-window.setFilter = function(f, btn) {
-  currentFilter = f;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderList();
-};
-
-function getFiltered() {
-  if (currentFilter === 'all') return allArticles;
-  if (currentFilter === 'pending')  return allArticles.filter(a => a.statut === 'soumis' || !a.statut);
-  if (currentFilter === 'approved') return allArticles.filter(a => a.statut === 'publie');
-  if (currentFilter === 'rejected') return allArticles.filter(a => a.statut === 'refuse');
-  return allArticles;
-}
-
-// ── RENDU ─────────────────────────────────────────────────────────────
-function renderList() {
-  const list = document.getElementById('articles-list');
-  const filtered = getFiltered();
-  if (filtered.length === 0) {
-    list.innerHTML = '<div class="empty-state">Aucun article dans cette catégorie.</div>';
+const _auth = getAuth(_app);
+const _db = getFirestore(_app);
+// Exposer pour les autres scripts
+window._db = _db; window._auth = _auth;
+const _ROLES = {'super-admin':'Super-administrateur','moderateur-redaction':'Modérateur de rédaction','redacteur':'Rédacteur','moderateur-comments':'Modérateur de commentaires','lecteur-commentateur':'Lecteur-commentateur','lecteur':'Lecteur'};
+const _WRITERS = ['super-admin','moderateur-redaction','redacteur'];
+const _MODS = ['super-admin','moderateur-redaction'];
+// Date
+var _d = new Date();
+var _dt = document.getElementById('topbar-date');
+if (_dt) _dt.textContent = _d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).replace(/^./,function(c){return c.toUpperCase();});
+onAuthStateChanged(_auth, async (user) => {
+  var el = document.getElementById('topbar-right');
+  if (!el) return;
+  if (!user) {
+    el.innerHTML = '<a href="connexion.html" style="color:#EDE0CC;">Connexion</a>';
     return;
   }
-  list.innerHTML = filtered.map(a => renderArticleItem(a)).join('');
-}
-
-function statusBadge(statut) {
-  if (statut === 'publie')  return '<span class="art-status status-approved">✓ Publié</span>';
-  if (statut === 'refuse')  return '<span class="art-status status-rejected">✕ Refusé</span>';
-  return '<span class="art-status status-pending">⏳ En attente</span>';
-}
-
-function renderArticleItem(a) {
-  const date = a.soumisLe ? new Date(a.soumisLe.seconds ? a.soumisLe.seconds*1000 : a.soumisLe).toLocaleDateString('fr-FR') : '—';
-  const isPending = !a.statut || a.statut === 'soumis';
-  const actionBtns = isPending ? `
-    <button class="btn btn-approve" onclick="event.stopPropagation();approveArticle('${a.id}')">✓ Publier</button>
-    <button class="btn btn-reject"  onclick="event.stopPropagation();showRejectForm('${a.id}')">✕ Refuser</button>
-  ` : `
-    <button class="btn btn-ghost" onclick="event.stopPropagation();resetStatus('${a.id}')">↺ Remettre en attente</button>
-  `;
-
-  return `<div class="article-item" id="item-${a.id}">
-    <div class="article-header" onclick="toggleDetail('${a.id}')">
-      <div class="art-left">
-        ${statusBadge(a.statut)}
-        <div class="art-title">${a.titre || 'Sans titre'}</div>
-        <div class="art-meta">
-          <span><b>${a.auteurNom || a.auteur || '—'}</b></span>
-          <span>${a.rubrique || '—'}</span>
-          <span>Soumis le ${date}</span>
-          <span>${a.duree || ''}</span>
-        </div>
-      </div>
-      <div class="art-right">
-        ${a.imageTitre ? `<img class="art-img" src="${a.imageTitre}" alt="">` : ''}
-        <button class="btn btn-preview" onclick="event.stopPropagation();openPreview('${a.id}')">👁 Aperçu</button>
-        ${actionBtns}
-      </div>
-    </div>
-
-    <div class="article-detail" id="detail-${a.id}">
-      <div class="detail-grid">
-        <div class="detail-body">
-          ${a.chapeau ? `<p class="chapeau-preview">${a.chapeau}</p>` : ''}
-          <div class="blocks-preview" id="blocks-${a.id}">
-            ${renderBlocks(a.blocks || [])}
-          </div>
-          <!-- FORMULAIRE REFUS -->
-          <div class="reject-form" id="reject-form-${a.id}">
-            <p style="font-size:13px;font-weight:500;color:var(--red);margin-bottom:8px;">Motif du refus (envoyé au rédacteur)</p>
-            <textarea id="reject-txt-${a.id}" placeholder="Expliquez pourquoi l'article est refusé…"></textarea>
-            <div class="reject-actions">
-              <button class="btn btn-reject" onclick="confirmReject('${a.id}')">Confirmer le refus</button>
-              <button class="btn btn-ghost" onclick="hideRejectForm('${a.id}')">Annuler</button>
-            </div>
-          </div>
-        </div>
-        <div class="detail-side">
-          <div class="side-section">
-            <p class="side-label">Rubrique</p>
-            <p style="font-size:13px;color:var(--violet);font-weight:500;">${a.rubrique || '—'}</p>
-          </div>
-          <div class="side-section">
-            <p class="side-label">Auteur(e)</p>
-            <p style="font-size:13px;color:var(--violet);font-weight:500;">${a.auteurNom || a.auteur || '—'}</p>
-            ${a.auteurInstitution ? `<p style="font-size:11px;color:var(--text3);margin-top:2px;">${a.auteurInstitution}</p>` : ''}
-          </div>
-          <div class="side-section">
-            <p class="side-label">Conflit d'intérêt</p>
-            ${a.conflict === 'declared'
-              ? `<div class="conflict-badge conflict-yes">⚠ Déclaré<br><span style="font-size:11px;font-weight:300;">${a.conflictTxt||''}</span></div>`
-              : `<div class="conflict-badge conflict-none">✓ Aucun conflit</div>`}
-          </div>
-          ${a.tags && a.tags.length ? `<div class="side-section">
-            <p class="side-label">Mots-clés</p>
-            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;">
-              ${a.tags.map(t => `<span style="font-size:10px;color:var(--violet-m);background:var(--violet-xl);padding:2px 7px;border-radius:2px;">${t}</span>`).join('')}
-            </div>
-          </div>` : ''}
-          ${a.moderationComment ? `<div class="side-section" style="border-color:var(--red-bd);background:var(--red-bg);">
-            <p class="side-label" style="color:var(--red);">Commentaire modérateur</p>
-            <p style="font-size:12px;color:var(--red);">${a.moderationComment}</p>
-          </div>` : ''}
-        </div>
-      </div>
-    </div>
-  </div>`;
-}
-
-function renderBlocks(blocks) {
-  if (!blocks || blocks.length === 0) return '<p style="font-size:12px;color:var(--text3);">Pas de contenu</p>';
-  return blocks.slice(0, 4).map(b => {
-    if (b.type === 'title')    return `<div class="block-prev title-b">${b.content||''}</div>`;
-    if (b.type === 'text')     return `<div class="block-prev">${(b.content||'').substring(0,200)}${b.content && b.content.length > 200 ? '…' : ''}</div>`;
-    if (b.type === 'quote')    return `<div class="block-prev quote-b">${b.content||''}</div>`;
-    if (b.type === 'image')    return `<div class="block-prev" style="font-size:11px;color:var(--text3);">🖼 Image</div>`;
-    if (b.type === 'separator') return '<hr style="border:none;border-top:1px solid var(--line);margin:8px 0;">';
-    return '';
-  }).join('') + (blocks.length > 4 ? `<p style="font-size:11px;color:var(--text3);margin-top:6px;">+ ${blocks.length - 4} bloc(s) supplémentaire(s)</p>` : '');
-}
-
-// ── ACTIONS ───────────────────────────────────────────────────────────
-window.toggleDetail = function(id) {
-  const item = document.getElementById('item-' + id);
-  item.classList.toggle('expanded');
-};
-
-window.approveArticle = async function(id) {
   try {
-    await updateDoc(doc(db, 'articles', id), {
-      statut: 'publie',
-      publieLe: new Date(),
-      modereePar: currentUser.uid,
-      moderePrNom: currentUser.prenom + ' ' + currentUser.nom
+    var snap = await getDoc(doc(_db, 'users', user.uid));
+    if (!snap.exists()) return;
+    var p = snap.data();
+    var isSA  = p.role === 'super-admin';
+    var isMod = _MODS.indexOf(p.role) !== -1;
+    var isWriter = _WRITERS.indexOf(p.role) !== -1;
+    var btns = '';
+    if (isWriter) btns += ' <a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>';
+    if (isMod)   btns += ' <a href="moderation.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;border:1px solid #D4B896;">📋 Modération</a>';
+    if (isSA)    btns += ' <a href="gestion-comptes.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">👥 Comptes</a>';
+    if (isSA)    btns += ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✍ Auteurs</a>';
+    if (isSA||isMod) btns += ' <a href="disposition.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✏ Disposition</a>';
+    if (isSA)    btns += ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>';
+    el.innerHTML = '<span style="color:#EDE0CC">'+(_ROLES[p.role]||p.role)+'</span>'
+      +' — <strong style="color:#fff">'+p.prenom+' '+p.nom+'</strong>'
+      +btns
+      +' <span style="opacity:.3;margin:0 6px">|</span>'
+      +' <a href="profil.html" style="color:#EDE0CC;">Mon profil</a>'
+      +' <span style="opacity:.3;margin:0 4px">|</span>'
+      +' <a href="#" id="_deco" style="color:#EDE0CC;">Déconnexion</a>';
+    document.getElementById('_deco').addEventListener('click', async e => {
+      e.preventDefault(); await signOut(_auth); window.location.href = 'connexion.html';
     });
-    const a = allArticles.find(x => x.id === id);
-    if (a) { a.statut = 'publie'; a.publieLe = new Date(); }
-    updateStats();
-    renderList();
-    toast('✓ Article publié !', 'ok');
-  } catch(e) { toast('Erreur : ' + e.message); }
-};
-
-window.showRejectForm = function(id) {
-  const form = document.getElementById('reject-form-' + id);
-  if (form) form.classList.add('show');
-  // S'assurer que le détail est ouvert
-  const item = document.getElementById('item-' + id);
-  if (item) item.classList.add('expanded');
-};
-
-window.hideRejectForm = function(id) {
-  const form = document.getElementById('reject-form-' + id);
-  if (form) form.classList.remove('show');
-};
-
-window.confirmReject = async function(id) {
-  const txt = document.getElementById('reject-txt-' + id).value.trim();
-  if (!txt) { toast('Veuillez entrer un motif de refus'); return; }
-  try {
-    await updateDoc(doc(db, 'articles', id), {
-      statut: 'refuse',
-      refuseLe: new Date(),
-      modereePar: currentUser.uid,
-      moderationComment: txt
-    });
-    const a = allArticles.find(x => x.id === id);
-    if (a) { a.statut = 'refuse'; a.moderationComment = txt; }
-    updateStats();
-    renderList();
-    toast('Article refusé avec commentaire', 'ok');
-  } catch(e) { toast('Erreur : ' + e.message); }
-};
-
-window.resetStatus = async function(id) {
-  try {
-    await updateDoc(doc(db, 'articles', id), { statut: 'soumis', moderationComment: '' });
-    const a = allArticles.find(x => x.id === id);
-    if (a) { a.statut = 'soumis'; a.moderationComment = ''; }
-    updateStats();
-    renderList();
-    toast('Article remis en attente');
-  } catch(e) { toast('Erreur : ' + e.message); }
-};
-
-// ── APERÇU ────────────────────────────────────────────────────────────
-window.openPreview = function(id) {
-  const a = allArticles.find(x => x.id === id);
-  if (!a) return;
-  let html = '';
-  if (a.rubrique) html += `<p class="pm-cat">${a.rubrique}</p>`;
-  html += `<h1 class="pm-titre">${a.titre||'Sans titre'}</h1>`;
-  html += `<p class="pm-meta"><b>${a.auteurNom||a.auteur||''}</b> &nbsp;·&nbsp; ${a.rubrique||''} &nbsp;·&nbsp; ${a.duree||''}</p>`;
-  if (a.imageTitre) html += `<img src="${a.imageTitre}" style="width:100%;max-height:300px;object-fit:cover;border-radius:3px;margin-bottom:8px;">`;
-  if (a.chapeau) html += `<p class="pm-chapeau">${a.chapeau}</p>`;
-  (a.blocks||[]).forEach(b => {
-    if (b.type==='title')    html += `<h2 style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;color:var(--violet);margin:24px 0 10px;padding-top:16px;border-top:1px solid var(--line);">${b.content||''}</h2>`;
-    if (b.type==='subtitle') html += `<h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;font-style:italic;color:var(--text2);margin-bottom:10px;">${b.content||''}</h3>`;
-    if (b.type==='text')     html += `<p style="font-size:16px;line-height:1.8;color:var(--text);font-weight:300;margin-bottom:16px;white-space:pre-wrap;">${b.content||''}</p>`;
-    if (b.type==='quote')    html += `<blockquote style="border-left:3px solid var(--violet-m);padding:14px 18px;margin:20px 0;background:var(--beige2);border-radius:0 3px 3px 0;font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;color:var(--violet2);">${b.content||''}</blockquote>`;
-    if (b.type==='separator') html += `<hr style="border:none;border-top:1px solid var(--line);margin:20px 0;">`;
-    if (b.type==='image'&&b.src) html += `<img src="${b.src}" style="width:100%;max-height:280px;object-fit:cover;border-radius:3px;margin-bottom:6px;"><p style="font-size:11px;color:var(--text3);font-style:italic;">${b.caption||''}</p>`;
-  });
-  document.getElementById('pm-body').innerHTML = html;
-  document.getElementById('preview-modal').classList.add('show');
-  document.body.style.overflow = 'hidden';
-};
-
-window.closePreview = function() {
-  document.getElementById('preview-modal').classList.remove('show');
-  document.body.style.overflow = '';
-};
-
-// ── TOAST ─────────────────────────────────────────────────────────────
-function toast(msg, type) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'show' + (type ? ' ' + type : '');
-  setTimeout(() => t.className = '', 2500);
-}
+  } catch(e) { console.error(e); }
+});
 </script>
 </body>
 </html>

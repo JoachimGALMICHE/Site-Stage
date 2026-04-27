@@ -127,10 +127,7 @@ footer a:hover{color:#fff;}
 </head>
 <body>
 
-<div id="topbar">
-  <span>L'Œil d'Euclide — Administration</span>
-  <span id="topbar-right"></span>
-</div>
+<div id="topbar"><span id="topbar-date"></span><span id="topbar-right"></span></div>
 
 <header>
   <div class="header-top">
@@ -229,11 +226,10 @@ footer a:hover{color:#fff;}
 </footer>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, getDocs, updateDoc, deleteDoc, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const app = initializeApp({
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const _app = getApps().length ? getApps()[0] : initializeApp({
   apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",
   authDomain:"l-oeil-d-euclyde.firebaseapp.com",
   projectId:"l-oeil-d-euclyde",
@@ -241,195 +237,50 @@ const app = initializeApp({
   messagingSenderId:"179241004963",
   appId:"1:179241004963:web:c7c7afa926e03032653416"
 });
-const auth = getAuth(app);
-const db   = getFirestore(app);
-
-const ROLES_LABEL = {
-  'super-admin':          'Super-administrateur',
-  'moderateur-redaction': 'Modérateur de rédaction',
-  'redacteur':            'Rédacteur',
-  'moderateur-comments':  'Modérateur de commentaires',
-  'lecteur-commentateur': 'Lecteur-commentateur',
-  'lecteur':              'Lecteur'
-};
-
-let allUsers   = [];
-let currentUid = null;
-
-// ── ACCÈS ─────────────────────────────────────────────────────────────
-onAuthStateChanged(auth, async (user) => {
-  document.getElementById('loader').style.display = 'none';
-  if (!user) { showDenied(); return; }
-  try {
-    const snap = await getDoc(doc(db, 'users', user.uid));
-    if (!snap.exists() || snap.data().role !== 'super-admin') { showDenied(); return; }
-    currentUid = user.uid;
-    updateTopbar(snap.data());
-    document.getElementById('main-content').style.display = 'block';
-    await loadUsers();
-  } catch(e) { showDenied(); }
-});
-
-function showDenied() {
-  document.getElementById('loader').style.display = 'none';
-  document.getElementById('access-denied').style.display = 'block';
-}
-
-function updateTopbar(profile) {
-  const el = document.getElementById('topbar-right');
-  el.innerHTML = '<span style="color:#EDE0CC">' + (ROLES_LABEL[profile.role]||profile.role) + '</span>'
-    + ' &mdash; <strong style="color:#fff">' + profile.prenom + ' ' + profile.nom + '</strong>'
-    + ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">✍ Auteurs</a>'
-    + ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>'
-    + ' <span style="opacity:.3;margin:0 6px">|</span>'
-    + ' <a href="#" id="btn-deco" style="color:#EDE0CC;">Déconnexion</a>';
-  document.getElementById('btn-deco').addEventListener('click', async e => {
-    e.preventDefault();
-    await signOut(auth);
-    window.location.href = 'connexion.html';
-  });
-}
-
-// ── CHARGEMENT ────────────────────────────────────────────────────────
-async function loadUsers() {
-  try {
-    const snap = await getDocs(collection(db, 'users'));
-    allUsers = snap.docs.map(d => ({ uid: d.id, ...d.data() }));
-    // Trier : super-admin en premier, puis par nom
-    allUsers.sort((a,b) => {
-      if (a.role === 'super-admin' && b.role !== 'super-admin') return -1;
-      if (b.role === 'super-admin' && a.role !== 'super-admin') return 1;
-      return (a.nom||'').localeCompare(b.nom||'');
-    });
-    updateStats();
-    renderTable(allUsers);
-  } catch(e) {
-    document.getElementById('users-tbody').innerHTML =
-      '<tr><td colspan="5" class="empty-state">Erreur de chargement : ' + e.message + '</td></tr>';
-  }
-}
-
-function updateStats() {
-  document.getElementById('stat-total').textContent = allUsers.length;
-  document.getElementById('stat-admins').textContent = allUsers.filter(u => u.role === 'super-admin').length;
-  document.getElementById('stat-redacteurs').textContent = allUsers.filter(u => u.role === 'redacteur' || u.role === 'moderateur-redaction').length;
-  document.getElementById('stat-lecteurs').textContent = allUsers.filter(u => u.role === 'lecteur' || u.role === 'lecteur-commentateur').length;
-}
-
-// ── RENDU TABLE ───────────────────────────────────────────────────────
-function renderTable(users) {
-  const tbody = document.getElementById('users-tbody');
-  if (users.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Aucun utilisateur trouvé.</td></tr>';
+const _auth = getAuth(_app);
+const _db = getFirestore(_app);
+// Exposer pour les autres scripts
+window._db = _db; window._auth = _auth;
+const _ROLES = {'super-admin':'Super-administrateur','moderateur-redaction':'Modérateur de rédaction','redacteur':'Rédacteur','moderateur-comments':'Modérateur de commentaires','lecteur-commentateur':'Lecteur-commentateur','lecteur':'Lecteur'};
+const _WRITERS = ['super-admin','moderateur-redaction','redacteur'];
+const _MODS = ['super-admin','moderateur-redaction'];
+// Date
+var _d = new Date();
+var _dt = document.getElementById('topbar-date');
+if (_dt) _dt.textContent = _d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).replace(/^./,function(c){return c.toUpperCase();});
+onAuthStateChanged(_auth, async (user) => {
+  var el = document.getElementById('topbar-right');
+  if (!el) return;
+  if (!user) {
+    el.innerHTML = '<a href="connexion.html" style="color:#EDE0CC;">Connexion</a>';
     return;
   }
-  tbody.innerHTML = users.map(u => {
-    const initials = ((u.prenom||'?')[0] + (u.nom||'?')[0]).toUpperCase();
-    const badgeClass = 'role-' + (u.role||'lecteur').replace(/-/g,'_').replace(/_/g,'-');
-    const date = u.createdAt ? new Date(u.createdAt.seconds ? u.createdAt.seconds*1000 : u.createdAt).toLocaleDateString('fr-FR') : '—';
-    const isSelf = u.uid === currentUid;
-
-    return `<tr id="row-${u.uid}">
-      <td>
-        <div class="user-info">
-          <div class="user-avatar">${initials}</div>
-          <div>
-            <div class="user-name">${u.prenom||''} ${u.nom||''}</div>
-            <div class="user-email">${u.email||''}</div>
-          </div>
-        </div>
-      </td>
-      <td><span class="role-badge ${badgeClass}">${ROLES_LABEL[u.role]||u.role||'lecteur'}</span></td>
-      <td>
-        <select class="role-select" id="select-${u.uid}" ${isSelf ? 'disabled title="Vous ne pouvez pas modifier votre propre rôle"' : ''}>
-          <option value="lecteur"          ${u.role==='lecteur'?'selected':''}>Lecteur</option>
-          <option value="lecteur-commentateur" ${u.role==='lecteur-commentateur'?'selected':''}>Lecteur-commentateur</option>
-          <option value="moderateur-comments" ${u.role==='moderateur-comments'?'selected':''}>Modérateur commentaires</option>
-          <option value="redacteur"        ${u.role==='redacteur'?'selected':''}>Rédacteur</option>
-          <option value="moderateur-redaction" ${u.role==='moderateur-redaction'?'selected':''}>Modérateur rédaction</option>
-          <option value="super-admin"      ${u.role==='super-admin'?'selected':''}>Super-administrateur</option>
-        </select>
-      </td>
-      <td class="date-cell">${date}</td>
-      <td>
-        <div class="actions">
-          <button class="btn btn-save" onclick="saveRole('${u.uid}')" ${isSelf ? 'disabled' : ''}>
-            Enregistrer
-          </button>
-          <button class="btn btn-danger" onclick="confirmDelete('${u.uid}','${u.prenom} ${u.nom}')" ${isSelf ? 'disabled title="Vous ne pouvez pas supprimer votre propre compte"' : ''}>
-            Supprimer
-          </button>
-        </div>
-      </td>
-    </tr>`;
-  }).join('');
-}
-
-// ── FILTRES ───────────────────────────────────────────────────────────
-window.filterUsers = function() {
-  const q     = document.getElementById('search-input').value.trim().toLowerCase();
-  const role  = document.getElementById('role-filter').value;
-  const filtered = allUsers.filter(u => {
-    const matchQ    = !q || (u.prenom+' '+u.nom+' '+u.email).toLowerCase().includes(q);
-    const matchRole = !role || u.role === role;
-    return matchQ && matchRole;
-  });
-  renderTable(filtered);
-};
-
-// ── SAVE RÔLE ─────────────────────────────────────────────────────────
-window.saveRole = async function(uid) {
-  const sel   = document.getElementById('select-'+uid);
-  const newRole = sel.value;
-  const btn   = document.querySelector(`#row-${uid} .btn-save`);
-  btn.disabled = true;
-  btn.textContent = '…';
   try {
-    await updateDoc(doc(db, 'users', uid), { role: newRole });
-    // Mettre à jour localement
-    const u = allUsers.find(x => x.uid === uid);
-    if (u) u.role = newRole;
-    updateStats();
-    // Mettre à jour le badge dans la ligne
-    const badgeCell = document.querySelector(`#row-${uid} td:nth-child(2)`);
-    if (badgeCell) {
-      const badgeClass = 'role-' + newRole;
-      badgeCell.innerHTML = `<span class="role-badge ${badgeClass}">${ROLES_LABEL[newRole]||newRole}</span>`;
-    }
-    toast('✓ Rôle mis à jour : ' + (ROLES_LABEL[newRole]||newRole));
-  } catch(e) {
-    toast('Erreur : ' + e.message, true);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Enregistrer';
-  }
-};
-
-// ── SUPPRESSION ───────────────────────────────────────────────────────
-window.confirmDelete = function(uid, name) {
-  if (!confirm(`Supprimer le compte de ${name} ?\n\nCette action est irréversible.`)) return;
-  deleteUser(uid);
-};
-
-async function deleteUser(uid) {
-  try {
-    await deleteDoc(doc(db, 'users', uid));
-    allUsers = allUsers.filter(u => u.uid !== uid);
-    updateStats();
-    filterUsers();
-    toast('Compte supprimé');
-  } catch(e) {
-    toast('Erreur : ' + e.message, true);
-  }
-}
-
-// ── TOAST ─────────────────────────────────────────────────────────────
-function toast(msg, isErr=false) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'show' + (isErr ? ' err' : '');
-  setTimeout(() => t.className = '', 2500);
-}
+    var snap = await getDoc(doc(_db, 'users', user.uid));
+    if (!snap.exists()) return;
+    var p = snap.data();
+    var isSA  = p.role === 'super-admin';
+    var isMod = _MODS.indexOf(p.role) !== -1;
+    var isWriter = _WRITERS.indexOf(p.role) !== -1;
+    var btns = '';
+    if (isWriter) btns += ' <a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>';
+    if (isMod)   btns += ' <a href="moderation.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;border:1px solid #D4B896;">📋 Modération</a>';
+    if (isSA)    btns += ' <a href="gestion-comptes.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">👥 Comptes</a>';
+    if (isSA)    btns += ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✍ Auteurs</a>';
+    if (isSA||isMod) btns += ' <a href="disposition.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✏ Disposition</a>';
+    if (isSA)    btns += ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>';
+    el.innerHTML = '<span style="color:#EDE0CC">'+(_ROLES[p.role]||p.role)+'</span>'
+      +' — <strong style="color:#fff">'+p.prenom+' '+p.nom+'</strong>'
+      +btns
+      +' <span style="opacity:.3;margin:0 6px">|</span>'
+      +' <a href="profil.html" style="color:#EDE0CC;">Mon profil</a>'
+      +' <span style="opacity:.3;margin:0 4px">|</span>'
+      +' <a href="#" id="_deco" style="color:#EDE0CC;">Déconnexion</a>';
+    document.getElementById('_deco').addEventListener('click', async e => {
+      e.preventDefault(); await signOut(_auth); window.location.href = 'connexion.html';
+    });
+  } catch(e) { console.error(e); }
+});
 </script>
 </body>
 </html>

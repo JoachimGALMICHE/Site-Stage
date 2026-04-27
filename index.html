@@ -149,10 +149,7 @@ footer li a:hover{color:#fff;}
 </head>
 <body>
 
-<div id="topbar">
-  <span id="topbar-date"></span><script>document.getElementById("topbar-date").textContent=new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).replace(/^./,function(c){return c.toUpperCase();});</script>
-  <span id="topbar-right"><a href="connexion.html">Connexion</a><span class="t-sep">|</span><a href="#newsletter">Newsletter</a></span>
-</div>
+<div id="topbar"><span id="topbar-date"></span><span id="topbar-right"></span></div>
 
 <header>
   <div class="header-top">
@@ -300,10 +297,10 @@ footer li a:hover{color:#fff;}
 
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-const _app = initializeApp({
+const _app = getApps().length ? getApps()[0] : initializeApp({
   apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",
   authDomain:"l-oeil-d-euclyde.firebaseapp.com",
   projectId:"l-oeil-d-euclyde",
@@ -313,8 +310,15 @@ const _app = initializeApp({
 });
 const _auth = getAuth(_app);
 const _db = getFirestore(_app);
+// Exposer pour les autres scripts
+window._db = _db; window._auth = _auth;
 const _ROLES = {'super-admin':'Super-administrateur','moderateur-redaction':'Modérateur de rédaction','redacteur':'Rédacteur','moderateur-comments':'Modérateur de commentaires','lecteur-commentateur':'Lecteur-commentateur','lecteur':'Lecteur'};
 const _WRITERS = ['super-admin','moderateur-redaction','redacteur'];
+const _MODS = ['super-admin','moderateur-redaction'];
+// Date
+var _d = new Date();
+var _dt = document.getElementById('topbar-date');
+if (_dt) _dt.textContent = _d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).replace(/^./,function(c){return c.toUpperCase();});
 onAuthStateChanged(_auth, async (user) => {
   var el = document.getElementById('topbar-right');
   if (!el) return;
@@ -326,136 +330,28 @@ onAuthStateChanged(_auth, async (user) => {
     var snap = await getDoc(doc(_db, 'users', user.uid));
     if (!snap.exists()) return;
     var p = snap.data();
-    var modBtn = ['super-admin','moderateur-redaction'].indexOf(p.role) !== -1
-      ? ' <a href="moderation.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">📋 Modération</a>'
-      : '';
-    var adminBtn = p.role === 'super-admin'
-      ? ' <a href="gestion-comptes.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">👥 Comptes</a>'
-        + ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✍ Auteurs</a>'
-        + ' <a href="disposition.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✏ Disposition</a>'
-        + ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>'
-      : '';
-    var writeBtn = _WRITERS.indexOf(p.role) !== -1
-      ? ' <a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>'
-      : '';
+    var isSA  = p.role === 'super-admin';
+    var isMod = _MODS.indexOf(p.role) !== -1;
+    var isWriter = _WRITERS.indexOf(p.role) !== -1;
+    var btns = '';
+    if (isWriter) btns += ' <a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>';
+    if (isMod)   btns += ' <a href="moderation.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;border:1px solid #D4B896;">📋 Modération</a>';
+    if (isSA)    btns += ' <a href="gestion-comptes.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">👥 Comptes</a>';
+    if (isSA)    btns += ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✍ Auteurs</a>';
+    if (isSA||isMod) btns += ' <a href="disposition.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✏ Disposition</a>';
+    if (isSA)    btns += ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>';
     el.innerHTML = '<span style="color:#EDE0CC">'+(_ROLES[p.role]||p.role)+'</span>'
-      +' &mdash; <strong style="color:#fff">'+p.prenom+' '+p.nom+'</strong>'
-      +writeBtn+modBtn+adminBtn
+      +' — <strong style="color:#fff">'+p.prenom+' '+p.nom+'</strong>'
+      +btns
       +' <span style="opacity:.3;margin:0 6px">|</span>'
+      +' <a href="profil.html" style="color:#EDE0CC;">Mon profil</a>'
+      +' <span style="opacity:.3;margin:0 4px">|</span>'
       +' <a href="#" id="_deco" style="color:#EDE0CC;">Déconnexion</a>';
     document.getElementById('_deco').addEventListener('click', async e => {
-      e.preventDefault();
-      await signOut(_auth);
-      window.location.href = 'connexion.html';
+      e.preventDefault(); await signOut(_auth); window.location.href = 'connexion.html';
     });
   } catch(e) { console.error(e); }
 });
-</script>
-<script type="module">
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-const fbApp = getApps().length ? getApps()[0] : initializeApp({
-  apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",
-  authDomain:"l-oeil-d-euclyde.firebaseapp.com",
-  projectId:"l-oeil-d-euclyde",
-  storageBucket:"l-oeil-d-euclyde.firebasestorage.app",
-  messagingSenderId:"179241004963",
-  appId:"1:179241004963:web:c7c7afa926e03032653416"
-});
-const db = getFirestore(fbApp);
-const auth = getAuth(fbApp);
-
-// Charger et afficher les bandeaux
-async function loadBandeaux() {
-  try {
-    const snap = await getDoc(doc(db, 'config', 'disposition'));
-    if (!snap.exists()) return;
-    const bandeaux = snap.data().bandeaux || [];
-    const container = document.getElementById('bandeaux-container');
-    if (!container || bandeaux.length === 0) return;
-
-    // Si une disposition est publiée : cacher tier234 et recent, afficher les bandeaux
-    document.getElementById('tier234').style.display = 'none';
-    document.getElementById('recent').style.display = 'none';
-
-    container.innerHTML = '';
-    bandeaux.forEach(b => {
-      const el = document.createElement('div');
-      el.style.cssText = 'margin:28px 0;';
-      if (b.type === 'pub' && b.pub) {
-        el.innerHTML = renderPubBandeau(b.pub);
-      } else if (b.type === 'type1' && b.slots[0]) {
-        el.innerHTML = renderType1(b.slots[0]);
-      } else if (b.type === 'type2') {
-        el.innerHTML = renderType2(b.slots);
-      } else if (b.type === 'type3') {
-        el.innerHTML = renderType3(b.slots);
-      }
-      container.appendChild(el);
-    });
-  } catch(e) { console.warn('Erreur bandeaux:', e); }
-}
-
-function artHtml(a, cls) {
-  if (!a) return `<div class="${cls}" style="background:var(--beige3);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text3);">Emplacement vide</div>`;
-  return `<div class="${cls}" style="background:var(--beige2);border:1px solid var(--line);border-radius:3px;padding:14px;cursor:pointer;" onclick="window.location='article.html'">
-    <div style="font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--violet-m);margin-bottom:6px;">${a.rubrique||''}</div>
-    <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--violet);line-height:1.2;">${a.titre||''}</div>
-    <div style="font-size:11px;color:var(--text3);margin-top:6px;">${a.auteur||''}</div>
-  </div>`;
-}
-
-function renderPubBandeau(pub) {
-  return `<a href="${pub.lien||'#'}" target="_blank" style="display:flex;gap:20px;align-items:center;background:var(--beige2);border:1px solid var(--line);border-radius:4px;padding:16px 20px;text-decoration:none;">
-    ${pub.img ? `<img src="${pub.img}" style="width:80px;height:52px;object-fit:cover;border-radius:2px;flex-shrink:0;">` : ''}
-    <div>
-      <div style="font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--violet-m);margin-bottom:4px;">Partenaire</div>
-      <div style="font-size:15px;font-weight:500;color:var(--violet);">${pub.titre||''}</div>
-      <div style="font-size:12px;color:var(--text3);margin-top:2px;">${pub.texte||''}</div>
-    </div>
-  </a>`;
-}
-
-function renderType1(a) {
-  return `<div style="border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;">
-    <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;">À la une</div>
-    ${artHtml(a, '')}
-  </div>`;
-}
-
-function renderType2(slots) {
-  return '<div style="padding:20px 0;border-top:1px solid var(--line);">'
-    + '<div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;">Sélection</div>'
-    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">'
-    + '<div style="display:flex;flex-direction:column;gap:12px;">' + artHtml(slots[0]||null,'') + artHtml(slots[1]||null,'') + '</div>'
-    + '<div style="display:flex;flex-direction:column;gap:8px;">' + [2,3,4,5,6].map(function(i){ return artHtml(slots[i]||null,''); }).join('') + '</div>'
-    + '</div></div>';
-}
-
-function renderType3(slots) {
-  return '<div style="padding:20px 0;border-top:1px solid var(--line);">'
-    + '<div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;">Articles</div>'
-    + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">' + slots.map(function(s){ return artHtml(s,''); }).join('') + '</div>'
-    + '</div>';
-}
-
-// Bouton disposition pour les éditeurs
-onAuthStateChanged(auth, async (user) => {
-  if (!user) return;
-  try {
-    const snap = await getDoc(doc(db, 'users', user.uid));
-    if (!snap.exists()) return;
-    const role = snap.data().role;
-    if (['super-admin','moderateur-redaction'].includes(role)) {
-      const dispo = document.getElementById('btn-disposition');
-      if (dispo) dispo.style.display = 'inline-block';
-    }
-  } catch(e) {}
-});
-
-loadBandeaux();
 </script>
 </body>
 </html>

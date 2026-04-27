@@ -153,10 +153,7 @@ footer a{color:var(--violet-l);}
 </head>
 <body>
 
-<div id="topbar">
-  <span><a href="index.html">← Retour à l'accueil</a></span>
-  <span id="topbar-right"></span>
-</div>
+<div id="topbar"><span id="topbar-date"></span><span id="topbar-right"></span></div>
 
 <header>
   <div class="header-top">
@@ -298,11 +295,10 @@ footer a{color:var(--violet-l);}
 </footer>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, getDocs, collection, setDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const app = initializeApp({
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const _app = getApps().length ? getApps()[0] : initializeApp({
   apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",
   authDomain:"l-oeil-d-euclyde.firebaseapp.com",
   projectId:"l-oeil-d-euclyde",
@@ -310,330 +306,50 @@ const app = initializeApp({
   messagingSenderId:"179241004963",
   appId:"1:179241004963:web:c7c7afa926e03032653416"
 });
-const auth = getAuth(app);
-const db   = getFirestore(app);
-
-const ROLES = {'super-admin':'Super-administrateur','moderateur-redaction':'Modérateur de rédaction','redacteur':'Rédacteur','moderateur-comments':'Modérateur de commentaires','lecteur-commentateur':'Lecteur-commentateur','lecteur':'Lecteur'};
-const WRITERS = ['super-admin','moderateur-redaction','redacteur'];
-const EDITORS = ['super-admin','moderateur-redaction'];
-
-// ── ÉTAT ─────────────────────────────────────────────────────────────
-let bandeaux = [];       // liste des blocs de disposition
-let allArticles = [];    // articles depuis Firestore
-let activeSlot = null;   // { bandeauId, slotIdx } — slot en attente
-let activePubId = null;  // bandeau pub en cours de config
-let pubImgData = null;
-let uid = () => 'b' + Date.now() + Math.random().toString(36).slice(2,5);
-
-// ── ACCÈS ─────────────────────────────────────────────────────────────
-onAuthStateChanged(auth, async (user) => {
-  if (!user) { window.location.href = 'connexion.html'; return; }
-  try {
-    const snap = await getDoc(doc(db, 'users', user.uid));
-    if (!snap.exists()) { window.location.href = 'connexion.html'; return; }
-    const p = snap.data();
-    if (!EDITORS.includes(p.role)) { window.location.href = 'index.html'; return; }
-    updateTopbar(p);
-    await loadArticles();
-    await loadDispo();
-    render();
-  } catch(e) { console.error(e); }
-});
-
-function updateTopbar(p) {
-  const el = document.getElementById('topbar-right');
-  const adminBtn = p.role === 'super-admin'
-    ? ' <a href="gestion-comptes.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">👥 Comptes</a>'
-      + ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✍ Auteurs</a>'
-        + ' <a href="disposition.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✏ Disposition</a>'
-      + ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>'
-    : '';
-  el.innerHTML = '<span style="color:#EDE0CC">'+(ROLES[p.role]||p.role)+'</span>'
-    +' &mdash; <strong style="color:#fff">'+p.prenom+' '+p.nom+'</strong>'
-    +' <a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>'
-    +adminBtn
-    +' <span style="opacity:.3;margin:0 6px">|</span>'
-    +' <a href="profil.html" style="color:#EDE0CC;">Mon profil</a>'
-    +' <span style="opacity:.3;margin:0 4px">|</span>'
-    +' <a href="#" id="btn-deco" style="color:#EDE0CC;">Déconnexion</a>';
-  document.getElementById('btn-deco').addEventListener('click', async e => {
-    e.preventDefault(); await signOut(auth); window.location.href = 'connexion.html';
-  });
-}
-
-// ── CHARGER ARTICLES ──────────────────────────────────────────────────
-async function loadArticles() {
-  try {
-    const snap = await getDocs(collection(db, 'articles'));
-    allArticles = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    // Articles de démo si vide
-    if (allArticles.length === 0) {
-      allArticles = [
-        { id:'demo1', titre:'La réforme des retraites fragilise le dialogue social', rubrique:'Politique', auteur:'Marie Dupont', date:'31 mars 2026' },
-        { id:'demo2', titre:'Un vaccin contre Alzheimer en phase III', rubrique:'Science', auteur:'Pr. Lefebvre', date:'31 mars 2026' },
-        { id:'demo3', titre:'Sécheresse en Espagne : 40% des réserves perdues', rubrique:'Environnement', auteur:'Carla Ramos', date:'30 mars 2026' },
-        { id:'demo4', titre:'La BCE maintient ses taux face à l\'inflation', rubrique:'Économie', auteur:'Pierre Vidal', date:'28 mars 2026' },
-        { id:'demo5', titre:'Taïwan et la Chine : statu quo fragile', rubrique:'International', auteur:'Paul Chen', date:'29 mars 2026' },
-        { id:'demo6', titre:'Le retour des librairies indépendantes', rubrique:'Culture', auteur:'Julien Fabre', date:'26 mars 2026' },
-        { id:'demo7', titre:'Décrochage scolaire : les vrais chiffres', rubrique:'Éducation', auteur:'Sophie Leclerc', date:'29 mars 2026' },
-      ];
-    }
-    renderArticleList(allArticles);
-  } catch(e) { console.warn('Erreur articles:', e); }
-}
-
-function renderArticleList(list) {
-  const el = document.getElementById('art-list');
-  if (list.length === 0) { el.innerHTML = '<p style="padding:10px;font-size:12px;color:var(--text3);">Aucun article trouvé</p>'; return; }
-  el.innerHTML = list.map(a => `
-    <div class="art-item" onclick="assignArticle('${a.id}')">
-      <div class="ai-cat">${a.rubrique||'—'}</div>
-      <div class="ai-title">${a.titre||'Sans titre'}</div>
-      <div class="ai-meta">${a.auteur||''} · ${a.date||''}</div>
-    </div>
-  `).join('');
-}
-
-window.filterArticles = function() {
-  const q = document.getElementById('art-search').value.trim().toLowerCase();
-  renderArticleList(q ? allArticles.filter(a => (a.titre+' '+a.rubrique+' '+a.auteur).toLowerCase().includes(q)) : allArticles);
-};
-
-// ── CHARGER/SAUVER DISPOSITION ────────────────────────────────────────
-async function loadDispo() {
-  try {
-    const snap = await getDoc(doc(db, 'config', 'disposition'));
-    if (snap.exists()) bandeaux = snap.data().bandeaux || [];
-  } catch(e) { bandeaux = []; }
-}
-
-window.saveDispo = async function(silent) {
-  try {
-    // Nettoyer les undefined pour Firestore
-    const clean = JSON.parse(JSON.stringify(bandeaux, (k, v) => v === undefined ? null : v));
-    await setDoc(doc(db, 'config', 'disposition'), { bandeaux: clean, updatedAt: new Date() });
-    if (!silent) toast('✓ Disposition sauvegardée');
-  } catch(e) { toast('Erreur : ' + e.message); }
-};
-
-window.publishDispo = async function() {
-  await window.saveDispo(true);
-  toast('✓ Disposition publiée sur l\'accueil !');
-};
-
-// ── AJOUTER BANDEAU ───────────────────────────────────────────────────
-window.addBandeau = function(type) {
-  const b = { id: uid(), type, slots: [], pub: null };
-  if (type === 'type1') b.slots = [null];
-  if (type === 'type2') b.slots = [null,null,null,null,null,null,null];
-  if (type === 'type3') b.slots = [null,null,null,null,null,null];
-  bandeaux.push(b);
-  document.getElementById('empty-msg') && (document.getElementById('empty-msg').style.display = 'none');
-  if (type === 'pub') { activePubId = b.id; document.getElementById('pub-form-section').style.display = 'block'; }
-  render();
-  toast('Bandeau ajouté');
-};
-
-window.removeBandeau = function(id) {
-  bandeaux = bandeaux.filter(b => b.id !== id);
-  render();
-};
-
-// ── SLOTS ARTICLES ────────────────────────────────────────────────────
-window.selectSlot = function(bandeauId, slotIdx) {
-  activeSlot = { bandeauId, slotIdx };
-  // Activer la recherche
-  document.getElementById('art-search').disabled = false;
-  document.getElementById('art-search').focus();
-  document.getElementById('slot-hint').textContent = 'Choisissez un article dans la liste ci-dessous';
-  document.getElementById('slot-hint').style.color = 'var(--violet-m)';
-  render();
-};
-
-window.clearSlot = function(bandeauId, slotIdx, e) {
-  e && e.stopPropagation();
-  const b = bandeaux.find(b => b.id === bandeauId);
-  if (b) b.slots[slotIdx] = null;
-  render();
-};
-
-window.assignArticle = function(artId) {
-  if (!activeSlot) { toast('Cliquez d\'abord sur un emplacement'); return; }
-  const b = bandeaux.find(b => b.id === activeSlot.bandeauId);
-  const art = allArticles.find(a => a.id === artId);
-  if (b && art) {
-    b.slots[activeSlot.slotIdx] = { id: art.id, titre: art.titre, rubrique: art.rubrique, auteur: art.auteur };
-    activeSlot = null;
-    document.getElementById('art-search').disabled = false;
-    document.getElementById('slot-hint').textContent = 'Cliquez sur un emplacement dans la disposition';
-    document.getElementById('slot-hint').style.color = 'var(--text3)';
-    render();
-    toast('Article assigné ✓');
-  }
-};
-
-// ── CONFIG PUB ────────────────────────────────────────────────────────
-window.handlePubImg = function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    pubImgData = ev.target.result;
-    const img = document.getElementById('pub-img-preview');
-    img.src = pubImgData; img.style.display = 'block';
-    document.querySelector('#pub-img-drop p').style.display = 'none';
-  };
-  reader.readAsDataURL(file);
-};
-
-window.applyPubConfig = function() {
-  if (!activePubId) return;
-  const b = bandeaux.find(b => b.id === activePubId);
-  if (b) {
-    b.pub = {
-      img: pubImgData,
-      titre: document.getElementById('pub-titre').value,
-      texte: document.getElementById('pub-texte').value,
-      lien: document.getElementById('pub-lien').value
-    };
-    render();
-    toast('Bandeau pub configuré ✓');
-  }
-};
-
-// ── RENDU ─────────────────────────────────────────────────────────────
-function render() {
-  const frame = document.getElementById('preview-frame');
-  const emptyMsg = document.getElementById('empty-msg');
-  document.getElementById('block-count').textContent = bandeaux.length + ' bloc(s)';
-
-  if (bandeaux.length === 0) {
-    frame.innerHTML = '';
-    const em = document.createElement('p');
-    em.id = 'empty-msg';
-    em.style.cssText = 'text-align:center;color:var(--text3);font-size:13px;padding:40px 0;';
-    em.textContent = 'Cliquez sur un type de bandeau à droite pour l\'ajouter';
-    frame.appendChild(em);
+const _auth = getAuth(_app);
+const _db = getFirestore(_app);
+// Exposer pour les autres scripts
+window._db = _db; window._auth = _auth;
+const _ROLES = {'super-admin':'Super-administrateur','moderateur-redaction':'Modérateur de rédaction','redacteur':'Rédacteur','moderateur-comments':'Modérateur de commentaires','lecteur-commentateur':'Lecteur-commentateur','lecteur':'Lecteur'};
+const _WRITERS = ['super-admin','moderateur-redaction','redacteur'];
+const _MODS = ['super-admin','moderateur-redaction'];
+// Date
+var _d = new Date();
+var _dt = document.getElementById('topbar-date');
+if (_dt) _dt.textContent = _d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).replace(/^./,function(c){return c.toUpperCase();});
+onAuthStateChanged(_auth, async (user) => {
+  var el = document.getElementById('topbar-right');
+  if (!el) return;
+  if (!user) {
+    el.innerHTML = '<a href="connexion.html" style="color:#EDE0CC;">Connexion</a>';
     return;
   }
-
-  frame.innerHTML = '';
-  bandeaux.forEach((b, bi) => {
-    frame.appendChild(makeDropLine(bi));
-    frame.appendChild(makeBandeauEl(b));
-  });
-  frame.appendChild(makeDropLine(bandeaux.length));
-}
-
-function makeDropLine(idx) {
-  const d = document.createElement('div');
-  d.className = 'drop-line';
-  d.dataset.idx = idx;
-  return d;
-}
-
-function makeBandeauEl(b) {
-  const wrap = document.createElement('div');
-  wrap.className = 'prev-bandeau';
-  wrap.id = 'bandeau-' + b.id;
-
-  // Handle + actions
-  const actions = document.createElement('div');
-  actions.className = 'b-actions';
-  actions.innerHTML = `<button class="b-btn del" onclick="removeBandeau('${b.id}')">✕ Supprimer</button>`;
-  wrap.appendChild(actions);
-
-  if (b.type === 'type1') {
-    wrap.innerHTML += renderType1(b);
-  } else if (b.type === 'type2') {
-    wrap.innerHTML += renderType2(b);
-  } else if (b.type === 'type3') {
-    wrap.innerHTML += renderType3(b);
-  } else if (b.type === 'pub') {
-    wrap.innerHTML += renderPub(b);
-  }
-
-  wrap.appendChild(actions);
-  return wrap;
-}
-
-function slotHtml(b, idx, cls) {
-  const s = b.slots[idx];
-  const isActive = activeSlot && activeSlot.bandeauId === b.id && activeSlot.slotIdx === idx;
-  if (s) {
-    return `<div class="${cls} filled" onclick="selectSlot('${b.id}',${idx})">
-      <div class="slot-cat">${s.rubrique||''}</div>
-      <div style="font-size:11px;font-weight:500;color:var(--violet);line-height:1.3;">${s.titre||''}</div>
-      <div style="font-size:10px;color:var(--text3);margin-top:2px;">${s.auteur||''}</div>
-      <span class="slot-remove" onclick="clearSlot('${b.id}',${idx},event)">✕ retirer</span>
-    </div>`;
-  }
-  return `<div class="${cls}${isActive?' slot-waiting':''}" onclick="selectSlot('${b.id}',${idx})">
-    ${isActive ? '← Choisissez un article' : '+ Article'}
-  </div>`;
-}
-
-function renderType1(b) {
-  return `<div class="btype1">
-    <div class="b-label">Type 1 — Grand article</div>
-    ${slotHtml(b, 0, 'art-slot')}
-  </div>`;
-}
-
-function renderType2(b) {
-  return `<div class="btype2">
-    <div class="b-label">Type 2 — 2 grands + 5 petits</div>
-    <div class="row-two-cols">
-      <div class="col-big">
-        ${slotHtml(b, 0, 'slot-big')}
-        ${slotHtml(b, 1, 'slot-big')}
-      </div>
-      <div class="col-small">
-        ${[2,3,4,5,6].map(i => slotHtml(b, i, 'slot-small')).join('')}
-      </div>
-    </div>
-  </div>`;
-}
-
-function renderType3(b) {
-  return `<div class="btype3">
-    <div class="b-label">Type 3 — 6 articles</div>
-    <div class="row-six">
-      ${[0,1,2,3,4,5].map(i => slotHtml(b, i, 'slot-medium')).join('')}
-    </div>
-  </div>`;
-}
-
-function renderPub(b) {
-  const p = b.pub;
-  if (!p) return `<div class="bpub" onclick="(function(){activePubId='${b.id}';document.getElementById('pub-form-section').style.display='block';})()">
-    <div class="b-label">Bandeau publicitaire</div>
-    <div style="text-align:center;padding:16px;font-size:12px;color:var(--violet-l);">Cliquez pour configurer</div>
-  </div>`;
-  return `<div class="bpub">
-    <div class="b-label">Bandeau publicitaire</div>
-    <a href="${p.lien||'#'}" target="_blank" style="text-decoration:none;">
-      <div class="bpub-inner">
-        <div class="bpub-img">${p.img ? '<img src="'+p.img+'">' : 'IMG'}</div>
-        <div class="bpub-text">
-          <div class="bpub-titre">${p.titre||'Annonceur'}</div>
-          <div class="bpub-desc">${p.texte||''}</div>
-          <div class="bpub-lien">${p.lien||''}</div>
-        </div>
-      </div>
-    </a>
-  </div>`;
-}
-
-// ── TOAST ─────────────────────────────────────────────────────────────
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
-}
-
-// Autosave toutes les 30s
-setInterval(() => window.saveDispo(true), 30000);
+  try {
+    var snap = await getDoc(doc(_db, 'users', user.uid));
+    if (!snap.exists()) return;
+    var p = snap.data();
+    var isSA  = p.role === 'super-admin';
+    var isMod = _MODS.indexOf(p.role) !== -1;
+    var isWriter = _WRITERS.indexOf(p.role) !== -1;
+    var btns = '';
+    if (isWriter) btns += ' <a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>';
+    if (isMod)   btns += ' <a href="moderation.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;border:1px solid #D4B896;">📋 Modération</a>';
+    if (isSA)    btns += ' <a href="gestion-comptes.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">👥 Comptes</a>';
+    if (isSA)    btns += ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✍ Auteurs</a>';
+    if (isSA||isMod) btns += ' <a href="disposition.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✏ Disposition</a>';
+    if (isSA)    btns += ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>';
+    el.innerHTML = '<span style="color:#EDE0CC">'+(_ROLES[p.role]||p.role)+'</span>'
+      +' — <strong style="color:#fff">'+p.prenom+' '+p.nom+'</strong>'
+      +btns
+      +' <span style="opacity:.3;margin:0 6px">|</span>'
+      +' <a href="profil.html" style="color:#EDE0CC;">Mon profil</a>'
+      +' <span style="opacity:.3;margin:0 4px">|</span>'
+      +' <a href="#" id="_deco" style="color:#EDE0CC;">Déconnexion</a>';
+    document.getElementById('_deco').addEventListener('click', async e => {
+      e.preventDefault(); await signOut(_auth); window.location.href = 'connexion.html';
+    });
+  } catch(e) { console.error(e); }
+});
 </script>
 </body>
 </html>
