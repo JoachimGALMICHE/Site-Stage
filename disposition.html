@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Disposition — L'Œil d'Euclide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --beige:#F2EDE4;--beige2:#EAE4D8;--beige3:#DED6C8;
+  --violet:#1C1C2E;--violet2:#2A2A3E;--violet-m:#B8956A;
+  --violet-l:#D4B896;--violet-xl:#EDE0CC;
+  --text:#1C1C2E;--text2:#3A3A4E;--text3:#8A8A9A;
+  --line:#D8D0C4;--line2:#C8BEB0;
+  --green:#1A5C32;--green-bg:#EAF5EE;--green-bd:#B8DEC4;
+  --red:#5C2A1A;--red-bg:#FDF3F0;--red-bd:#E8C4B8;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--beige);color:var(--text);-webkit-font-smoothing:antialiased;}
+a{color:inherit;text-decoration:none;}
+#topbar{background:var(--violet);color:var(--violet-l);padding:6px 40px;font-size:11px;letter-spacing:.07em;display:flex;justify-content:space-between;align-items:center;}
+#topbar a{color:var(--violet-xl);transition:color .2s;}
+header{padding:32px 40px 0;border-bottom:1px solid var(--line2);}
+.header-top{display:flex;align-items:flex-end;justify-content:space-between;padding-bottom:18px;}
+.site-name{font-family:'Cormorant Garamond',serif;font-size:74px;font-weight:300;letter-spacing:-3px;line-height:1;color:var(--violet);}
+.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px;}
+.tagline{font-size:11px;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;}
+nav#cats{overflow-x:auto;white-space:nowrap;scrollbar-width:none;}
+nav#cats::-webkit-scrollbar{display:none;}
+nav#cats a{display:inline-block;padding:13px 16px;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);border-bottom:2px solid transparent;transition:color .2s,border-color .2s;}
+nav#cats a:first-child{padding-left:0;}
+nav#cats a:hover{color:var(--violet);}
+
+/* LAYOUT DEUX COLONNES */
+.editor-wrap{display:grid;grid-template-columns:1fr 340px;min-height:calc(100vh - 160px);}
+
+/* PANNEAU GAUCHE — PRÉVISUALISATION */
+.preview-col{padding:32px 40px;border-right:1px solid var(--line2);overflow-y:auto;}
+.preview-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;color:var(--violet);margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
+.preview-frame{background:var(--beige2);border:1px solid var(--line);border-radius:4px;min-height:400px;padding:20px;}
+
+/* BLOCS PRÉVIEW */
+.prev-bandeau{margin-bottom:12px;border-radius:3px;overflow:hidden;cursor:grab;position:relative;transition:box-shadow .15s;}
+.prev-bandeau:hover{box-shadow:0 2px 12px rgba(28,28,46,.1);}
+.prev-bandeau.dragging{opacity:.4;}
+.prev-bandeau .b-handle{position:absolute;top:8px;left:8px;background:rgba(28,28,46,.6);color:#fff;border-radius:2px;padding:2px 6px;font-size:10px;cursor:grab;z-index:2;}
+.prev-bandeau .b-actions{position:absolute;top:8px;right:8px;display:flex;gap:4px;z-index:2;}
+.prev-bandeau .b-btn{background:rgba(28,28,46,.7);color:#fff;border:none;border-radius:2px;padding:3px 8px;font-size:10px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.prev-bandeau .b-btn:hover{background:var(--violet-m);}
+.prev-bandeau .b-btn.del{background:rgba(92,42,26,.8);}
+
+/* Type 1 — 1 grand article */
+.btype1{background:var(--beige3);padding:16px;}
+.btype1 .b-label{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--violet-m);margin-bottom:10px;}
+.btype1 .art-slot{background:var(--beige);border:1.5px dashed var(--line2);border-radius:3px;padding:14px;min-height:80px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text3);cursor:pointer;transition:border-color .15s,background .15s;}
+.btype1 .art-slot:hover{border-color:var(--violet-m);background:var(--violet-xl);}
+.btype1 .art-slot.filled{border-style:solid;border-color:var(--line);background:var(--beige2);justify-content:flex-start;flex-direction:column;align-items:flex-start;gap:4px;}
+.btype1 .art-slot .slot-cat{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--violet-m);}
+.btype1 .art-slot .slot-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;color:var(--violet);line-height:1.2;}
+.btype1 .art-slot .slot-meta{font-size:11px;color:var(--text3);}
+.btype1 .art-slot .slot-remove{font-size:11px;color:var(--red);cursor:pointer;align-self:flex-end;}
+
+/* Type 2 — 2 grands + 5 petits */
+.btype2{background:var(--beige3);padding:16px;}
+.btype2 .b-label{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--violet-m);margin-bottom:10px;}
+.btype2 .row-big{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.btype2 .row-small{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
+.slot-big{background:var(--beige);border:1.5px dashed var(--line2);border-radius:3px;padding:10px;min-height:70px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text3);cursor:pointer;transition:border-color .15s;}
+.slot-big:hover,.slot-small:hover{border-color:var(--violet-m);}
+.slot-small{background:var(--beige);border:1.5px dashed var(--line2);border-radius:3px;padding:6px;min-height:50px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text3);cursor:pointer;transition:border-color .15s;text-align:center;}
+.slot-big.filled,.slot-small.filled{border-style:solid;border-color:var(--line);background:var(--beige2);}
+
+/* Type 3 — 6 articles */
+.btype3{background:var(--beige3);padding:16px;}
+.btype3 .b-label{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--violet-m);margin-bottom:10px;}
+.btype3 .row-six{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.slot-medium{background:var(--beige);border:1.5px dashed var(--line2);border-radius:3px;padding:10px;min-height:60px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text3);cursor:pointer;transition:border-color .15s;text-align:center;}
+.slot-medium:hover{border-color:var(--violet-m);}
+.slot-medium.filled{border-style:solid;border-color:var(--line);background:var(--beige2);}
+
+/* Bandeau PUB */
+.bpub{background:var(--violet2);padding:16px;border-radius:3px;}
+.bpub .b-label{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--violet-l);margin-bottom:8px;}
+.bpub-inner{background:var(--beige3);border-radius:2px;padding:12px;display:flex;gap:12px;align-items:center;}
+.bpub-img{width:80px;height:50px;background:var(--line);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text3);flex-shrink:0;overflow:hidden;}
+.bpub-img img{width:100%;height:100%;object-fit:cover;}
+.bpub-text .bpub-titre{font-size:13px;font-weight:500;color:var(--violet);}
+.bpub-text .bpub-desc{font-size:11px;color:var(--text3);margin-top:2px;}
+.bpub-text .bpub-lien{font-size:11px;color:var(--violet-m);margin-top:4px;}
+
+/* DROP SEPARATOR */
+.drop-line{height:8px;border-radius:3px;margin:4px 0;transition:background .15s,height .15s;}
+.drop-line.active{height:20px;background:var(--violet-xl);border:1px dashed var(--violet-m);}
+
+/* PANNEAU DROIT — OUTILS */
+.tools-col{background:var(--beige2);border-left:1px solid var(--line2);overflow-y:auto;display:flex;flex-direction:column;}
+.tools-section{padding:20px;border-bottom:1px solid var(--line);}
+.tools-title{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;}
+
+/* PALETTE BANDEAUX */
+.btype-palette{display:flex;flex-direction:column;gap:8px;}
+.btype-item{background:var(--beige);border:1px solid var(--line2);border-radius:3px;padding:12px 14px;cursor:pointer;transition:border-color .15s,background .15s;}
+.btype-item:hover{border-color:var(--violet-m);background:#fff;}
+.btype-item .bt-name{font-size:13px;font-weight:500;color:var(--violet);}
+.btype-item .bt-desc{font-size:11px;color:var(--text3);margin-top:2px;}
+.btype-item .bt-preview{display:flex;gap:3px;margin-top:8px;}
+.bt-square{background:var(--beige3);border:1px solid var(--line);border-radius:1px;}
+
+/* LISTE ARTICLES */
+.art-search{width:100%;border:1px solid var(--line2);padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:12px;background:var(--beige);color:var(--text);outline:none;border-radius:2px;margin-bottom:10px;}
+.art-search:focus{border-color:var(--violet-m);}
+.art-list{max-height:200px;overflow-y:auto;border:1px solid var(--line);border-radius:2px;}
+.art-item{padding:8px 10px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .15s;}
+.art-item:last-child{border-bottom:none;}
+.art-item:hover{background:var(--violet-xl);}
+.art-item .ai-cat{font-size:10px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--violet-m);}
+.art-item .ai-title{font-size:12px;color:var(--violet);margin-top:2px;line-height:1.3;}
+.art-item .ai-meta{font-size:11px;color:var(--text3);margin-top:2px;}
+
+/* FORMULAIRE PUB */
+.pub-form{display:flex;flex-direction:column;gap:10px;}
+.f-label-sm{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:4px;display:block;}
+.f-input-sm{width:100%;border:1px solid var(--line2);padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:12px;background:var(--beige);color:var(--text);outline:none;border-radius:2px;transition:border-color .2s;}
+.f-input-sm:focus{border-color:var(--violet-m);}
+.img-drop-pub{border:1.5px dashed var(--line2);border-radius:2px;padding:16px;text-align:center;cursor:pointer;position:relative;transition:border-color .15s;}
+.img-drop-pub:hover{border-color:var(--violet-m);}
+.img-drop-pub input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.img-drop-pub p{font-size:12px;color:var(--text3);}
+
+/* BOUTONS */
+.btn{padding:8px 18px;border-radius:2px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;letter-spacing:.05em;cursor:pointer;transition:all .2s;border:1px solid transparent;}
+.btn-primary{background:var(--violet);color:#fff;}
+.btn-primary:hover{background:var(--violet2);}
+.btn-gold{background:var(--violet-m);color:#fff;}
+.btn-gold:hover{opacity:.9;}
+.btn-ghost{background:none;border-color:var(--line2);color:var(--text2);}
+.btn-ghost:hover{border-color:var(--violet-m);}
+.btn-block{width:100%;}
+
+/* SLOT ACTIF (en attente d'article) */
+.slot-waiting{border-color:var(--violet-m) !important;background:rgba(184,149,106,.08) !important;animation:pulse .8s infinite alternate;}
+@keyframes pulse{from{opacity:.7}to{opacity:1}}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;right:24px;background:var(--violet);color:#fff;padding:10px 18px;border-radius:2px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;}
+#toast.show{opacity:1;}
+
+footer{background:var(--violet);color:var(--violet-l);padding:18px 40px;text-align:center;font-size:11px;}
+footer a{color:var(--violet-l);}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <span><a href="index.html">← Retour à l'accueil</a></span>
+  <span id="topbar-right"></span>
+</div>
+
+<header>
+  <div class="header-top">
+    <div>
+      <a href="index.html" style="display:flex;align-items:center;gap:14px;text-decoration:none;">
+        <svg width="52" height="52" viewBox="0 0 52 52" fill="none" style="flex-shrink:0"><rect x="4" y="4" width="28" height="28" stroke="#B8956A" stroke-width="0.8" fill="none"/><circle cx="18" cy="18" r="14" stroke="#B8956A" stroke-width="0.8" fill="none"/><line x1="4" y1="18" x2="32" y2="18" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="18" y1="4" x2="18" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="32" y1="32" x2="44" y2="44" stroke="#B8956A" stroke-width="0.8" opacity="0.5"/></svg>
+        <div class="site-name">L'Œil d'Euclide</div>
+      </a>
+      <p class="tagline" style="margin-top:6px;">Mise en page — Éditeur de disposition</p>
+    </div>
+    <div class="header-right">
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost" onclick="saveDispo()">Sauvegarder</button>
+        <button class="btn btn-gold" onclick="publishDispo()">Publier</button>
+      </div>
+    </div>
+  </div>
+  <nav id="cats">
+    <a href="index.html">Accueil</a>
+    <a href="categorie.html?cat=Politique">Politique</a>
+    <a href="categorie.html?cat=Société">Société</a>
+    <a href="categorie.html?cat=Science">Science</a>
+    <a href="categorie.html?cat=Environnement">Environnement</a>
+    <a href="categorie.html?cat=Économie">Économie</a>
+    <a href="categorie.html?cat=Culture">Culture</a>
+    <a href="categorie.html?cat=International">International</a>
+    <a href="categorie.html?cat=Éducation">Éducation &amp; Jeunesse</a>
+    <a href="categorie.html?cat=Histoire">Histoire</a>
+    <a href="categorie.html?cat=Critique">Critique litt. &amp; artistique</a>
+  </nav>
+</header>
+
+<div class="editor-wrap">
+
+  <!-- COLONNE GAUCHE : PRÉVISUALISATION -->
+  <div class="preview-col">
+    <div class="preview-title">
+      <span>Disposition de la page d'accueil</span>
+      <span style="font-size:11px;color:var(--text3);font-weight:300;" id="block-count">0 bloc(s)</span>
+    </div>
+    <div id="preview-frame" class="preview-frame">
+      <div id="drop-zone-0" class="drop-line"></div>
+      <p style="text-align:center;color:var(--text3);font-size:13px;padding:40px 0;" id="empty-msg">
+        Cliquez sur un type de bandeau à droite pour l'ajouter
+      </p>
+    </div>
+  </div>
+
+  <!-- COLONNE DROITE : OUTILS -->
+  <div class="tools-col">
+
+    <!-- AJOUTER UN BANDEAU -->
+    <div class="tools-section">
+      <p class="tools-title">Ajouter un bandeau</p>
+      <div class="btype-palette">
+
+        <div class="btype-item" onclick="addBandeau('type1')">
+          <div class="bt-name">Type 1 — Grand article</div>
+          <div class="bt-desc">1 article mis en avant pleine largeur</div>
+          <div class="bt-preview">
+            <div class="bt-square" style="width:100%;height:28px;"></div>
+          </div>
+        </div>
+
+        <div class="btype-item" onclick="addBandeau('type2')">
+          <div class="bt-name">Type 2 — 2 grands + 5 petits</div>
+          <div class="bt-desc">2 articles larges et 5 articles secondaires</div>
+          <div class="bt-preview" style="flex-direction:column;gap:3px;">
+            <div style="display:flex;gap:3px;"><div class="bt-square" style="flex:1;height:20px;"></div><div class="bt-square" style="flex:1;height:20px;"></div></div>
+            <div style="display:flex;gap:3px;">${[1,2,3,4,5].map(()=>'<div class="bt-square" style="flex:1;height:12px;"></div>').join('')}</div>
+          </div>
+        </div>
+
+        <div class="btype-item" onclick="addBandeau('type3')">
+          <div class="bt-name">Type 3 — 6 articles</div>
+          <div class="bt-desc">Grille de 6 articles en 3 colonnes</div>
+          <div class="bt-preview" style="flex-direction:column;gap:3px;">
+            <div style="display:flex;gap:3px;"><div class="bt-square" style="flex:1;height:16px;"></div><div class="bt-square" style="flex:1;height:16px;"></div><div class="bt-square" style="flex:1;height:16px;"></div></div>
+            <div style="display:flex;gap:3px;"><div class="bt-square" style="flex:1;height:16px;"></div><div class="bt-square" style="flex:1;height:16px;"></div><div class="bt-square" style="flex:1;height:16px;"></div></div>
+          </div>
+        </div>
+
+        <div class="btype-item" onclick="addBandeau('pub')">
+          <div class="bt-name" style="color:var(--violet-m);">Bandeau publicitaire</div>
+          <div class="bt-desc">Image + titre + texte + lien externe</div>
+          <div class="bt-preview">
+            <div class="bt-square" style="width:48px;height:24px;background:var(--violet2);"></div>
+            <div style="flex:1;height:24px;background:var(--beige3);border:1px solid var(--line);border-radius:1px;"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CHOISIR UN ARTICLE -->
+    <div class="tools-section">
+      <p class="tools-title">Choisir un article</p>
+      <p id="slot-hint" style="font-size:11px;color:var(--text3);margin-bottom:8px;">Cliquez d'abord sur un emplacement dans la disposition</p>
+      <input type="text" class="art-search" id="art-search" placeholder="Rechercher un article…" oninput="filterArticles()" disabled>
+      <div class="art-list" id="art-list"></div>
+    </div>
+
+    <!-- BANDEAU PUB -->
+    <div class="tools-section" id="pub-form-section" style="display:none;">
+      <p class="tools-title">Configurer le bandeau pub</p>
+      <div class="pub-form">
+        <div>
+          <span class="f-label-sm">Image</span>
+          <div class="img-drop-pub" id="pub-img-drop">
+            <input type="file" accept="image/*" onchange="handlePubImg(event)">
+            <p>Cliquer pour ajouter une image</p>
+            <img id="pub-img-preview" src="" style="display:none;max-width:100%;max-height:80px;object-fit:cover;margin-top:6px;border-radius:2px;">
+          </div>
+        </div>
+        <div>
+          <span class="f-label-sm">Titre</span>
+          <input type="text" class="f-input-sm" id="pub-titre" placeholder="Nom de l'annonceur">
+        </div>
+        <div>
+          <span class="f-label-sm">Texte</span>
+          <input type="text" class="f-input-sm" id="pub-texte" placeholder="Courte description">
+        </div>
+        <div>
+          <span class="f-label-sm">Lien URL</span>
+          <input type="url" class="f-input-sm" id="pub-lien" placeholder="https://...">
+        </div>
+        <button class="btn btn-primary btn-block" onclick="applyPubConfig()">Appliquer</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<footer>
+  <a href="index.html">L'Œil d'Euclide</a>
+  <p style="font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;color:#B8956A;text-align:right;margin-top:8px;">Mettre notre monde en perspective</p>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, getDocs, collection, setDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",
+  authDomain:"l-oeil-d-euclyde.firebaseapp.com",
+  projectId:"l-oeil-d-euclyde",
+  storageBucket:"l-oeil-d-euclyde.firebasestorage.app",
+  messagingSenderId:"179241004963",
+  appId:"1:179241004963:web:c7c7afa926e03032653416"
+});
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+const ROLES = {'super-admin':'Super-administrateur','moderateur-redaction':'Modérateur de rédaction','redacteur':'Rédacteur','moderateur-comments':'Modérateur de commentaires','lecteur-commentateur':'Lecteur-commentateur','lecteur':'Lecteur'};
+const WRITERS = ['super-admin','moderateur-redaction','redacteur'];
+const EDITORS = ['super-admin','moderateur-redaction'];
+
+// ── ÉTAT ─────────────────────────────────────────────────────────────
+let bandeaux = [];       // liste des blocs de disposition
+let allArticles = [];    // articles depuis Firestore
+let activeSlot = null;   // { bandeauId, slotIdx } — slot en attente
+let activePubId = null;  // bandeau pub en cours de config
+let pubImgData = null;
+let uid = () => 'b' + Date.now() + Math.random().toString(36).slice(2,5);
+
+// ── ACCÈS ─────────────────────────────────────────────────────────────
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { window.location.href = 'connexion.html'; return; }
+  try {
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    if (!snap.exists()) { window.location.href = 'connexion.html'; return; }
+    const p = snap.data();
+    if (!EDITORS.includes(p.role)) { window.location.href = 'index.html'; return; }
+    updateTopbar(p);
+    await loadArticles();
+    await loadDispo();
+    render();
+  } catch(e) { console.error(e); }
+});
+
+function updateTopbar(p) {
+  const el = document.getElementById('topbar-right');
+  const adminBtn = p.role === 'super-admin'
+    ? ' <a href="gestion-comptes.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">👥 Comptes</a>'
+      + ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✍ Auteurs</a>'
+      + ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>'
+    : '';
+  el.innerHTML = '<span style="color:#EDE0CC">'+(ROLES[p.role]||p.role)+'</span>'
+    +' &mdash; <strong style="color:#fff">'+p.prenom+' '+p.nom+'</strong>'
+    +' <a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>'
+    +adminBtn
+    +' <span style="opacity:.3;margin:0 6px">|</span>'
+    +' <a href="profil.html" style="color:#EDE0CC;">Mon profil</a>'
+    +' <span style="opacity:.3;margin:0 4px">|</span>'
+    +' <a href="#" id="btn-deco" style="color:#EDE0CC;">Déconnexion</a>';
+  document.getElementById('btn-deco').addEventListener('click', async e => {
+    e.preventDefault(); await signOut(auth); window.location.href = 'connexion.html';
+  });
+}
+
+// ── CHARGER ARTICLES ──────────────────────────────────────────────────
+async function loadArticles() {
+  try {
+    const snap = await getDocs(collection(db, 'articles'));
+    allArticles = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    // Articles de démo si vide
+    if (allArticles.length === 0) {
+      allArticles = [
+        { id:'demo1', titre:'La réforme des retraites fragilise le dialogue social', rubrique:'Politique', auteur:'Marie Dupont', date:'31 mars 2026' },
+        { id:'demo2', titre:'Un vaccin contre Alzheimer en phase III', rubrique:'Science', auteur:'Pr. Lefebvre', date:'31 mars 2026' },
+        { id:'demo3', titre:'Sécheresse en Espagne : 40% des réserves perdues', rubrique:'Environnement', auteur:'Carla Ramos', date:'30 mars 2026' },
+        { id:'demo4', titre:'La BCE maintient ses taux face à l\'inflation', rubrique:'Économie', auteur:'Pierre Vidal', date:'28 mars 2026' },
+        { id:'demo5', titre:'Taïwan et la Chine : statu quo fragile', rubrique:'International', auteur:'Paul Chen', date:'29 mars 2026' },
+        { id:'demo6', titre:'Le retour des librairies indépendantes', rubrique:'Culture', auteur:'Julien Fabre', date:'26 mars 2026' },
+        { id:'demo7', titre:'Décrochage scolaire : les vrais chiffres', rubrique:'Éducation', auteur:'Sophie Leclerc', date:'29 mars 2026' },
+      ];
+    }
+    renderArticleList(allArticles);
+  } catch(e) { console.warn('Erreur articles:', e); }
+}
+
+function renderArticleList(list) {
+  const el = document.getElementById('art-list');
+  if (list.length === 0) { el.innerHTML = '<p style="padding:10px;font-size:12px;color:var(--text3);">Aucun article trouvé</p>'; return; }
+  el.innerHTML = list.map(a => `
+    <div class="art-item" onclick="assignArticle('${a.id}')">
+      <div class="ai-cat">${a.rubrique||'—'}</div>
+      <div class="ai-title">${a.titre||'Sans titre'}</div>
+      <div class="ai-meta">${a.auteur||''} · ${a.date||''}</div>
+    </div>
+  `).join('');
+}
+
+window.filterArticles = function() {
+  const q = document.getElementById('art-search').value.trim().toLowerCase();
+  renderArticleList(q ? allArticles.filter(a => (a.titre+' '+a.rubrique+' '+a.auteur).toLowerCase().includes(q)) : allArticles);
+};
+
+// ── CHARGER/SAUVER DISPOSITION ────────────────────────────────────────
+async function loadDispo() {
+  try {
+    const snap = await getDoc(doc(db, 'config', 'disposition'));
+    if (snap.exists()) bandeaux = snap.data().bandeaux || [];
+  } catch(e) { bandeaux = []; }
+}
+
+window.saveDispo = async function(silent) {
+  try {
+    await setDoc(doc(db, 'config', 'disposition'), { bandeaux, updatedAt: new Date() });
+    if (!silent) toast('✓ Disposition sauvegardée');
+  } catch(e) { toast('Erreur : ' + e.message); }
+};
+
+window.publishDispo = async function() {
+  await window.saveDispo(true);
+  toast('✓ Disposition publiée sur l\'accueil !');
+};
+
+// ── AJOUTER BANDEAU ───────────────────────────────────────────────────
+window.addBandeau = function(type) {
+  const b = { id: uid(), type, slots: [], pub: null };
+  if (type === 'type1') b.slots = [null];
+  if (type === 'type2') b.slots = [null,null,null,null,null,null,null];
+  if (type === 'type3') b.slots = [null,null,null,null,null,null];
+  bandeaux.push(b);
+  document.getElementById('empty-msg') && (document.getElementById('empty-msg').style.display = 'none');
+  if (type === 'pub') { activePubId = b.id; document.getElementById('pub-form-section').style.display = 'block'; }
+  render();
+  toast('Bandeau ajouté');
+};
+
+window.removeBandeau = function(id) {
+  bandeaux = bandeaux.filter(b => b.id !== id);
+  render();
+};
+
+// ── SLOTS ARTICLES ────────────────────────────────────────────────────
+window.selectSlot = function(bandeauId, slotIdx) {
+  activeSlot = { bandeauId, slotIdx };
+  // Activer la recherche
+  document.getElementById('art-search').disabled = false;
+  document.getElementById('art-search').focus();
+  document.getElementById('slot-hint').textContent = 'Choisissez un article dans la liste ci-dessous';
+  document.getElementById('slot-hint').style.color = 'var(--violet-m)';
+  render();
+};
+
+window.clearSlot = function(bandeauId, slotIdx, e) {
+  e && e.stopPropagation();
+  const b = bandeaux.find(b => b.id === bandeauId);
+  if (b) b.slots[slotIdx] = null;
+  render();
+};
+
+window.assignArticle = function(artId) {
+  if (!activeSlot) { toast('Cliquez d\'abord sur un emplacement'); return; }
+  const b = bandeaux.find(b => b.id === activeSlot.bandeauId);
+  const art = allArticles.find(a => a.id === artId);
+  if (b && art) {
+    b.slots[activeSlot.slotIdx] = { id: art.id, titre: art.titre, rubrique: art.rubrique, auteur: art.auteur };
+    activeSlot = null;
+    document.getElementById('art-search').disabled = false;
+    document.getElementById('slot-hint').textContent = 'Cliquez sur un emplacement dans la disposition';
+    document.getElementById('slot-hint').style.color = 'var(--text3)';
+    render();
+    toast('Article assigné ✓');
+  }
+};
+
+// ── CONFIG PUB ────────────────────────────────────────────────────────
+window.handlePubImg = function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    pubImgData = ev.target.result;
+    const img = document.getElementById('pub-img-preview');
+    img.src = pubImgData; img.style.display = 'block';
+    document.querySelector('#pub-img-drop p').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+};
+
+window.applyPubConfig = function() {
+  if (!activePubId) return;
+  const b = bandeaux.find(b => b.id === activePubId);
+  if (b) {
+    b.pub = {
+      img: pubImgData,
+      titre: document.getElementById('pub-titre').value,
+      texte: document.getElementById('pub-texte').value,
+      lien: document.getElementById('pub-lien').value
+    };
+    render();
+    toast('Bandeau pub configuré ✓');
+  }
+};
+
+// ── RENDU ─────────────────────────────────────────────────────────────
+function render() {
+  const frame = document.getElementById('preview-frame');
+  const emptyMsg = document.getElementById('empty-msg');
+  document.getElementById('block-count').textContent = bandeaux.length + ' bloc(s)';
+
+  if (bandeaux.length === 0) {
+    frame.innerHTML = '';
+    const em = document.createElement('p');
+    em.id = 'empty-msg';
+    em.style.cssText = 'text-align:center;color:var(--text3);font-size:13px;padding:40px 0;';
+    em.textContent = 'Cliquez sur un type de bandeau à droite pour l\'ajouter';
+    frame.appendChild(em);
+    return;
+  }
+
+  frame.innerHTML = '';
+  bandeaux.forEach((b, bi) => {
+    frame.appendChild(makeDropLine(bi));
+    frame.appendChild(makeBandeauEl(b));
+  });
+  frame.appendChild(makeDropLine(bandeaux.length));
+}
+
+function makeDropLine(idx) {
+  const d = document.createElement('div');
+  d.className = 'drop-line';
+  d.dataset.idx = idx;
+  return d;
+}
+
+function makeBandeauEl(b) {
+  const wrap = document.createElement('div');
+  wrap.className = 'prev-bandeau';
+  wrap.id = 'bandeau-' + b.id;
+
+  // Handle + actions
+  const actions = document.createElement('div');
+  actions.className = 'b-actions';
+  actions.innerHTML = `<button class="b-btn del" onclick="removeBandeau('${b.id}')">✕ Supprimer</button>`;
+  wrap.appendChild(actions);
+
+  if (b.type === 'type1') {
+    wrap.innerHTML += renderType1(b);
+  } else if (b.type === 'type2') {
+    wrap.innerHTML += renderType2(b);
+  } else if (b.type === 'type3') {
+    wrap.innerHTML += renderType3(b);
+  } else if (b.type === 'pub') {
+    wrap.innerHTML += renderPub(b);
+  }
+
+  wrap.appendChild(actions);
+  return wrap;
+}
+
+function slotHtml(b, idx, cls) {
+  const s = b.slots[idx];
+  const isActive = activeSlot && activeSlot.bandeauId === b.id && activeSlot.slotIdx === idx;
+  if (s) {
+    return `<div class="${cls} filled" onclick="selectSlot('${b.id}',${idx})">
+      <div class="slot-cat">${s.rubrique||''}</div>
+      <div style="font-size:11px;font-weight:500;color:var(--violet);line-height:1.3;">${s.titre||''}</div>
+      <div style="font-size:10px;color:var(--text3);margin-top:2px;">${s.auteur||''}</div>
+      <span class="slot-remove" onclick="clearSlot('${b.id}',${idx},event)">✕ retirer</span>
+    </div>`;
+  }
+  return `<div class="${cls}${isActive?' slot-waiting':''}" onclick="selectSlot('${b.id}',${idx})">
+    ${isActive ? '← Choisissez un article' : '+ Article'}
+  </div>`;
+}
+
+function renderType1(b) {
+  return `<div class="btype1">
+    <div class="b-label">Type 1 — Grand article</div>
+    ${slotHtml(b, 0, 'art-slot')}
+  </div>`;
+}
+
+function renderType2(b) {
+  return `<div class="btype2">
+    <div class="b-label">Type 2 — 2 grands + 5 petits</div>
+    <div class="row-big">
+      ${slotHtml(b, 0, 'slot-big')}
+      ${slotHtml(b, 1, 'slot-big')}
+    </div>
+    <div class="row-small">
+      ${[2,3,4,5,6].map(i => slotHtml(b, i, 'slot-small')).join('')}
+    </div>
+  </div>`;
+}
+
+function renderType3(b) {
+  return `<div class="btype3">
+    <div class="b-label">Type 3 — 6 articles</div>
+    <div class="row-six">
+      ${[0,1,2,3,4,5].map(i => slotHtml(b, i, 'slot-medium')).join('')}
+    </div>
+  </div>`;
+}
+
+function renderPub(b) {
+  const p = b.pub;
+  if (!p) return `<div class="bpub" onclick="(function(){activePubId='${b.id}';document.getElementById('pub-form-section').style.display='block';})()">
+    <div class="b-label">Bandeau publicitaire</div>
+    <div style="text-align:center;padding:16px;font-size:12px;color:var(--violet-l);">Cliquez pour configurer</div>
+  </div>`;
+  return `<div class="bpub">
+    <div class="b-label">Bandeau publicitaire</div>
+    <a href="${p.lien||'#'}" target="_blank" style="text-decoration:none;">
+      <div class="bpub-inner">
+        <div class="bpub-img">${p.img ? '<img src="'+p.img+'">' : 'IMG'}</div>
+        <div class="bpub-text">
+          <div class="bpub-titre">${p.titre||'Annonceur'}</div>
+          <div class="bpub-desc">${p.texte||''}</div>
+          <div class="bpub-lien">${p.lien||''}</div>
+        </div>
+      </div>
+    </a>
+  </div>`;
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// Autosave toutes les 30s
+setInterval(() => window.saveDispo(true), 30000);
+</script>
+</body>
+</html>

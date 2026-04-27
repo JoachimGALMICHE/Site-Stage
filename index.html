@@ -235,8 +235,12 @@ footer li a:hover{color:#fff;}
     </div>
   </div>
 
+  <!-- BANDEAUX ÉDITORIAUX (chargés depuis Firebase) -->
+  <div id="bandeaux-container"></div>
+
   <section id="recent">
     <p class="sec-label">Articles récents</p>
+    <a id="btn-disposition" href="disposition.html" style="display:none;float:right;margin-top:-32px;background:var(--violet-m);color:#fff;padding:5px 14px;border-radius:2px;font-size:11px;font-weight:500;letter-spacing:.06em;text-decoration:none;">✏ Disposition</a>
     <div class="a-grid">
       <div class="a-card"><div class="img-box r32" style="background-image:url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&auto=format&fit=crop');background-size:cover;background-position:center;"></div><span class="a-rub">Économie &amp; Entreprise</span><h3><a href="article.html">Les PME françaises face à la hausse du coût de l'énergie industrielle</a></h3><p class="a-auth">Thomas Martin · 30 mars 2026</p></div>
       <div class="a-card"><div class="img-box r32" style="background-image:url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&auto=format&fit=crop');background-size:cover;background-position:center;"></div><span class="a-rub">Éducation &amp; Jeunesse</span><h3><a href="article.html">Décrochage scolaire : que disent vraiment les chiffres officiels ?</a></h3><p class="a-auth">Sophie Leclerc · 29 mars 2026</p></div>
@@ -338,6 +342,115 @@ onAuthStateChanged(_auth, async (user) => {
     });
   } catch(e) { console.error(e); }
 });
+</script>
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const fbApp = getApps().length ? getApps()[0] : initializeApp({
+  apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",
+  authDomain:"l-oeil-d-euclyde.firebaseapp.com",
+  projectId:"l-oeil-d-euclyde",
+  storageBucket:"l-oeil-d-euclyde.firebasestorage.app",
+  messagingSenderId:"179241004963",
+  appId:"1:179241004963:web:c7c7afa926e03032653416"
+});
+const db = getFirestore(fbApp);
+const auth = getAuth(fbApp);
+
+// Charger et afficher les bandeaux
+async function loadBandeaux() {
+  try {
+    const snap = await getDoc(doc(db, 'config', 'disposition'));
+    if (!snap.exists()) return;
+    const bandeaux = snap.data().bandeaux || [];
+    const container = document.getElementById('bandeaux-container');
+    if (!container || bandeaux.length === 0) return;
+    container.innerHTML = '';
+    bandeaux.forEach(b => {
+      const el = document.createElement('div');
+      el.style.cssText = 'margin:28px 0;';
+      if (b.type === 'pub' && b.pub) {
+        el.innerHTML = renderPubBandeau(b.pub);
+      } else if (b.type === 'type1' && b.slots[0]) {
+        el.innerHTML = renderType1(b.slots[0]);
+      } else if (b.type === 'type2') {
+        el.innerHTML = renderType2(b.slots);
+      } else if (b.type === 'type3') {
+        el.innerHTML = renderType3(b.slots);
+      }
+      container.appendChild(el);
+    });
+  } catch(e) { console.warn('Erreur bandeaux:', e); }
+}
+
+function artHtml(a, cls) {
+  if (!a) return `<div class="${cls}" style="background:var(--beige3);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text3);">Emplacement vide</div>`;
+  return `<div class="${cls}" style="background:var(--beige2);border:1px solid var(--line);border-radius:3px;padding:14px;cursor:pointer;" onclick="window.location='article.html'">
+    <div style="font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--violet-m);margin-bottom:6px;">${a.rubrique||''}</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--violet);line-height:1.2;">${a.titre||''}</div>
+    <div style="font-size:11px;color:var(--text3);margin-top:6px;">${a.auteur||''}</div>
+  </div>`;
+}
+
+function renderPubBandeau(pub) {
+  return `<a href="${pub.lien||'#'}" target="_blank" style="display:flex;gap:20px;align-items:center;background:var(--beige2);border:1px solid var(--line);border-radius:4px;padding:16px 20px;text-decoration:none;">
+    ${pub.img ? `<img src="${pub.img}" style="width:80px;height:52px;object-fit:cover;border-radius:2px;flex-shrink:0;">` : ''}
+    <div>
+      <div style="font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--violet-m);margin-bottom:4px;">Partenaire</div>
+      <div style="font-size:15px;font-weight:500;color:var(--violet);">${pub.titre||''}</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:2px;">${pub.texte||''}</div>
+    </div>
+  </a>`;
+}
+
+function renderType1(a) {
+  return `<div style="border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;">
+    <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;">À la une</div>
+    ${artHtml(a, '')}
+  </div>`;
+}
+
+function renderType2(slots) {
+  return `<div style="padding:20px 0;border-top:1px solid var(--line);">
+    <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;">Sélection</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      ${artHtml(slots[0],'')}
+${artHtml(slots[1],'')}
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;">
+      ${[2,3,4,5,6].map(i => artHtml(slots[i]||null,'')).join('
+')}
+    </div>
+  </div>`;
+}
+
+function renderType3(slots) {
+  return `<div style="padding:20px 0;border-top:1px solid var(--line);">
+    <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;">Articles</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+      ${slots.map(s => artHtml(s,'')).join('
+')}
+    </div>
+  </div>`;
+}
+
+// Bouton disposition pour les éditeurs
+onAuthStateChanged(auth, async (user) => {
+  if (!user) return;
+  try {
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    if (!snap.exists()) return;
+    const role = snap.data().role;
+    if (['super-admin','moderateur-redaction'].includes(role)) {
+      const dispo = document.getElementById('btn-disposition');
+      if (dispo) dispo.style.display = 'inline-block';
+    }
+  } catch(e) {}
+});
+
+loadBandeaux();
 </script>
 </body>
 </html>
