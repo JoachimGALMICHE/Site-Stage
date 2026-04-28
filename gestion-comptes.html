@@ -123,7 +123,39 @@ footer a:hover{color:#fff;}
   .site-name{font-size:44px;}
   .page-header{flex-direction:column;}
 }
+
+/* BURGER MENU */
+#burger-btn{background:none;border:none;cursor:pointer;padding:4px 6px;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;}
+#burger-btn span{display:block;width:18px;height:1.5px;background:var(--violet-xl,#EDE0CC);border-radius:1px;transition:all .25s;}
+#burger-btn.open span:nth-child(1){transform:translateY(5.5px) rotate(45deg);}
+#burger-btn.open span:nth-child(2){opacity:0;}
+#burger-btn.open span:nth-child(3){transform:translateY(-5.5px) rotate(-45deg);}
+#burger-menu{display:none;position:absolute;top:100%;right:0;min-width:220px;background:var(--violet2,#2A2A3E);border:1px solid rgba(255,255,255,.08);border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.35);z-index:300;padding:8px 0;}
+#burger-menu.show{display:block;}
+#burger-menu a,#burger-menu button{display:block;width:100%;text-align:left;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:400;color:rgba(255,255,255,.8);background:none;border:none;cursor:pointer;letter-spacing:.02em;text-decoration:none;transition:background .15s,color .15s;}
+#burger-menu a:hover,#burger-menu button:hover{background:rgba(255,255,255,.07);color:#fff;}
+#burger-menu .menu-sep{height:1px;background:rgba(255,255,255,.08);margin:6px 0;}
+#burger-menu .menu-badge{display:inline-block;font-size:10px;font-weight:500;background:var(--violet-m,#B8956A);color:#fff;padding:1px 7px;border-radius:2px;margin-left:8px;vertical-align:middle;}
+#burger-menu .menu-badge.dark{background:rgba(255,255,255,.15);}
+#topbar{position:relative;}
 </style>
+<script>
+window._toggleBurger = function() {
+  var m = document.getElementById("burger-menu");
+  var b = document.getElementById("burger-btn");
+  if (!m) return;
+  m.style.display = (m.style.display === "block") ? "none" : "block";
+  if (b) b.classList.toggle("open");
+};
+document.addEventListener("click", function(e) {
+  var m = document.getElementById("burger-menu");
+  var b = document.getElementById("burger-btn");
+  if (m && b && !m.contains(e.target) && !b.contains(e.target)) {
+    m.style.display = "none";
+    if (b) b.classList.remove("open");
+  }
+});
+</script>
 </head>
 <body>
 
@@ -228,8 +260,40 @@ footer a:hover{color:#fff;}
 <script type="module">
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-const _app = getApps().length ? getApps()[0] : initializeApp({
+import { getFirestore, doc, getDoc, getDocs, updateDoc, deleteDoc, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+
+function buildBurger(p, auth, signOut) {
+  var el = document.getElementById("topbar-right");
+  if (!el) return;
+  var RL = {"super-admin":"Super-administrateur","moderateur-redaction":"Moderateur de redaction","redacteur":"Redacteur","moderateur-comments":"Moderateur commentaires","lecteur-commentateur":"Lecteur-commentateur","lecteur":"Lecteur"};
+  var isSA = p.role === "super-admin";
+  var isMod = isSA || p.role === "moderateur-redaction";
+  var isWriter = isMod || p.role === "redacteur";
+  function lnk(href, txt) { return "<a href=\"" + href + "\" style=\"display:block;padding:10px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;\">" + txt + "</a>"; }
+  function sep() { return "<div style=\"height:1px;background:rgba(255,255,255,.08);margin:6px 0;\"></div>"; }
+  var mi = "";
+  mi += "<div style=\"padding:10px 20px 4px;font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;\">" + p.prenom + " " + p.nom + "</div>";
+  mi += "<div style=\"padding:2px 20px 8px;font-size:11px;color:rgba(255,255,255,.4);\">" + (RL[p.role] || p.role) + "</div>";
+  mi += sep();
+  mi += lnk("profil.html", "Mon profil");
+  if (isWriter) mi += lnk("creer-article.html", "Creer un article");
+  if (isMod) { mi += sep(); mi += lnk("moderation.html", "Moderation"); mi += lnk("disposition.html", "Disposition"); }
+  if (isSA) { mi += sep(); mi += lnk("gestion-comptes.html", "Gestion des comptes"); mi += lnk("auteurs.html", "Base auteurs"); mi += lnk("permissions.html", "Permissions"); }
+  mi += sep();
+  mi += "<button id=\"_deco_btn\" style=\"display:block;width:100%;text-align:left;padding:10px 20px;font-size:13px;color:rgba(255,255,255,.8);background:none;border:none;cursor:pointer;font-family:inherit;\">Deconnexion</button>";
+  var bars = "<span style=\"color:rgba(255,255,255,.6);font-size:11px;margin-right:10px;\">" + p.prenom + " " + p.nom + "</span>";
+  bars += "<button id=\"burger-btn\" onclick=\"window._toggleBurger()\" style=\"background:none;border:none;cursor:pointer;padding:4px 6px;display:inline-flex;flex-direction:column;gap:4px;vertical-align:middle;\">";
+  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
+  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
+  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
+  bars += "</button>";
+  bars += "<div id=\"burger-menu\" style=\"position:absolute;top:100%;right:0;min-width:220px;background:#2A2A3E;border:1px solid rgba(255,255,255,.08);border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.35);z-index:300;padding:8px 0;\">" + mi + "</div>";
+  el.innerHTML = bars;
+  document.getElementById("_deco_btn").addEventListener("click", function() { signOut(auth).then(function() { window.location.href = "connexion.html"; }); });
+}
+
+const app = getApps().length ? getApps()[0] : initializeApp({
   apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",
   authDomain:"l-oeil-d-euclyde.firebaseapp.com",
   projectId:"l-oeil-d-euclyde",
@@ -237,50 +301,116 @@ const _app = getApps().length ? getApps()[0] : initializeApp({
   messagingSenderId:"179241004963",
   appId:"1:179241004963:web:c7c7afa926e03032653416"
 });
-const _auth = getAuth(_app);
-const _db = getFirestore(_app);
-// Exposer pour les autres scripts
-window._db = _db; window._auth = _auth;
-const _ROLES = {'super-admin':'Super-administrateur','moderateur-redaction':'Modérateur de rédaction','redacteur':'Rédacteur','moderateur-comments':'Modérateur de commentaires','lecteur-commentateur':'Lecteur-commentateur','lecteur':'Lecteur'};
-const _WRITERS = ['super-admin','moderateur-redaction','redacteur'];
-const _MODS = ['super-admin','moderateur-redaction'];
-// Date
-var _d = new Date();
-var _dt = document.getElementById('topbar-date');
-if (_dt) _dt.textContent = _d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).replace(/^./,function(c){return c.toUpperCase();});
-onAuthStateChanged(_auth, async (user) => {
-  var el = document.getElementById('topbar-right');
-  if (!el) return;
-  if (!user) {
-    el.innerHTML = '<a href="connexion.html" style="color:#EDE0CC;">Connexion</a>';
-    return;
-  }
+const auth = getAuth(app), db = getFirestore(app);
+window._db = db; window._auth = auth;
+
+const RL = {"super-admin":'Super-administrateur',"moderateur-redaction":'Modérateur de rédaction',"redacteur":'Rédacteur',"moderateur-comments":'Modérateur de commentaires',"lecteur-commentateur":'Lecteur-commentateur',"lecteur":'Lecteur'};
+const dt = document.getElementById("topbar-date");
+if (dt) dt.textContent = new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).replace(/^./,c=>c.toUpperCase());
+
+let allUsers = [], currentUid = null;
+
+
+onAuthStateChanged(auth, async user => {
+  document.getElementById("loader").style.display = "none";
+  if (!user) { document.getElementById("access-denied").style.display = "block"; return; }
   try {
-    var snap = await getDoc(doc(_db, 'users', user.uid));
-    if (!snap.exists()) return;
-    var p = snap.data();
-    var isSA  = p.role === 'super-admin';
-    var isMod = _MODS.indexOf(p.role) !== -1;
-    var isWriter = _WRITERS.indexOf(p.role) !== -1;
-    var btns = '';
-    if (isWriter) btns += ' <a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>';
-    if (isMod)   btns += ' <a href="moderation.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;border:1px solid #D4B896;">📋 Modération</a>';
-    if (isSA)    btns += ' <a href="gestion-comptes.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">👥 Comptes</a>';
-    if (isSA)    btns += ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✍ Auteurs</a>';
-    if (isSA||isMod) btns += ' <a href="disposition.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✏ Disposition</a>';
-    if (isSA)    btns += ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>';
-    el.innerHTML = '<span style="color:#EDE0CC">'+(_ROLES[p.role]||p.role)+'</span>'
-      +' — <strong style="color:#fff">'+p.prenom+' '+p.nom+'</strong>'
-      +btns
-      +' <span style="opacity:.3;margin:0 6px">|</span>'
-      +' <a href="profil.html" style="color:#EDE0CC;">Mon profil</a>'
-      +' <span style="opacity:.3;margin:0 4px">|</span>'
-      +' <a href="#" id="_deco" style="color:#EDE0CC;">Déconnexion</a>';
-    document.getElementById('_deco').addEventListener('click', async e => {
-      e.preventDefault(); await signOut(_auth); window.location.href = 'connexion.html';
-    });
-  } catch(e) { console.error(e); }
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if (!snap.exists() || snap.data().role !== "super-admin") {
+      document.getElementById("access-denied").style.display = "block"; return;
+    }
+    currentUid = user.uid;
+    buildBurger(snap.data(), auth, signOut);
+    document.getElementById("main-content").style.display = "block";
+    await loadUsers();
+  } catch(e) { document.getElementById("access-denied").style.display = "block"; }
 });
+
+async function loadUsers() {
+  try {
+    const snap = await getDocs(collection(db, "users"));
+    allUsers = snap.docs.map(d => ({uid: d.id, ...d.data()}));
+    allUsers.sort((a,b) => {
+      if (a.role === "super-admin" && b.role !== "super-admin") return -1;
+      if (b.role === "super-admin" && a.role !== "super-admin") return 1;
+      return (a.nom||'').localeCompare(b.nom||'');
+    });
+    updateStats(); renderTable(allUsers);
+  } catch(e) {
+    document.getElementById("users-tbody").innerHTML = '<tr><td colspan="5" class="empty-state">Erreur: ' + e.message + '</td></tr>';
+  }
+}
+
+function updateStats() {
+  document.getElementById("stat-total").textContent = allUsers.length;
+  document.getElementById("stat-admins").textContent = allUsers.filter(u => u.role === "super-admin").length;
+  document.getElementById("stat-redacteurs").textContent = allUsers.filter(u => u.role === "redacteur" || u.role === "moderateur-redaction").length;
+  document.getElementById("stat-lecteurs").textContent = allUsers.filter(u => u.role === "lecteur" || u.role === "lecteur-commentateur").length;
+}
+
+function renderTable(users) {
+  const tb = document.getElementById("users-tbody");
+  if (!users.length) { tb.innerHTML = "<tr><td colspan=\"5\" class=\"empty-state\">Aucun utilisateur.</td></tr>"; return; }
+  const rows = [];
+  users.forEach(function(u) {
+    const init = ((u.prenom||"?")[0] + (u.nom||"?")[0]).toUpperCase();
+    const date = u.createdAt ? new Date((u.createdAt.seconds||0)*1000).toLocaleDateString("fr-FR") : "—";
+    const self = u.uid === currentUid;
+    const rList = ["lecteur","lecteur-commentateur","moderateur-comments","redacteur","moderateur-redaction","super-admin"];
+    let opts = "";
+    rList.forEach(function(r) { opts += "<option value=\"" + r + "\"" + (u.role===r?" selected":"") + ">" + (RL[r]||r) + "</option>"; });
+    let row = "<tr id=\"row-" + u.uid + "\">";
+    row += "<td><div class=\"user-info\"><div class=\"user-avatar\">" + init + "</div><div>";
+    row += "<div class=\"user-name\">" + (u.prenom||"") + " " + (u.nom||"") + "</div>";
+    row += "<div class=\"user-email\">" + (u.email||"") + "</div></div></div></td>";
+    row += "<td><span class=\"role-badge role-" + (u.role||"lecteur") + "\">" + (RL[u.role]||u.role) + "</span></td>";
+    row += "<td><select class=\"role-select\" id=\"select-" + u.uid + "\"" + (self?" disabled":"") + ">" + opts + "</select></td>";
+    row += "<td class=\"date-cell\">" + date + "</td>";
+    row += "<td><div class=\"actions\">";
+    row += "<button class=\"btn btn-save\" onclick=\"window.saveRole('" + u.uid + "')\""  + (self?" disabled":"") + ">Enregistrer</button>";
+    row += "<button class=\"btn btn-danger\" onclick=\"window.confirmDelete('" + u.uid + "')\""  + (self?" disabled":"") + ">Supprimer</button>";
+    row += "</div></td></tr>";
+    rows.push(row);
+  });
+  tb.innerHTML = rows.join("");
+}
+
+window.filterUsers = function() {
+  const q = document.getElementById("search-input").value.trim().toLowerCase();
+  const role = document.getElementById("role-filter").value;
+  renderTable(allUsers.filter(u => (!q || (u.prenom+' '+u.nom+' '+u.email).toLowerCase().includes(q)) && (!role || u.role === role)));
+};
+
+window.saveRole = async function(uid) {
+  const sel = document.getElementById('select-' + uid);
+  const newRole = sel.value;
+  const btn = document.querySelector('#row-' + uid + ' .btn-save');
+  btn.disabled = true; btn.textContent = '…';
+  try {
+    await updateDoc(doc(db, "users", uid), {role: newRole});
+    const u = allUsers.find(x => x.uid === uid);
+    if (u) u.role = newRole;
+    updateStats();
+    const bc = document.querySelector('#row-' + uid + ' td:nth-child(2)');
+    if (bc) bc.innerHTML = "<span class=\"role-badge role-" + newRole + "\">" + (RL[newRole]||newRole) + "</span>";
+    toast('Rôle mis à jour');
+  } catch(e) { toast('Erreur: ' + e.message, true); }
+  finally { btn.disabled = false; btn.textContent = 'Enregistrer'; }
+};
+
+window.confirmDelete = function(uid, name) {
+  if (!confirm('Supprimer ' + name + ' ?')) return;
+  deleteDoc(doc(db, "users", uid)).then(() => {
+    allUsers = allUsers.filter(u => u.uid !== uid);
+    updateStats(); window.filterUsers(); toast('Supprimé');
+  }).catch(e => toast('Erreur: ' + e.message, true));
+};
+
+function toast(msg, err) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.className = "show" + (err ? ' err' : '');
+  setTimeout(() => t.className = '', 2500);
+}
 </script>
 </body>
 </html>

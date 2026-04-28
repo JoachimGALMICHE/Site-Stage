@@ -149,7 +149,39 @@ nav#cats a:hover{color:var(--violet);}
 
 footer{background:var(--violet);color:var(--violet-l);padding:18px 40px;text-align:center;font-size:11px;}
 footer a{color:var(--violet-l);}
+
+/* BURGER MENU */
+#burger-btn{background:none;border:none;cursor:pointer;padding:4px 6px;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;}
+#burger-btn span{display:block;width:18px;height:1.5px;background:var(--violet-xl,#EDE0CC);border-radius:1px;transition:all .25s;}
+#burger-btn.open span:nth-child(1){transform:translateY(5.5px) rotate(45deg);}
+#burger-btn.open span:nth-child(2){opacity:0;}
+#burger-btn.open span:nth-child(3){transform:translateY(-5.5px) rotate(-45deg);}
+#burger-menu{display:none;position:absolute;top:100%;right:0;min-width:220px;background:var(--violet2,#2A2A3E);border:1px solid rgba(255,255,255,.08);border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.35);z-index:300;padding:8px 0;}
+#burger-menu.show{display:block;}
+#burger-menu a,#burger-menu button{display:block;width:100%;text-align:left;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:400;color:rgba(255,255,255,.8);background:none;border:none;cursor:pointer;letter-spacing:.02em;text-decoration:none;transition:background .15s,color .15s;}
+#burger-menu a:hover,#burger-menu button:hover{background:rgba(255,255,255,.07);color:#fff;}
+#burger-menu .menu-sep{height:1px;background:rgba(255,255,255,.08);margin:6px 0;}
+#burger-menu .menu-badge{display:inline-block;font-size:10px;font-weight:500;background:var(--violet-m,#B8956A);color:#fff;padding:1px 7px;border-radius:2px;margin-left:8px;vertical-align:middle;}
+#burger-menu .menu-badge.dark{background:rgba(255,255,255,.15);}
+#topbar{position:relative;}
 </style>
+<script>
+window._toggleBurger = function() {
+  var m = document.getElementById("burger-menu");
+  var b = document.getElementById("burger-btn");
+  if (!m) return;
+  m.style.display = (m.style.display === "block") ? "none" : "block";
+  if (b) b.classList.toggle("open");
+};
+document.addEventListener("click", function(e) {
+  var m = document.getElementById("burger-menu");
+  var b = document.getElementById("burger-btn");
+  if (m && b && !m.contains(e.target) && !b.contains(e.target)) {
+    m.style.display = "none";
+    if (b) b.classList.remove("open");
+  }
+});
+</script>
 </head>
 <body>
 
@@ -223,7 +255,7 @@ footer a{color:var(--violet-l);}
           <div class="bt-desc">2 articles larges et 5 articles secondaires</div>
           <div class="bt-preview" style="flex-direction:column;gap:3px;">
             <div style="display:flex;gap:3px;"><div class="bt-square" style="flex:1;height:20px;"></div><div class="bt-square" style="flex:1;height:20px;"></div></div>
-            <div style="display:flex;gap:3px;">${[1,2,3,4,5].map(()=>'<div class="bt-square" style="flex:1;height:12px;"></div>').join('')}</div>
+            <div style="display:flex;gap:3px;">${[1,2,3,4,5].map(()=>'<div class="bt-square" style="flex:1;height:12px;"></div>').join("")}</div>
           </div>
         </div>
 
@@ -233,6 +265,14 @@ footer a{color:var(--violet-l);}
           <div class="bt-preview" style="flex-direction:column;gap:3px;">
             <div style="display:flex;gap:3px;"><div class="bt-square" style="flex:1;height:16px;"></div><div class="bt-square" style="flex:1;height:16px;"></div><div class="bt-square" style="flex:1;height:16px;"></div></div>
             <div style="display:flex;gap:3px;"><div class="bt-square" style="flex:1;height:16px;"></div><div class="bt-square" style="flex:1;height:16px;"></div><div class="bt-square" style="flex:1;height:16px;"></div></div>
+          </div>
+        </div>
+
+        <div class="btype-item" onclick="addBandeau('newsletter')">
+          <div class="bt-name" style="color:var(--violet-m);">Lettre d'Euclide</div>
+          <div class="bt-desc">Bloc d'inscription à la newsletter</div>
+          <div class="bt-preview">
+            <div style="width:100%;height:28px;background:var(--violet2);border-radius:2px;display:flex;align-items:center;padding:0 8px;gap:6px;"><div style="flex:1;height:8px;background:rgba(255,255,255,.2);border-radius:1px;"></div><div style="width:40px;height:14px;background:#B8956A;border-radius:1px;"></div></div>
           </div>
         </div>
 
@@ -297,8 +337,40 @@ footer a{color:var(--violet-l);}
 <script type="module">
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-const _app = getApps().length ? getApps()[0] : initializeApp({
+import { getFirestore, doc, getDoc, getDocs, setDoc, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+
+function buildBurger(p, auth, signOut) {
+  var el = document.getElementById("topbar-right");
+  if (!el) return;
+  var RL = {"super-admin":"Super-administrateur","moderateur-redaction":"Moderateur de redaction","redacteur":"Redacteur","moderateur-comments":"Moderateur commentaires","lecteur-commentateur":"Lecteur-commentateur","lecteur":"Lecteur"};
+  var isSA = p.role === "super-admin";
+  var isMod = isSA || p.role === "moderateur-redaction";
+  var isWriter = isMod || p.role === "redacteur";
+  function lnk(href, txt) { return "<a href=\"" + href + "\" style=\"display:block;padding:10px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;\">" + txt + "</a>"; }
+  function sep() { return "<div style=\"height:1px;background:rgba(255,255,255,.08);margin:6px 0;\"></div>"; }
+  var mi = "";
+  mi += "<div style=\"padding:10px 20px 4px;font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;\">" + p.prenom + " " + p.nom + "</div>";
+  mi += "<div style=\"padding:2px 20px 8px;font-size:11px;color:rgba(255,255,255,.4);\">" + (RL[p.role] || p.role) + "</div>";
+  mi += sep();
+  mi += lnk("profil.html", "Mon profil");
+  if (isWriter) mi += lnk("creer-article.html", "Creer un article");
+  if (isMod) { mi += sep(); mi += lnk("moderation.html", "Moderation"); mi += lnk("disposition.html", "Disposition"); }
+  if (isSA) { mi += sep(); mi += lnk("gestion-comptes.html", "Gestion des comptes"); mi += lnk("auteurs.html", "Base auteurs"); mi += lnk("permissions.html", "Permissions"); }
+  mi += sep();
+  mi += "<button id=\"_deco_btn\" style=\"display:block;width:100%;text-align:left;padding:10px 20px;font-size:13px;color:rgba(255,255,255,.8);background:none;border:none;cursor:pointer;font-family:inherit;\">Deconnexion</button>";
+  var bars = "<span style=\"color:rgba(255,255,255,.6);font-size:11px;margin-right:10px;\">" + p.prenom + " " + p.nom + "</span>";
+  bars += "<button id=\"burger-btn\" onclick=\"window._toggleBurger()\" style=\"background:none;border:none;cursor:pointer;padding:4px 6px;display:inline-flex;flex-direction:column;gap:4px;vertical-align:middle;\">";
+  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
+  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
+  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
+  bars += "</button>";
+  bars += "<div id=\"burger-menu\" style=\"position:absolute;top:100%;right:0;min-width:220px;background:#2A2A3E;border:1px solid rgba(255,255,255,.08);border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.35);z-index:300;padding:8px 0;\">" + mi + "</div>";
+  el.innerHTML = bars;
+  document.getElementById("_deco_btn").addEventListener("click", function() { signOut(auth).then(function() { window.location.href = "connexion.html"; }); });
+}
+
+const app = getApps().length ? getApps()[0] : initializeApp({
   apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",
   authDomain:"l-oeil-d-euclyde.firebaseapp.com",
   projectId:"l-oeil-d-euclyde",
@@ -306,50 +378,229 @@ const _app = getApps().length ? getApps()[0] : initializeApp({
   messagingSenderId:"179241004963",
   appId:"1:179241004963:web:c7c7afa926e03032653416"
 });
-const _auth = getAuth(_app);
-const _db = getFirestore(_app);
-// Exposer pour les autres scripts
-window._db = _db; window._auth = _auth;
-const _ROLES = {'super-admin':'Super-administrateur','moderateur-redaction':'Modérateur de rédaction','redacteur':'Rédacteur','moderateur-comments':'Modérateur de commentaires','lecteur-commentateur':'Lecteur-commentateur','lecteur':'Lecteur'};
-const _WRITERS = ['super-admin','moderateur-redaction','redacteur'];
-const _MODS = ['super-admin','moderateur-redaction'];
-// Date
-var _d = new Date();
-var _dt = document.getElementById('topbar-date');
-if (_dt) _dt.textContent = _d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).replace(/^./,function(c){return c.toUpperCase();});
-onAuthStateChanged(_auth, async (user) => {
-  var el = document.getElementById('topbar-right');
-  if (!el) return;
-  if (!user) {
-    el.innerHTML = '<a href="connexion.html" style="color:#EDE0CC;">Connexion</a>';
-    return;
-  }
+const auth = getAuth(app), db = getFirestore(app);
+window._db = db; window._auth = auth;
+
+const dt = document.getElementById("topbar-date");
+if (dt) dt.textContent = new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).replace(/^./,c=>c.toUpperCase());
+
+
+const EDITORS = ["super-admin","moderateur-redaction"];
+let bandeaux = [], allArticles = [], activeSlot = null, activePubId = null, pubImgData = null;
+function uid() { return 'b' + Date.now() + Math.random().toString(36).slice(2,5); }
+
+const ARTS_STATIC = [
+  {id:"article1",titre:"La reforme des retraites fragilise le dialogue social",rubrique:"Politique",auteur:"Marie Dupont"},
+  {id:"article2",titre:"Un vaccin contre Alzheimer en phase III",rubrique:"Science",auteur:"Pr. Lefebvre"},
+  {id:"article3",titre:"Secheresse en Espagne : 40% des reserves perdues",rubrique:"Environnement",auteur:"Carla Ramos"},
+  {id:"article4",titre:"La BCE maintient ses taux",rubrique:"Economie",auteur:"Pierre Vidal"},
+  {id:"article5",titre:"Logement : les jeunes exclus des grandes villes",rubrique:"Societe",auteur:"Camille Renard"},
+  {id:"article6",titre:"80 ans apres, Nuremberg resonne encore",rubrique:"Histoire",auteur:"Prof. Bauer"},
+  {id:"article7",titre:"IA et creation litteraire",rubrique:"Culture",auteur:"Nadia Korel"},
+  {id:"article8",titre:"G20 : reforme du FMI",rubrique:"International",auteur:"Amara Diop"},
+];
+
+onAuthStateChanged(auth, async user => {
+  if (!user) { window.location.href = "connexion.html"; return; }
   try {
-    var snap = await getDoc(doc(_db, 'users', user.uid));
-    if (!snap.exists()) return;
-    var p = snap.data();
-    var isSA  = p.role === 'super-admin';
-    var isMod = _MODS.indexOf(p.role) !== -1;
-    var isWriter = _WRITERS.indexOf(p.role) !== -1;
-    var btns = '';
-    if (isWriter) btns += ' <a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>';
-    if (isMod)   btns += ' <a href="moderation.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;border:1px solid #D4B896;">📋 Modération</a>';
-    if (isSA)    btns += ' <a href="gestion-comptes.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">👥 Comptes</a>';
-    if (isSA)    btns += ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✍ Auteurs</a>';
-    if (isSA||isMod) btns += ' <a href="disposition.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✏ Disposition</a>';
-    if (isSA)    btns += ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>';
-    el.innerHTML = '<span style="color:#EDE0CC">'+(_ROLES[p.role]||p.role)+'</span>'
-      +' — <strong style="color:#fff">'+p.prenom+' '+p.nom+'</strong>'
-      +btns
-      +' <span style="opacity:.3;margin:0 6px">|</span>'
-      +' <a href="profil.html" style="color:#EDE0CC;">Mon profil</a>'
-      +' <span style="opacity:.3;margin:0 4px">|</span>'
-      +' <a href="#" id="_deco" style="color:#EDE0CC;">Déconnexion</a>';
-    document.getElementById('_deco').addEventListener('click', async e => {
-      e.preventDefault(); await signOut(_auth); window.location.href = 'connexion.html';
-    });
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if (!snap.exists() || !EDITORS.includes(snap.data().role)) { window.location.href = "index.html"; return; }
+    buildBurger(snap.data(), auth, signOut);
+    await loadArticles();
+    await loadDispo();
+    render();
   } catch(e) { console.error(e); }
 });
+
+async function loadArticles() {
+  try {
+    const snap = await getDocs(collection(db, "articles"));
+    const fb = snap.docs.map(d => ({id:d.id,...d.data()})).filter(a => a.statut === "publie");
+    const fbIds = new Set(fb.map(a => a.id));
+    allArticles = [...fb, ...ARTS_STATIC.filter(a => !fbIds.has(a.id))];
+  } catch(e) { allArticles = [...ARTS_STATIC]; }
+  renderArtList(allArticles);
+}
+
+function renderArtList(list) {
+  const el = document.getElementById("art-list");
+  if (!el) return;
+  if (!list.length) { el.innerHTML = "<p style=\"padding:10px;font-size:12px;color:var(--text3);\">Aucun article</p>"; return; }
+  const rows = [];
+  list.forEach(function(a) {
+    let row = "<div class=\"art-item\" onclick=\"window.assignArticle('" + a.id + "')\">";
+    row += "<div class=\"ai-cat\">" + (a.rubrique||"") + "</div>";
+    row += "<div class=\"ai-title\">" + (a.titre||"") + "</div>";
+    row += "<div class=\"ai-meta\">" + (a.auteur||a.auteurNom||"") + "</div>";
+    row += "</div>";
+    rows.push(row);
+  });
+  el.innerHTML = rows.join("");
+}
+
+window.filterArticles = function() {
+  const q = document.getElementById("art-search").value.trim().toLowerCase();
+  renderArtList(q ? allArticles.filter(a => (a.titre+' '+a.rubrique+' '+(a.auteur||'')).toLowerCase().includes(q)) : allArticles);
+};
+
+async function loadDispo() {
+  try {
+    const snap = await getDoc(doc(db, "config", "disposition"));
+    if (snap.exists()) bandeaux = snap.data().bandeaux || [];
+  } catch(e) { bandeaux = []; }
+}
+
+window.saveDispo = async function(silent) {
+  try {
+    const clean = JSON.parse(JSON.stringify(bandeaux, (k,v) => v === undefined ? null : v));
+    await setDoc(doc(db, "config", "disposition"), {bandeaux: clean, updatedAt: new Date()});
+    if (!silent) toast("Disposition sauvegardee");
+  } catch(e) { toast('Erreur: ' + e.message); }
+};
+
+window.publishDispo = async function() {
+  await window.saveDispo(true);
+  toast("Publie sur l'accueil !");
+};
+
+window.addBandeau = function(type) {
+  const b = {id: uid(), type, slots: [], pub: null};
+  if (type === "type1") b.slots = [null];
+  if (type === "type2") b.slots = [null,null,null,null,null,null,null];
+  if (type === "type3") b.slots = [null,null,null,null,null,null];
+  bandeaux.push(b);
+  if (type === "pub") { activePubId = b.id; document.getElementById("pub-form-section").style.display = "block"; }
+  render();
+  toast("Bandeau ajoute");
+};
+
+window.removeBandeau = function(id) { bandeaux = bandeaux.filter(b => b.id !== id); render(); };
+
+window.selectSlot = function(bid, idx) {
+  activeSlot = {bandeauId: bid, slotIdx: idx};
+  const s = document.getElementById("art-search");
+  if (s) { s.disabled = false; s.focus(); }
+  const h = document.getElementById("slot-hint");
+  if (h) { h.textContent = "Choisissez un article ci-dessous"; h.style.color = "var(--violet-m)"; }
+  render();
+};
+
+window.clearSlot = function(bid, idx, e) {
+  if (e) e.stopPropagation();
+  const b = bandeaux.find(b => b.id === bid);
+  if (b) b.slots[idx] = null;
+  render();
+};
+
+window.assignArticle = async function(artId) {
+  if (!activeSlot) { toast("Cliquez d'abord sur un emplacement"); return; }
+  const b = bandeaux.find(b => b.id === activeSlot.bandeauId);
+  const art = allArticles.find(a => a.id === artId);
+  if (b && art) {
+    let img = art.imageTitre || null;
+    if (!img && !artId.startsWith("article")) {
+      try {
+        const s = await getDoc(doc(db, "articles", artId));
+        if (s.exists()) img = s.data().imageTitre || null;
+      } catch(e) {}
+    }
+    b.slots[activeSlot.slotIdx] = {id: art.id, titre: art.titre, rubrique: art.rubrique, auteur: art.auteur||art.auteurNom||'', chapeau: art.chapeau||'', imageTitre: img};
+    activeSlot = null;
+    const h = document.getElementById("slot-hint");
+    if (h) { h.textContent = "Cliquez sur un emplacement"; h.style.color = "var(--text3)"; }
+    render(); toast("Article assigne");
+  }
+};
+
+window.handlePubImg = function(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    pubImgData = ev.target.result;
+    const img = document.getElementById("pub-img-preview");
+    img.src = pubImgData; img.style.display = "block";
+    document.querySelector('#pub-img-drop p').style.display = "none";
+  };
+  reader.readAsDataURL(file);
+};
+
+window.applyPubConfig = function() {
+  if (!activePubId) return;
+  const b = bandeaux.find(b => b.id === activePubId);
+  if (b) {
+    b.pub = {img: pubImgData, titre: document.getElementById("pub-titre").value, texte: document.getElementById("pub-texte").value, lien: document.getElementById("pub-lien").value};
+    render(); toast("Pub configuree");
+  }
+};
+
+function render() {
+  const frame = document.getElementById("preview-frame");
+  document.getElementById("block-count").textContent = bandeaux.length + " bloc(s)";
+  frame.innerHTML = "";
+  if (!bandeaux.length) {
+    const em = document.createElement("p");
+    em.style.cssText = "text-align:center;color:var(--text3);font-size:13px;padding:40px 0;";
+    em.textContent = "Cliquez sur un bandeau a droite pour l'ajouter";
+    frame.appendChild(em); return;
+  }
+  bandeaux.forEach((b, i) => { frame.appendChild(makeDropLine(i)); frame.appendChild(makeBandeauEl(b)); });
+  frame.appendChild(makeDropLine(bandeaux.length));
+}
+
+function makeDropLine(i) { const d = document.createElement("div"); d.className = "drop-line"; d.dataset.idx = i; return d; }
+
+function slotHtml(b, idx, cls) {
+  const s = b.slots[idx];
+  const isActive = activeSlot && activeSlot.bandeauId === b.id && activeSlot.slotIdx === idx;
+  if (s) {
+    return "<div class=\"" + cls + " filled\" onclick=\"window.selectSlot('" + b.id + "'," + idx + ")\">"
+      + "<div class=\"slot-cat\">" + (s.rubrique||"") + "</div>"
+      + "<div style=\"font-size:11px;font-weight:500;color:var(--violet);line-height:1.3;\">" + (s.titre||"") + "</div>"
+      + "<span class=\"slot-remove\" onclick=\"window.clearSlot('" + b.id + "'," + idx + ",event)\">retirer</span>"
+      + "</div>";
+  }
+  return "<div class=\"" + cls + (isActive ? " slot-waiting" : "") + "\" onclick=\"window.selectSlot('" + b.id + "'," + idx + ")\">" + (isActive ? "Choisissez..." : "+ Article") + "</div>";
+}
+
+function makeBandeauEl(b) {
+  const wrap = document.createElement("div");
+  wrap.className = "prev-bandeau"; wrap.id = "bandeau-" + b.id;
+  const actions = document.createElement("div");
+  actions.className = "b-actions";
+  actions.innerHTML = "<button class=\"b-btn del\" onclick=\"window.removeBandeau('" + b.id + "')\">Supprimer</button>";
+  if (b.type === "type1") {
+    wrap.innerHTML = "<div class=\"btype1\"><div class=\"b-label\">Type 1</div>" + slotHtml(b, 0, "art-slot") + "</div>";
+  } else if (b.type === "type2") {
+    wrap.innerHTML = "<div class=\"btype2\"><div class=\"b-label\">Type 2</div><div class=\"row-two-cols\"><div class=\"col-big\">"
+      + slotHtml(b,0,"slot-big") + slotHtml(b,1,"slot-big")
+      + "</div><div class=\"col-small\">"
+      + [2,3,4,5,6].map(function(i){ return slotHtml(b,i,"slot-small"); }).join("")
+      + "</div></div></div>";
+  } else if (b.type === "type3") {
+    wrap.innerHTML = "<div class=\"btype3\"><div class=\"b-label\">Type 3</div><div class=\"row-six\">"
+      + [0,1,2,3,4,5].map(function(i){ return slotHtml(b,i,"slot-medium"); }).join("")
+      + "</div></div>";
+  } else if (b.type === "newsletter") {
+    wrap.innerHTML = "<div style=\"background:var(--violet2);padding:14px 16px;border-radius:3px;\"><div class=\"b-label\" style=\"color:var(--violet-l);\">Lettre Euclide</div><div style=\"font-size:11px;color:rgba(255,255,255,.4);\">Newsletter - En cours de mise en oeuvre</div></div>";
+  } else if (b.type === "pub") {
+    var p = b.pub;
+    if (p) {
+      wrap.innerHTML = "<div class=\"bpub\"><div class=\"b-label\">Pub</div><div class=\"bpub-inner\">"
+        + "<div class=\"bpub-img\">" + (p.img ? "<img src=\"" + p.img + "\">" : "IMG") + "</div>"
+        + "<div class=\"bpub-text\"><div class=\"bpub-titre\">" + (p.titre||"") + "</div>"
+        + "<div class=\"bpub-desc\">" + (p.texte||"") + "</div></div></div></div>";
+    } else {
+      wrap.innerHTML = "<div class=\"bpub\" onclick=\"activePubId='" + b.id + "';document.getElementById('pub-form-section').style.display='block'\">"
+        + "<div class=\"b-label\">Bandeau pub</div>"
+        + "<div style=\"text-align:center;padding:12px;font-size:12px;color:var(--violet-l);\">Cliquez pour configurer</div></div>";
+    }
+  }
+  wrap.appendChild(actions);
+  return wrap;
+}
+
+function toast(msg) { const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2200); }
+setInterval(() => window.saveDispo(true), 30000);
 </script>
 </body>
 </html>

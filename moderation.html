@@ -134,7 +134,39 @@ footer a{color:var(--violet-l);}
   #main-content,header,#topbar,footer{padding-left:20px;padding-right:20px;}
   .site-name{font-size:44px;}
 }
+
+/* BURGER MENU */
+#burger-btn{background:none;border:none;cursor:pointer;padding:4px 6px;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;}
+#burger-btn span{display:block;width:18px;height:1.5px;background:var(--violet-xl,#EDE0CC);border-radius:1px;transition:all .25s;}
+#burger-btn.open span:nth-child(1){transform:translateY(5.5px) rotate(45deg);}
+#burger-btn.open span:nth-child(2){opacity:0;}
+#burger-btn.open span:nth-child(3){transform:translateY(-5.5px) rotate(-45deg);}
+#burger-menu{display:none;position:absolute;top:100%;right:0;min-width:220px;background:var(--violet2,#2A2A3E);border:1px solid rgba(255,255,255,.08);border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.35);z-index:300;padding:8px 0;}
+#burger-menu.show{display:block;}
+#burger-menu a,#burger-menu button{display:block;width:100%;text-align:left;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:400;color:rgba(255,255,255,.8);background:none;border:none;cursor:pointer;letter-spacing:.02em;text-decoration:none;transition:background .15s,color .15s;}
+#burger-menu a:hover,#burger-menu button:hover{background:rgba(255,255,255,.07);color:#fff;}
+#burger-menu .menu-sep{height:1px;background:rgba(255,255,255,.08);margin:6px 0;}
+#burger-menu .menu-badge{display:inline-block;font-size:10px;font-weight:500;background:var(--violet-m,#B8956A);color:#fff;padding:1px 7px;border-radius:2px;margin-left:8px;vertical-align:middle;}
+#burger-menu .menu-badge.dark{background:rgba(255,255,255,.15);}
+#topbar{position:relative;}
 </style>
+<script>
+window._toggleBurger = function() {
+  var m = document.getElementById("burger-menu");
+  var b = document.getElementById("burger-btn");
+  if (!m) return;
+  m.style.display = (m.style.display === "block") ? "none" : "block";
+  if (b) b.classList.toggle("open");
+};
+document.addEventListener("click", function(e) {
+  var m = document.getElementById("burger-menu");
+  var b = document.getElementById("burger-btn");
+  if (m && b && !m.contains(e.target) && !b.contains(e.target)) {
+    m.style.display = "none";
+    if (b) b.classList.remove("open");
+  }
+});
+</script>
 </head>
 <body>
 
@@ -217,8 +249,39 @@ footer a{color:var(--violet-l);}
 <script type="module">
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-const _app = getApps().length ? getApps()[0] : initializeApp({
+import { getFirestore, doc, getDoc, getDocs, updateDoc, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+function buildBurger(p, auth, signOut) {
+  var el = document.getElementById("topbar-right");
+  if (!el) return;
+  var RL = {"super-admin":"Super-administrateur","moderateur-redaction":"Moderateur de redaction","redacteur":"Redacteur","moderateur-comments":"Moderateur commentaires","lecteur-commentateur":"Lecteur-commentateur","lecteur":"Lecteur"};
+  var isSA = p.role === "super-admin";
+  var isMod = isSA || p.role === "moderateur-redaction";
+  var isWriter = isMod || p.role === "redacteur";
+  function lnk(href, txt) { return "<a href=\"" + href + "\" style=\"display:block;padding:10px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;\">" + txt + "</a>"; }
+  function sep() { return "<div style=\"height:1px;background:rgba(255,255,255,.08);margin:6px 0;\"></div>"; }
+  var mi = "";
+  mi += "<div style=\"padding:10px 20px 4px;font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;\">" + p.prenom + " " + p.nom + "</div>";
+  mi += "<div style=\"padding:2px 20px 8px;font-size:11px;color:rgba(255,255,255,.4);\">" + (RL[p.role] || p.role) + "</div>";
+  mi += sep();
+  mi += lnk("profil.html", "Mon profil");
+  if (isWriter) mi += lnk("creer-article.html", "Creer un article");
+  if (isMod) { mi += sep(); mi += lnk("moderation.html", "Moderation"); mi += lnk("disposition.html", "Disposition"); }
+  if (isSA) { mi += sep(); mi += lnk("gestion-comptes.html", "Gestion des comptes"); mi += lnk("auteurs.html", "Base auteurs"); mi += lnk("permissions.html", "Permissions"); }
+  mi += sep();
+  mi += "<button id=\"_deco_btn\" style=\"display:block;width:100%;text-align:left;padding:10px 20px;font-size:13px;color:rgba(255,255,255,.8);background:none;border:none;cursor:pointer;font-family:inherit;\">Deconnexion</button>";
+  var bars = "<span style=\"color:rgba(255,255,255,.6);font-size:11px;margin-right:10px;\">" + p.prenom + " " + p.nom + "</span>";
+  bars += "<button id=\"burger-btn\" onclick=\"window._toggleBurger()\" style=\"background:none;border:none;cursor:pointer;padding:4px 6px;display:inline-flex;flex-direction:column;gap:4px;vertical-align:middle;\">";
+  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
+  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
+  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
+  bars += "</button>";
+  bars += "<div id=\"burger-menu\" style=\"position:absolute;top:100%;right:0;min-width:220px;background:#2A2A3E;border:1px solid rgba(255,255,255,.08);border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.35);z-index:300;padding:8px 0;\">" + mi + "</div>";
+  el.innerHTML = bars;
+  document.getElementById("_deco_btn").addEventListener("click", function() { signOut(auth).then(function() { window.location.href = "connexion.html"; }); });
+}
+
+const app = getApps().length ? getApps()[0] : initializeApp({
   apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",
   authDomain:"l-oeil-d-euclyde.firebaseapp.com",
   projectId:"l-oeil-d-euclyde",
@@ -226,50 +289,166 @@ const _app = getApps().length ? getApps()[0] : initializeApp({
   messagingSenderId:"179241004963",
   appId:"1:179241004963:web:c7c7afa926e03032653416"
 });
-const _auth = getAuth(_app);
-const _db = getFirestore(_app);
-// Exposer pour les autres scripts
-window._db = _db; window._auth = _auth;
-const _ROLES = {'super-admin':'Super-administrateur','moderateur-redaction':'Modérateur de rédaction','redacteur':'Rédacteur','moderateur-comments':'Modérateur de commentaires','lecteur-commentateur':'Lecteur-commentateur','lecteur':'Lecteur'};
-const _WRITERS = ['super-admin','moderateur-redaction','redacteur'];
-const _MODS = ['super-admin','moderateur-redaction'];
-// Date
-var _d = new Date();
-var _dt = document.getElementById('topbar-date');
-if (_dt) _dt.textContent = _d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).replace(/^./,function(c){return c.toUpperCase();});
-onAuthStateChanged(_auth, async (user) => {
-  var el = document.getElementById('topbar-right');
-  if (!el) return;
-  if (!user) {
-    el.innerHTML = '<a href="connexion.html" style="color:#EDE0CC;">Connexion</a>';
-    return;
-  }
+const auth = getAuth(app), db = getFirestore(app);
+window._db = db; window._auth = auth;
+
+const dt = document.getElementById("topbar-date");
+if (dt) dt.textContent = new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).replace(/^./,c=>c.toUpperCase());
+
+let allArticles = [], currentFilter = 'all', currentUser = null;
+
+
+onAuthStateChanged(auth, async user => {
+  document.getElementById("loader").style.display = "none";
+  if (!user) { document.getElementById("access-denied").style.display = "block"; return; }
   try {
-    var snap = await getDoc(doc(_db, 'users', user.uid));
-    if (!snap.exists()) return;
-    var p = snap.data();
-    var isSA  = p.role === 'super-admin';
-    var isMod = _MODS.indexOf(p.role) !== -1;
-    var isWriter = _WRITERS.indexOf(p.role) !== -1;
-    var btns = '';
-    if (isWriter) btns += ' <a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>';
-    if (isMod)   btns += ' <a href="moderation.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;border:1px solid #D4B896;">📋 Modération</a>';
-    if (isSA)    btns += ' <a href="gestion-comptes.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">👥 Comptes</a>';
-    if (isSA)    btns += ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✍ Auteurs</a>';
-    if (isSA||isMod) btns += ' <a href="disposition.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✏ Disposition</a>';
-    if (isSA)    btns += ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>';
-    el.innerHTML = '<span style="color:#EDE0CC">'+(_ROLES[p.role]||p.role)+'</span>'
-      +' — <strong style="color:#fff">'+p.prenom+' '+p.nom+'</strong>'
-      +btns
-      +' <span style="opacity:.3;margin:0 6px">|</span>'
-      +' <a href="profil.html" style="color:#EDE0CC;">Mon profil</a>'
-      +' <span style="opacity:.3;margin:0 4px">|</span>'
-      +' <a href="#" id="_deco" style="color:#EDE0CC;">Déconnexion</a>';
-    document.getElementById('_deco').addEventListener('click', async e => {
-      e.preventDefault(); await signOut(_auth); window.location.href = 'connexion.html';
-    });
-  } catch(e) { console.error(e); }
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if (!snap.exists() || !["super-admin","moderateur-redaction"].includes(snap.data().role)) {
+      document.getElementById("access-denied").style.display = "block"; return;
+    }
+    currentUser = {...snap.data(), uid: user.uid};
+    buildBurger(snap.data(), auth, signOut);
+    document.getElementById("main-content").style.display = "block";
+    await loadArticles();
+  } catch(e) { document.getElementById("access-denied").style.display = "block"; }
 });
+
+async function loadArticles() {
+  try {
+    const snap = await getDocs(collection(db, "articles"));
+    allArticles = snap.docs.map(d => ({id: d.id, ...d.data()}));
+    allArticles.sort((a,b) => (b.soumisLe?.seconds||0) - (a.soumisLe?.seconds||0));
+    updateStats(); renderList();
+  } catch(e) {
+    document.getElementById("articles-list").innerHTML = '<p class="empty-state">Erreur: ' + e.message + '</p>';
+  }
+}
+
+function updateStats() {
+  document.getElementById("stat-total").textContent = allArticles.length;
+  document.getElementById("stat-pending").textContent = allArticles.filter(a => !a.statut || a.statut === "soumis").length;
+  document.getElementById("stat-approved").textContent = allArticles.filter(a => a.statut === "publie").length;
+  document.getElementById("stat-rejected").textContent = allArticles.filter(a => a.statut === "refuse").length;
+}
+
+window.setFilter = function(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderList();
+};
+
+function getFiltered() {
+  if (currentFilter === 'pending')  return allArticles.filter(a => !a.statut || a.statut === "soumis");
+  if (currentFilter === 'approved') return allArticles.filter(a => a.statut === "publie");
+  if (currentFilter === 'rejected') return allArticles.filter(a => a.statut === "refuse");
+  return allArticles;
+}
+
+function statusBadge(s) {
+  if (s === "publie") return "<span class=\"art-status status-approved\">Publie</span>";
+  if (s === "refuse") return "<span class=\"art-status status-rejected\">Refuse</span>";
+  return "<span class=\"art-status status-pending\">En attente</span>";
+}
+
+function renderList() {
+  const list = document.getElementById("articles-list");
+  const filtered = getFiltered();
+  if (!filtered.length) { list.innerHTML = "<div class=\"empty-state\">Aucun article.</div>"; return; }
+  const rows = [];
+  filtered.forEach(function(a) {
+    const date = a.soumisLe ? new Date((a.soumisLe.seconds||0)*1000).toLocaleDateString("fr-FR") : "—";
+    const pending = !a.statut || a.statut === "soumis";
+    let html = "<div class=\"article-item\" id=\"item-" + a.id + "\">";
+    html += "<div class=\"article-header\" onclick=\"window.toggleDetail('" + a.id + "')\">";
+    html += "<div class=\"art-left\">" + statusBadge(a.statut);
+    html += "<div class=\"art-title\">" + (a.titre||"Sans titre") + "</div>";
+    html += "<div class=\"art-meta\"><span>" + (a.auteurNom||a.auteur||"—") + "</span><span>" + (a.rubrique||"—") + "</span><span>" + date + "</span></div>";
+    html += "</div><div class=\"art-right\">";
+    if (a.imageTitre) html += "<img class=\"art-img\" src=\"" + a.imageTitre + "\" alt=\"\">";
+    html += "<button class=\"btn btn-preview\" onclick=\"event.stopPropagation();window.openPreview('" + a.id + "')\">Apercu</button>";
+    if (pending) {
+      html += "<button class=\"btn btn-approve\" onclick=\"event.stopPropagation();window.approveArticle('" + a.id + "')\">Publier</button>";
+      html += "<button class=\"btn btn-reject\" onclick=\"event.stopPropagation();window.showRejectForm('" + a.id + "')\">Refuser</button>";
+    } else {
+      html += "<button class=\"btn btn-ghost\" onclick=\"event.stopPropagation();window.resetStatus('" + a.id + "')\">Remettre en attente</button>";
+    }
+    html += "</div></div>";
+    html += "<div class=\"article-detail\" id=\"detail-" + a.id + "\">";
+    if (a.chapeau) html += "<p class=\"chapeau-preview\">" + a.chapeau + "</p>";
+    html += "<div class=\"reject-form\" id=\"reject-form-" + a.id + "\" style=\"display:none;\">";
+    html += "<p style=\"font-size:13px;font-weight:500;color:var(--red);margin-bottom:8px;\">Motif du refus</p>";
+    html += "<textarea id=\"reject-txt-" + a.id + "\" style=\"width:100%;border:1px solid var(--red-bd);padding:8px;border-radius:2px;font-size:13px;min-height:80px;font-family:inherit;\" placeholder=\"Expliquer le motif...\"></textarea>";
+    html += "<div style=\"margin-top:8px;display:flex;gap:8px;\">";
+    html += "<button class=\"btn btn-reject\" onclick=\"window.confirmReject('" + a.id + "')\">Confirmer</button>";
+    html += "<button class=\"btn btn-ghost\" onclick=\"window.hideRejectForm('" + a.id + "')\">Annuler</button>";
+    html += "</div></div></div></div>";
+    rows.push(html);
+  });
+  list.innerHTML = rows.join("");
+}
+
+window.toggleDetail = id => document.getElementById('item-' + id)?.classList.toggle("expanded");
+
+window.approveArticle = async function(id) {
+  try {
+    await updateDoc(doc(db, "articles", id), {statut: "publie", publieLe: new Date()});
+    const a = allArticles.find(x => x.id === id);
+    if (a) a.statut = "publie";
+    updateStats(); renderList(); toast('Publié !', 'ok');
+  } catch(e) { toast('Erreur: ' + e.message); }
+};
+
+window.showRejectForm = function(id) {
+  const f = document.getElementById('reject-form-' + id);
+  if (f) f.style.display = "block";
+  document.getElementById('item-' + id)?.classList.add("expanded");
+};
+window.hideRejectForm = id => { const f = document.getElementById('reject-form-' + id); if (f) f.style.display = "none"; };
+
+window.confirmReject = async function(id) {
+  const txt = document.getElementById('reject-txt-' + id)?.value.trim();
+  if (!txt) { toast('Entrez un motif'); return; }
+  try {
+    await updateDoc(doc(db, "articles", id), {statut: "refuse", moderationComment: txt});
+    const a = allArticles.find(x => x.id === id);
+    if (a) { a.statut = "refuse"; a.moderationComment = txt; }
+    updateStats(); renderList(); toast('Refusé', 'ok');
+  } catch(e) { toast('Erreur: ' + e.message); }
+};
+
+window.resetStatus = async function(id) {
+  try {
+    await updateDoc(doc(db, "articles", id), {statut: "soumis", moderationComment: ''});
+    const a = allArticles.find(x => x.id === id);
+    if (a) { a.statut = "soumis"; a.moderationComment = ''; }
+    updateStats(); renderList(); toast('Remis en attente');
+  } catch(e) { toast('Erreur: ' + e.message); }
+};
+
+window.openPreview = function(id) {
+  const a = allArticles.find(function(x) { return x.id === id; });
+  if (!a) return;
+  let h = "";
+  if (a.imageTitre) h += "<img src=\"" + a.imageTitre + "\" style=\"width:100%;max-height:300px;object-fit:cover;border-radius:3px;margin-bottom:16px;\">";
+  h += "<h1 style=\"font-family:Cormorant Garamond,serif;font-size:38px;font-weight:300;color:#1C1C2E;margin-bottom:12px;\">" + (a.titre||"") + "</h1>";
+  if (a.chapeau) h += "<p style=\"font-size:16px;line-height:1.7;color:#3A3A4E;font-weight:300;border-left:2px solid #B8956A;padding-left:14px;margin-bottom:20px;\">" + a.chapeau + "</p>";
+  (a.blocks||[]).forEach(function(b) {
+    if (b.type === "text") h += "<p style=\"font-size:16px;line-height:1.8;margin-bottom:14px;font-weight:300;\">" + (b.content||"") + "</p>";
+    if (b.type === "title") h += "<h2 style=\"font-family:Cormorant Garamond,serif;font-size:26px;font-weight:400;color:#1C1C2E;margin:20px 0 10px;\">" + (b.content||"") + "</h2>";
+    if (b.type === "quote") h += "<blockquote style=\"border-left:3px solid #B8956A;padding:12px 16px;margin:18px 0;font-style:italic;font-size:17px;\">" + (b.content||"") + "</blockquote>";
+  });
+  document.getElementById("pm-body").innerHTML = h;
+  document.getElementById("preview-modal").classList.add("show");
+  document.body.style.overflow = "hidden";
+};
+window.closePreview = () => { document.getElementById("preview-modal").classList.remove("show"); document.body.style.overflow = ''; };
+
+function toast(msg, type) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.className = "show" + (type ? ' ' + type : '');
+  setTimeout(() => t.className = '', 2500);
+}
 </script>
 </body>
 </html>

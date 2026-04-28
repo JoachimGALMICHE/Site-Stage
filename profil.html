@@ -87,14 +87,43 @@ footer a:hover{color:#fff;}
   .site-name{font-size:44px;}
   .profile-card{flex-direction:column;text-align:center;}
 }
+
+/* BURGER MENU */
+#burger-btn{background:none;border:none;cursor:pointer;padding:4px 6px;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;}
+#burger-btn span{display:block;width:18px;height:1.5px;background:var(--violet-xl,#EDE0CC);border-radius:1px;transition:all .25s;}
+#burger-btn.open span:nth-child(1){transform:translateY(5.5px) rotate(45deg);}
+#burger-btn.open span:nth-child(2){opacity:0;}
+#burger-btn.open span:nth-child(3){transform:translateY(-5.5px) rotate(-45deg);}
+#burger-menu{display:none;position:absolute;top:100%;right:0;min-width:220px;background:var(--violet2,#2A2A3E);border:1px solid rgba(255,255,255,.08);border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.35);z-index:300;padding:8px 0;}
+#burger-menu.show{display:block;}
+#burger-menu a,#burger-menu button{display:block;width:100%;text-align:left;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:400;color:rgba(255,255,255,.8);background:none;border:none;cursor:pointer;letter-spacing:.02em;text-decoration:none;transition:background .15s,color .15s;}
+#burger-menu a:hover,#burger-menu button:hover{background:rgba(255,255,255,.07);color:#fff;}
+#burger-menu .menu-sep{height:1px;background:rgba(255,255,255,.08);margin:6px 0;}
+#burger-menu .menu-badge{display:inline-block;font-size:10px;font-weight:500;background:var(--violet-m,#B8956A);color:#fff;padding:1px 7px;border-radius:2px;margin-left:8px;vertical-align:middle;}
+#burger-menu .menu-badge.dark{background:rgba(255,255,255,.15);}
+#topbar{position:relative;}
 </style>
+<script>
+window._toggleBurger = function() {
+  var m = document.getElementById("burger-menu");
+  var b = document.getElementById("burger-btn");
+  if (!m) return;
+  m.style.display = (m.style.display === "block") ? "none" : "block";
+  if (b) b.classList.toggle("open");
+};
+document.addEventListener("click", function(e) {
+  var m = document.getElementById("burger-menu");
+  var b = document.getElementById("burger-btn");
+  if (m && b && !m.contains(e.target) && !b.contains(e.target)) {
+    m.style.display = "none";
+    if (b) b.classList.remove("open");
+  }
+});
+</script>
 </head>
 <body>
 
-<div id="topbar">
-  <span><a href="index.html">← Retour au site</a></span>
-  <span id="topbar-right"></span>
-</div>
+<div id="topbar"><span id="topbar-date"></span><span id="topbar-right"></span></div>
 
 <header>
   <div class="header-top">
@@ -202,140 +231,162 @@ footer a:hover{color:#fff;}
 </footer>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const _a = getApps().length ? getApps()[0] : initializeApp({apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",authDomain:"l-oeil-d-euclyde.firebaseapp.com",projectId:"l-oeil-d-euclyde",storageBucket:"l-oeil-d-euclyde.firebasestorage.app",messagingSenderId:"179241004963",appId:"1:179241004963:web:c7c7afa926e03032653416"});
+const _au = getAuth(_a), _db2 = getFirestore(_a);
+window._db = _db2; window._auth = _au;
 
-const app = initializeApp({
-  apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",
-  authDomain:"l-oeil-d-euclyde.firebaseapp.com",
-  projectId:"l-oeil-d-euclyde",
-  storageBucket:"l-oeil-d-euclyde.firebasestorage.app",
-  messagingSenderId:"179241004963",
-  appId:"1:179241004963:web:c7c7afa926e03032653416"
-});
-const auth = getAuth(app);
-const db   = getFirestore(app);
-
-const ROLES = {
-  'super-admin':'Super-administrateur','moderateur-redaction':'Modérateur de rédaction',
-  'redacteur':'Rédacteur','moderateur-comments':'Modérateur de commentaires',
-  'lecteur-commentateur':'Lecteur-commentateur','lecteur':'Lecteur'
-};
-const WRITERS = ['super-admin','moderateur-redaction','redacteur'];
-
-function showMsg(id, txt, type) {
-  const el = document.getElementById(id);
-  el.textContent = txt;
-  el.className = 'f-msg ' + type;
-  el.style.display = txt ? 'block' : 'none';
+function buildBurger(p, auth, signOut) {
+  var el = document.getElementById("topbar-right");
+  if (!el) return;
+  var RL = {"super-admin":"Super-administrateur","moderateur-redaction":"Moderateur de redaction","redacteur":"Redacteur","moderateur-comments":"Moderateur commentaires","lecteur-commentateur":"Lecteur-commentateur","lecteur":"Lecteur"};
+  var isSA = p.role === "super-admin";
+  var isMod = isSA || p.role === "moderateur-redaction";
+  var isWriter = isMod || p.role === "redacteur";
+  function lnk(href, txt) { return "<a href=\"" + href + "\" style=\"display:block;padding:10px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;\">" + txt + "</a>"; }
+  function sep() { return "<div style=\"height:1px;background:rgba(255,255,255,.08);margin:6px 0;\"></div>"; }
+  var mi = "";
+  mi += "<div style=\"padding:10px 20px 4px;font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;\">" + p.prenom + " " + p.nom + "</div>";
+  mi += "<div style=\"padding:2px 20px 8px;font-size:11px;color:rgba(255,255,255,.4);\">" + (RL[p.role] || p.role) + "</div>";
+  mi += sep();
+  mi += lnk("profil.html", "Mon profil");
+  if (isWriter) mi += lnk("creer-article.html", "Creer un article");
+  if (isMod) { mi += sep(); mi += lnk("moderation.html", "Moderation"); mi += lnk("disposition.html", "Disposition"); }
+  if (isSA) { mi += sep(); mi += lnk("gestion-comptes.html", "Gestion des comptes"); mi += lnk("auteurs.html", "Base auteurs"); mi += lnk("permissions.html", "Permissions"); }
+  mi += sep();
+  mi += "<button id=\"_deco_btn\" style=\"display:block;width:100%;text-align:left;padding:10px 20px;font-size:13px;color:rgba(255,255,255,.8);background:none;border:none;cursor:pointer;font-family:inherit;\">Deconnexion</button>";
+  var bars = "<span style=\"color:rgba(255,255,255,.6);font-size:11px;margin-right:10px;\">" + p.prenom + " " + p.nom + "</span>";
+  bars += "<button id=\"burger-btn\" onclick=\"window._toggleBurger()\" style=\"background:none;border:none;cursor:pointer;padding:4px 6px;display:inline-flex;flex-direction:column;gap:4px;vertical-align:middle;\">";
+  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
+  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
+  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
+  bars += "</button>";
+  bars += "<div id=\"burger-menu\" style=\"position:absolute;top:100%;right:0;min-width:220px;background:#2A2A3E;border:1px solid rgba(255,255,255,.08);border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.35);z-index:300;padding:8px 0;\">" + mi + "</div>";
+  el.innerHTML = bars;
+  document.getElementById("_deco_btn").addEventListener("click", function() { signOut(auth).then(function() { window.location.href = "connexion.html"; }); });
 }
 
-// ── FORCE MOT DE PASSE ────────────────────────────────────────────────
-window.checkStrength = function() {
-  const v = document.getElementById('mdp-new').value;
-  const bar = document.getElementById('pwd-bar');
-  const hint = document.getElementById('pwd-hint');
-  let score = 0;
-  if (v.length >= 8) score++;
-  if (v.length >= 12) score++;
-  if (/[A-Z]/.test(v)) score++;
-  if (/[0-9]/.test(v)) score++;
-  if (/[^A-Za-z0-9]/.test(v)) score++;
-  const levels = [
-    {w:'0%', c:'var(--red-bd)', t:'Trop court'},
-    {w:'25%', c:'#E8A87C', t:'Faible'},
-    {w:'50%', c:'#E8C87C', t:'Moyen'},
-    {w:'75%', c:'#9BC87C', t:'Bon'},
-    {w:'100%', c:'var(--green-bd)', t:'Excellent'},
-  ];
-  const l = levels[Math.min(score, 4)];
-  bar.style.width = l.w;
-  bar.style.background = l.c;
-  hint.textContent = v.length === 0 ? 'Entrez un mot de passe' : l.t;
-};
+const ROLES_FR = {"super-admin":"Super-administrateur","moderateur-redaction":"Modérateur de rédaction","redacteur":"Rédacteur","moderateur-comments":"Modérateur de commentaires","lecteur-commentateur":"Lecteur-commentateur","lecteur":"Lecteur"};
 
-// ── CHANGEMENT MDP ────────────────────────────────────────────────────
-window.changeMdp = async function() {
-  showMsg('mdp-msg', '', 'ok');
-  const actuel  = document.getElementById('mdp-actuel').value;
-  const newMdp  = document.getElementById('mdp-new').value;
-  const confirm = document.getElementById('mdp-confirm').value;
-  const btn     = document.getElementById('btn-mdp');
-
-  if (!actuel)           { showMsg('mdp-msg', 'Entrez votre mot de passe actuel.', 'err'); return; }
-  if (newMdp.length < 8) { showMsg('mdp-msg', 'Le nouveau mot de passe doit faire au moins 8 caractères.', 'err'); return; }
-  if (newMdp !== confirm) { showMsg('mdp-msg', 'Les mots de passe ne correspondent pas.', 'err'); return; }
-  if (newMdp === actuel)  { showMsg('mdp-msg', 'Le nouveau mot de passe doit être différent de l\'actuel.', 'err'); return; }
-
-  btn.disabled = true; btn.textContent = 'Mise à jour…';
-  try {
-    const user = auth.currentUser;
-    // Ré-authentifier d'abord
-    const cred = EmailAuthProvider.credential(user.email, actuel);
-    await reauthenticateWithCredential(user, cred);
-    // Changer le mot de passe
-    await updatePassword(user, newMdp);
-    showMsg('mdp-msg', '✓ Mot de passe mis à jour avec succès.', 'ok');
-    document.getElementById('mdp-actuel').value = '';
-    document.getElementById('mdp-new').value = '';
-    document.getElementById('mdp-confirm').value = '';
-    document.getElementById('pwd-bar').style.width = '0%';
-    document.getElementById('pwd-hint').textContent = 'Entrez un mot de passe';
-  } catch(e) {
-    const msgs = {
-      'auth/wrong-password': 'Mot de passe actuel incorrect.',
-      'auth/weak-password':  'Nouveau mot de passe trop faible.',
-      'auth/requires-recent-login': 'Session expirée, reconnectez-vous.'
-    };
-    showMsg('mdp-msg', msgs[e.code] || 'Erreur : ' + e.message, 'err');
-  } finally {
-    btn.disabled = false; btn.textContent = 'Mettre à jour le mot de passe';
+onAuthStateChanged(_au, async function(user) {
+  var el = document.getElementById("topbar-right");
+  var loader = document.getElementById("loader");
+  var pageWrap = document.getElementById("page-wrap");
+  if (!el) return;
+  if (!user) {
+    if (loader) loader.style.display = "none";
+    el.innerHTML = "<a href=\"connexion.html\" style=\"color:#EDE0CC;font-size:11px;\">Connexion</a>";
+    window.location.href = "connexion.html";
+    return;
   }
-};
-
-// ── SESSION ───────────────────────────────────────────────────────────
-onAuthStateChanged(auth, async (user) => {
-  document.getElementById('loader').style.display = 'none';
-  if (!user) { window.location.href = 'connexion.html'; return; }
-
   try {
-    const snap = await getDoc(doc(db, 'users', user.uid));
-    if (!snap.exists()) { window.location.href = 'connexion.html'; return; }
-    const p = snap.data();
+    var snap = await getDoc(doc(_db2, "users", user.uid));
+    if (!snap.exists()) return;
+    var p = snap.data();
 
-    // Remplir le profil
-    document.getElementById('avatar').textContent = ((p.prenom||'?')[0]+(p.nom||'?')[0]).toUpperCase();
-    document.getElementById('profile-name').textContent = (p.prenom||'') + ' ' + (p.nom||'');
-    document.getElementById('profile-email').textContent = p.email || user.email;
-    document.getElementById('profile-role').textContent = ROLES[p.role] || p.role;
-    document.getElementById('info-prenom').value = p.prenom || '';
-    document.getElementById('info-nom').value = p.nom || '';
-    document.getElementById('info-email').value = p.email || user.email;
-    document.getElementById('page-wrap').style.display = 'block';
+    // Burger menu
+    buildBurger(p, _au, signOut);
 
-    // Topbar
-    const el = document.getElementById('topbar-right');
-    const adminBtn = p.role === 'super-admin'
-      ? ' <a href="gestion-comptes.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">👥 Comptes</a>'
-        + ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✍ Auteurs</a>'
-        + ' <a href="disposition.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✏ Disposition</a>'
-        + ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>'
-      : '';
-    const writeBtn = WRITERS.indexOf(p.role) !== -1
-      ? ' <a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>' : '';
-    el.innerHTML = '<span style="color:#EDE0CC">'+(ROLES[p.role]||p.role)+'</span>'
-      +' &mdash; <strong style="color:#fff">'+p.prenom+' '+p.nom+'</strong>'
-      +writeBtn+modBtn+adminBtn
-      +' <span style="opacity:.3;margin:0 6px">|</span>'
-      +' <a href="profil.html" style="color:#EDE0CC;">Mon profil</a>'
-      +' <span style="opacity:.3;margin:0 4px">|</span>'
-      +' <a href="#" id="btn-deco" style="color:#EDE0CC;">Déconnexion</a>';
-    document.getElementById('btn-deco').addEventListener('click', async e => {
-      e.preventDefault(); await signOut(auth); window.location.href = 'connexion.html';
-    });
+    // Masquer loader, afficher page
+    if (loader) loader.style.display = "none";
+    if (pageWrap) pageWrap.style.display = "block";
+
+    // Carte identité
+    var nameEl = document.getElementById("profile-name");
+    var emailEl = document.getElementById("profile-email");
+    var roleEl = document.getElementById("profile-role");
+    var avatarEl = document.getElementById("avatar");
+    if (nameEl) nameEl.textContent = (p.prenom || "") + " " + (p.nom || "");
+    if (emailEl) emailEl.textContent = user.email || "";
+    if (roleEl) roleEl.textContent = ROLES_FR[p.role] || p.role || "";
+    if (avatarEl) avatarEl.textContent = ((p.prenom||"?")[0] + (p.nom||"?")[0]).toUpperCase();
+
+    // Champs formulaire
+    var fPrenom = document.getElementById("info-prenom");
+    var fNom = document.getElementById("info-nom");
+    var fEmail = document.getElementById("info-email");
+    if (fPrenom) fPrenom.value = p.prenom || "";
+    if (fNom) fNom.value = p.nom || "";
+    if (fEmail) fEmail.value = user.email || "";
+
+    // Stocker user courant pour changeMdp
+    window._currentUser = user;
+
   } catch(e) { console.error(e); }
 });
+
+// Force du mot de passe
+window.checkStrength = function() {
+  var val = document.getElementById("mdp-new").value;
+  var bar = document.getElementById("pwd-bar");
+  var hint = document.getElementById("pwd-hint");
+  if (!bar || !hint) return;
+  var score = 0;
+  if (val.length >= 8) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  var levels = [
+    {w:"0%", c:"#C84B31", t:"Trop court"},
+    {w:"25%", c:"#C84B31", t:"Faible"},
+    {w:"50%", c:"#E8A838", t:"Moyen"},
+    {w:"75%", c:"#6AAB9C", t:"Bon"},
+    {w:"100%", c:"#2D6A4F", t:"Excellent"}
+  ];
+  var lv = val.length === 0 ? 0 : Math.min(score + (val.length >= 8 ? 0 : -1) + 1, 4);
+  lv = Math.max(0, lv);
+  bar.style.width = levels[lv].w;
+  bar.style.background = levels[lv].c;
+  hint.textContent = val.length === 0 ? "Entrez un mot de passe" : levels[lv].t;
+};
+
+// Changement de mot de passe
+window.changeMdp = async function() {
+  var actuel = document.getElementById("mdp-actuel").value;
+  var newPwd = document.getElementById("mdp-new").value;
+  var confirm = document.getElementById("mdp-confirm").value;
+  var msgEl = document.getElementById("mdp-msg");
+  var btn = document.getElementById("btn-mdp");
+
+  function showMsg(txt, ok) {
+    if (!msgEl) return;
+    msgEl.style.display = "block";
+    msgEl.style.background = ok ? "#EAF5EE" : "#FDF3F0";
+    msgEl.style.borderColor = ok ? "#B8DEC4" : "#E8C4B8";
+    msgEl.style.color = ok ? "#1A5C32" : "#5C2A1A";
+    msgEl.textContent = txt;
+  }
+
+  if (!actuel || !newPwd || !confirm) { showMsg("Veuillez remplir tous les champs.", false); return; }
+  if (newPwd.length < 8) { showMsg("Le nouveau mot de passe doit contenir au moins 8 caractères.", false); return; }
+  if (newPwd !== confirm) { showMsg("Les mots de passe ne correspondent pas.", false); return; }
+
+  var user = window._currentUser;
+  if (!user) { showMsg("Session expirée, veuillez vous reconnecter.", false); return; }
+
+  if (btn) btn.disabled = true;
+  try {
+    var cred = EmailAuthProvider.credential(user.email, actuel);
+    await reauthenticateWithCredential(user, cred);
+    await updatePassword(user, newPwd);
+    showMsg("Mot de passe mis à jour avec succès.", true);
+    document.getElementById("mdp-actuel").value = "";
+    document.getElementById("mdp-new").value = "";
+    document.getElementById("mdp-confirm").value = "";
+    window.checkStrength();
+  } catch(e) {
+    var msg = "Une erreur est survenue.";
+    if (e.code === "auth/wrong-password" || e.code === "auth/invalid-credential") msg = "Mot de passe actuel incorrect.";
+    else if (e.code === "auth/weak-password") msg = "Nouveau mot de passe trop faible.";
+    else if (e.code === "auth/too-many-requests") msg = "Trop de tentatives, réessayez plus tard.";
+    showMsg(msg, false);
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+};
 </script>
+
 </body>
 </html>
