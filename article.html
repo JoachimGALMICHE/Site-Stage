@@ -135,15 +135,6 @@ footer ul li a:hover{color:#fff;}
 #topbar{position:relative;}
 </style>
 <script>
-window._toggleBurger = function() {
-  var m = document.getElementById("burger-menu");
-  var b = document.getElementById("burger-btn");
-  if (!m) return;
-  m.style.display = (m.style.display === "block") ? "none" : "block";
-  if (b) b.classList.toggle("open");
-};
-document.addEventListener("click", function(e) {
-  var m = document.getElementById("burger-menu");
   var b = document.getElementById("burger-btn");
   if (m && b && !m.contains(e.target) && !b.contains(e.target)) {
     m.style.display = "none";
@@ -248,10 +239,10 @@ document.addEventListener("click", function(e) {
       <li><a href="categorie.html?cat=Critique">Critique litt. &amp; artistique</a></li>
     </ul></div>
     <div><h4>Le site</h4><ul>
-      <li><a href="#">Nos auteurs</a></li>
+      <li><a href="auteurs.html">Nos auteurs</a></li>
       <li><a href="devenir-auteur.html">Comment devenir auteur ?</a></li>
       <li><a href="#">Mentions légales</a></li>
-      <li><a href="#">Contact</a></li>
+      <li><a href="charte.html">Charte éditoriale</a></li>
       <li><a href="connexion.html">Connexion</a></li>
     </ul></div>
   </div>
@@ -429,15 +420,26 @@ function renderArticle(a) {
   var html = '';
   html += '<p class="breadcrumb"><a href="index.html">Accueil</a><span>›</span>'
     + '<a href="categorie.html?cat=' + encodeURIComponent(a.cat||a.rubrique) + '">' + (a.rubrique||'—') + '</a>'
-    + '<span>›</span><span style="color:var(--text2)">' + a.titre.substring(0,40) + '…</span></p>';
+    + '<span>›</span><span style="color:var(--text2)">' + (a.titre||'').substring(0,40) + '…</span></p>';
   html += '<span class="rub-pill">' + (a.rubrique||'') + '</span>';
-  html += '<h1>' + a.titre + '</h1>';
-  html += '<p class="standfirst">' + a.chapeau + '</p>';
-  html += '<div class="art-meta"><span>Par <b>' + a.auteur + '</b></span><span>' + (a.institution||'') + '</span><span>' + a.date + '</span><span>' + a.duree + ' de lecture</span></div>';
+  html += '<h1>' + (a.titre||'') + '</h1>';
+  // Image AVANT le chapeau pour éviter le saut
+  if (a.img) {
+    html += '<figure style="margin:0 0 24px;"><img class="img-hero" src="' + a.img + '" alt="' + (a.titre||'') + '" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:3px;display:block;"><figcaption style="font-size:11px;color:var(--text3);margin-top:8px;">' + (a.legende||'') + '</figcaption></figure>';
+  }
+  if (a.chapeau) html += '<p class="standfirst">' + a.chapeau + '</p>';
+  // Auteur — chercher dans tous les champs possibles
+  var auteurNom = a.auteur || a.auteurNom || '';
+  var institution = a.institution || a.auteurInstitution || '';
+  html += '<div class="art-meta"><span>Par <b>' + auteurNom + '</b></span>'
+    + (institution ? '<span>' + institution + '</span>' : '')
+    + (a.date ? '<span>' + a.date + '</span>' : '')
+    + (a.duree ? '<span>' + a.duree + ' de lecture</span>' : '')
+    + (a.id && !a.id.startsWith('article') ? '<span id="edit-btn-wrap"></span>' : '')
+    + '</div>';
   if (!a.conflict) {
     html += '<div class="conflict-banner no-conflict"><span class="conflict-icon">\u2713</span><div><strong>Aucun conflit d\'int\u00e9r\u00eat d\u00e9clar\u00e9</strong><p>L\'auteur(e) certifie n\'avoir aucun lien avec les organisations mentionn\u00e9es dans cet article.</p></div></div>';
   }
-  html += '<figure><img class="img-hero" src="' + a.img + '" alt="' + a.titre + '"><figcaption>' + (a.legende||'') + '</figcaption></figure>';
   (a.contenu||[]).forEach(function(b) {
     if (b.type === 'p')     html += '<p>' + b.texte + '</p>';
     if (b.type === 'h2')    html += '<h2>' + b.texte + '</h2>';
@@ -449,7 +451,7 @@ function renderArticle(a) {
     html += '</div>';
   }
   document.getElementById('article-content').innerHTML = html;
-  document.title = a.titre + ' — L\'Œil d\'Euclide';
+  document.title = (a.titre||'Article') + ' — L\'Œil d\'Euclide';
 }
 
 function renderSidebar(currentId) {
@@ -503,10 +505,11 @@ function loadArticle() {
       var a = {
         id: snap.id,
         rubrique: d.rubrique, cat: d.rubrique,
-        titre: d.titre, chapeau: d.chapeau,
-        auteur: d.auteurNom || d.auteur || '',
-        institution: d.auteurInstitution || '',
-        date: d.soumisLe ? new Date(d.soumisLe.seconds*1000).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}) : '',
+        titre: d.titre || '',
+        chapeau: d.chapeau || '',
+        auteur: d.auteurNom || d.auteur || (d.coauteurs && d.coauteurs[0] && d.coauteurs[0].prenom ? d.coauteurs[0].prenom + ' ' + d.coauteurs[0].nom : '') || '',
+        institution: d.auteurInstitution || (d.coauteurs && d.coauteurs[0] && d.coauteurs[0].institutions ? d.coauteurs[0].institutions[0] : '') || '',
+        date: d.soumisLe ? new Date((d.soumisLe.seconds||0)*1000).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}) : (d.publieLe ? new Date((d.publieLe.seconds||0)*1000).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}) : ''),
         duree: d.duree || '',
         img: d.imageTitre || '',
         legende: d.imageLegende || '',
@@ -549,7 +552,7 @@ function buildBurger(p, auth, signOut) {
   function sep() { return "<div style=\"height:1px;background:rgba(255,255,255,.08);margin:6px 0;\"></div>"; }
   var mi = "";
   mi += "<div style=\"padding:10px 20px 4px;font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;\">" + p.prenom + " " + p.nom + "</div>";
-  mi += "<div style=\"padding:2px 20px 8px;font-size:11px;color:rgba(255,255,255,.4);\">" + (RL[p.role] || p.role) + "</div>";
+  mi += "<div style=\"padding:2px 20px 8px;font-size:11px;color:rgba(255,255,255,.4);\">" + (RL[p.role]||p.role) + "</div>";
   mi += sep();
   mi += lnk("profil.html", "Mon profil");
   if (isWriter) mi += lnk("creer-article.html", "Creer un article");
@@ -557,27 +560,129 @@ function buildBurger(p, auth, signOut) {
   if (isSA) { mi += sep(); mi += lnk("gestion-comptes.html", "Gestion des comptes"); mi += lnk("auteurs.html", "Base auteurs"); mi += lnk("permissions.html", "Permissions"); }
   mi += sep();
   mi += "<button id=\"_deco_btn\" style=\"display:block;width:100%;text-align:left;padding:10px 20px;font-size:13px;color:rgba(255,255,255,.8);background:none;border:none;cursor:pointer;font-family:inherit;\">Deconnexion</button>";
-  var bars = "<span style=\"color:rgba(255,255,255,.6);font-size:11px;margin-right:10px;\">" + p.prenom + " " + p.nom + "</span>";
-  bars += "<button id=\"burger-btn\" onclick=\"window._toggleBurger()\" style=\"background:none;border:none;cursor:pointer;padding:4px 6px;display:inline-flex;flex-direction:column;gap:4px;vertical-align:middle;\">";
-  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
-  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
-  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
-  bars += "</button>";
-  bars += "<div id=\"burger-menu\" style=\"position:absolute;top:100%;right:0;min-width:220px;background:#2A2A3E;border:1px solid rgba(255,255,255,.08);border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.35);z-index:300;padding:8px 0;\">" + mi + "</div>";
-  el.innerHTML = bars;
+  el.innerHTML = "<span style=\"color:rgba(255,255,255,.6);font-size:11px;margin-right:10px;\">" + p.prenom + " " + p.nom + "</span>"
+    + "<button id=\"burger-btn\" onclick=\"window._toggleBurger()\" style=\"background:none;border:none;cursor:pointer;padding:4px 6px;display:inline-flex;flex-direction:column;gap:4px;vertical-align:middle;\">"
+    + "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>"
+    + "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>"
+    + "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>"
+    + "</button>"
+    + "<div id=\"burger-menu\" style=\"display:none;position:absolute;top:100%;right:0;min-width:220px;background:#2A2A3E;border:1px solid rgba(255,255,255,.08);border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.35);z-index:9999;padding:8px 0;\">" + mi + "</div>";
   document.getElementById("_deco_btn").addEventListener("click", function() { signOut(auth).then(function() { window.location.href = "connexion.html"; }); });
 }
-onAuthStateChanged(_auth, async function(user) {
+
+const _auth = getAuth(_app);
+const _db = getFirestore(_app);
+// Exposer pour les autres scripts
+window._db = _db; window._auth = _auth;
+const _ROLES = {'super-admin':'Super-administrateur','moderateur-redaction':'Modérateur de rédaction','redacteur':'Rédacteur','moderateur-comments':'Modérateur de commentaires','lecteur-commentateur':'Lecteur-commentateur','lecteur':'Lecteur'};
+const _WRITERS = ['super-admin','moderateur-redaction','redacteur'];
+const _MODS = ['super-admin','moderateur-redaction'];
+// Date
+var _d = new Date();
+var _dt = document.getElementById('topbar-date');
+if (_dt) _dt.textContent = _d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).replace(/^./,function(c){return c.toUpperCase();});
+onAuthStateChanged(_auth, async (user) => {
+  var el = document.getElementById('topbar-right');
+  if (!el) return;
+  if (!user) {
+    el.innerHTML = '<a href="connexion.html" style="color:#EDE0CC;">Connexion</a>';
+    return;
+  }
+  try {
+    var snap = await getDoc(doc(_db, 'users', user.uid));
+    if (!snap.exists()) return;
+    buildBurger(snap.data(), _auth, signOut);
+    var p = snap.data();
+    // Bouton Modifier si auteur ou modérateur
+    var articleId2 = new URLSearchParams(window.location.search).get('id');
+    if (articleId2 && !articleId2.startsWith('article')) {
+      var canEdit = p.role === 'super-admin' || p.role === 'moderateur-redaction';
+      if (!canEdit) {
+        try {
+          var artSnap = await getDoc(doc(_db, 'articles', articleId2));
+          if (artSnap.exists() && artSnap.data().auteurId === user.uid) canEdit = true;
+        } catch(e) {}
+      }
+      if (canEdit) {
+        setTimeout(function() {
+          var editWrap = document.getElementById('edit-btn-wrap');
+          if (editWrap) {
+            editWrap.innerHTML = '<a href="creer-article.html?edit=' + articleId2 + '" style="background:var(--violet-m);color:#fff;padding:3px 12px;border-radius:2px;font-size:11px;font-weight:500;text-decoration:none;margin-left:8px;">✏ Modifier</a>';
+          }
+        }, 500);
+      }
+    }
+    var isSA  = p.role === 'super-admin';
+    var isMod = _MODS.indexOf(p.role) !== -1;
+    var isWriter = _WRITERS.indexOf(p.role) !== -1;
+    var btns = '';
+    if (isWriter) btns += ' <a href="creer-article.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;border:1px solid #D4B896;">+ Article</a>';
+    if (isMod)   btns += ' <a href="moderation.html" style="background:#1C1C2E;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;border:1px solid #D4B896;">📋 Modération</a>';
+    if (isSA)    btns += ' <a href="gestion-comptes.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:6px;">👥 Comptes</a>';
+    if (isSA)    btns += ' <a href="auteurs.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✍ Auteurs</a>';
+    if (isSA||isMod) btns += ' <a href="disposition.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">✏ Disposition</a>';
+    if (isSA)    btns += ' <a href="permissions.html" style="background:#B8956A;color:#fff;padding:2px 10px;border-radius:2px;font-weight:500;margin-left:4px;">⚙ Admin</a>';
+    el.innerHTML = '<span style="color:#EDE0CC">'+(_ROLES[p.role]||p.role)+'</span>'
+      +' — <strong style="color:#fff">'+p.prenom+' '+p.nom+'</strong>'
+      +btns
+      +' <span style="opacity:.3;margin:0 6px">|</span>'
+      +' <a href="profil.html" style="color:#EDE0CC;">Mon profil</a>'
+      +' <span style="opacity:.3;margin:0 4px">|</span>'
+      +' <a href="#" id="_deco" style="color:#EDE0CC;">Déconnexion</a>';
+    document.getElementById('_deco').addEventListener('click', async e => {
+      e.preventDefault(); await signOut(_auth); window.location.href = 'connexion.html';
+    });
+  } catch(e) { console.error(e); }
+});
+</script>
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const _a = getApps().length ? getApps()[0] : initializeApp({apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",authDomain:"l-oeil-d-euclyde.firebaseapp.com",projectId:"l-oeil-d-euclyde",storageBucket:"l-oeil-d-euclyde.firebasestorage.app",messagingSenderId:"179241004963",appId:"1:179241004963:web:c7c7afa926e03032653416"});
+const _au = getAuth(_a), _db2 = getFirestore(_a);
+window._db = _db2; window._auth = _au;
+const _dt = document.getElementById("topbar-date");
+if (_dt) _dt.textContent = new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).replace(/^./,function(c){return c.toUpperCase();});
+function L(href, txt) {
+  return "<a href=\"" + href + "\" style=\"display:block;padding:10px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;transition:background .15s;\" onmouseover=\"this.style.background='rgba(255,255,255,.07)'\" onmouseout=\"this.style.background=''\">" + txt + "</a>";
+}
+function SEP() { return "<div style=\"height:1px;background:rgba(255,255,255,.08);margin:6px 0;\"></div>"; }
+onAuthStateChanged(_au, async function(user) {
   var el = document.getElementById("topbar-right");
   if (!el) return;
   if (!user) { el.innerHTML = "<a href=\"connexion.html\" style=\"color:#EDE0CC;font-size:11px;\">Connexion</a>"; return; }
   try {
-    var snap = await getDoc(doc(_db, "users", user.uid));
+    var snap = await getDoc(doc(_db2, "users", user.uid));
     if (!snap.exists()) return;
     buildBurger(snap.data(), _auth, signOut);
+    var p = snap.data();
+    var RL = {"super-admin":"Super-administrateur","moderateur-redaction":"Moderateur de redaction","redacteur":"Redacteur","moderateur-comments":"Moderateur commentaires","lecteur-commentateur":"Lecteur-commentateur","lecteur":"Lecteur"};
+    var isSA = p.role === "super-admin";
+    var isMod = p.role === "super-admin" || p.role === "moderateur-redaction";
+    var isWriter = isMod || p.role === "redacteur";
+    var mi = "";
+    mi += "<div style=\"padding:10px 20px 4px;font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;font-weight:500;\">" + p.prenom + " " + p.nom + "</div>";
+    mi += "<div style=\"padding:2px 20px 8px;font-size:11px;color:rgba(255,255,255,.4);\">" + (RL[p.role]||p.role) + "</div>";
+    mi += SEP();
+    mi += L("profil.html", "Mon profil");
+    if (isWriter) mi += L("creer-article.html", "Creer un article");
+    if (isMod) { mi += SEP(); mi += L("moderation.html", "Moderation"); mi += L("disposition.html", "Disposition"); }
+    if (isSA) { mi += SEP(); mi += L("gestion-comptes.html", "Gestion des comptes"); mi += L("auteurs.html", "Base auteurs"); mi += L("permissions.html", "Permissions"); }
+    mi += SEP();
+    mi += "<button id=\"_deco_btn\" style=\"display:block;width:100%;text-align:left;padding:10px 20px;font-size:13px;color:rgba(255,255,255,.8);background:none;border:none;cursor:pointer;font-family:inherit;\">Deconnexion</button>";
+    el.innerHTML = "<span style=\"color:rgba(255,255,255,.6);font-size:11px;margin-right:10px;\">" + p.prenom + " " + p.nom + "</span>"
+      + "<button id=\"burger-btn\" onclick=\"window._toggleBurger()\" style=\"background:none;border:none;cursor:pointer;padding:4px 6px;display:inline-flex;flex-direction:column;gap:4px;vertical-align:middle;\">"
+      + "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>"
+      + "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>"
+      + "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>"
+      + "</button>"
+      + "<div id=\"burger-menu\" style=\"position:absolute;top:100%;right:0;min-width:220px;background:#2A2A3E;border:1px solid rgba(255,255,255,.08);border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.35);z-index:300;padding:8px 0;\">" + mi + "</div>";
+    document.getElementById("_deco_btn").addEventListener("click", async function() {
+      await signOut(_au); window.location.href = "connexion.html";
+    });
   } catch(e) { console.error(e); }
 });
 </script>
-
 </body>
 </html>

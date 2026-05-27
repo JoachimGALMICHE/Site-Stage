@@ -102,6 +102,7 @@ footer{background:var(--violet);color:var(--violet-l);padding:40px 40px 24px;}
 #burger-menu .menu-badge.dark{background:rgba(255,255,255,.15);}
 #topbar{position:relative;}
 </style>
+
 <script>
 window._toggleBurger = function() {
   var m = document.getElementById("burger-menu");
@@ -118,6 +119,31 @@ document.addEventListener("click", function(e) {
     if (b) b.classList.remove("open");
   }
 });
+window.buildBurger = function(p, auth, signOutFn) {
+  var el = document.getElementById("topbar-right");
+  if (!el) return;
+  var RL = {"super-admin":"Super-administrateur","moderateur-redaction":"Moderateur","redacteur":"Redacteur","moderateur-comments":"Mod.commentaires","lecteur-commentateur":"Lecteur+","lecteur":"Lecteur"};
+  var isSA=(p.role==="super-admin"), isMod=isSA||(p.role==="moderateur-redaction"), isW=isMod||(p.role==="redacteur");
+  var menu=document.createElement("div"); menu.id="burger-menu";
+  menu.style.cssText="display:none;position:absolute;top:100%;right:0;min-width:210px;background:#2A2A3E;border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.4);z-index:9999;padding:6px 0;";
+  function row(href,txt){var a=document.createElement("a");a.href=href;a.textContent=txt;a.style.cssText="display:block;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;";a.onmouseover=function(){this.style.background="rgba(255,255,255,.07)";};a.onmouseout=function(){this.style.background="";};menu.appendChild(a);}
+  function sep(){var d=document.createElement("div");d.style.cssText="height:1px;background:rgba(255,255,255,.1);margin:4px 0;";menu.appendChild(d);}
+  var h=document.createElement("div");h.style.cssText="padding:9px 20px 3px;font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;";h.textContent=p.prenom+" "+p.nom;menu.appendChild(h);
+  var r=document.createElement("div");r.style.cssText="padding:2px 20px 8px;font-size:11px;color:rgba(255,255,255,.4);";r.textContent=RL[p.role]||p.role;menu.appendChild(r);
+  sep();row("profil.html","Mon profil");
+  if(isW)row("creer-article.html","Creer un article");
+  if(isMod){sep();row("moderation.html","Moderation");row("disposition.html","Disposition");}
+  if(isSA){sep();row("gestion-comptes.html","Comptes");row("auteurs.html","Auteurs");row("permissions.html","Permissions");}
+  sep();
+  var dBtn=document.createElement("button");dBtn.textContent="Deconnexion";dBtn.style.cssText="display:block;width:100%;text-align:left;padding:9px 20px;font-size:13px;color:rgba(255,255,255,.85);background:none;border:none;cursor:pointer;font-family:inherit;";
+  dBtn.onclick=function(){signOutFn(auth).then(function(){window.location.href="connexion.html";});};
+  menu.appendChild(dBtn);
+  var bBtn=document.createElement("button");bBtn.id="burger-btn";bBtn.onclick=window._toggleBurger;
+  bBtn.style.cssText="background:none;border:none;cursor:pointer;padding:4px 6px;display:inline-flex;flex-direction:column;gap:4px;vertical-align:middle;";
+  for(var i=0;i<3;i++){var bar=document.createElement("span");bar.style.cssText="display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;";bBtn.appendChild(bar);}
+  var ns=document.createElement("span");ns.style.cssText="color:rgba(255,255,255,.6);font-size:11px;margin-right:8px;";ns.textContent=p.prenom+" "+p.nom;
+  el.innerHTML="";el.appendChild(ns);el.appendChild(bBtn);el.appendChild(menu);
+};
 </script>
 </head>
 <body>
@@ -179,8 +205,8 @@ document.addEventListener("click", function(e) {
   <div class="f-inner">
     <a href="index.html" class="f-brand" style="display:flex;align-items:center;gap:8px"><svg width="44" height="44" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;display:inline-block;vertical-align:middle"><rect x="4" y="4" width="28" height="28" stroke="#B8956A" stroke-width="0.8" fill="none"/><circle cx="18" cy="18" r="14" stroke="#B8956A" stroke-width="0.8" fill="none"/><line x1="4" y1="18" x2="32" y2="18" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="18" y1="4" x2="18" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="32" y1="32" x2="44" y2="44" stroke="#B8956A" stroke-width="0.8" opacity="0.5"/></svg>L'Œil d'Euclide</a>
     <div class="f-links">
-      <a href="#">À propos</a>
-      <a href="#">Contact</a>
+      <a href="apropos.html">À propos</a>
+      <a href="charte.html">Charte éditoriale</a>
       <a href="connexion.html">Connexion</a>
     </div>
   </div>
@@ -188,103 +214,7 @@ document.addEventListener("click", function(e) {
 <p style="font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;color:#B8956A;text-align:right;letter-spacing:.03em;margin-top:8px;">Mettre notre monde en perspective</p>
 </footer>
 
-<script>
-const DATA={
-  "Politique":[
-    {titre:"La réforme des retraites fragilise le dialogue social en France",extrait:"Les syndicats annoncent une mobilisation nationale après l'échec des négociations.",auteur:"Marie Dupont",date:"31 mars 2026",duree:"8 min",img:"https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=400&auto=format&fit=crop"},
-    {titre:"Après les législatives, la recomposition politique s'accélère",extrait:"L'émergence de nouveaux partis et alliances recompose profondément le paysage politique français.",auteur:"Antoine Garnier",date:"28 mars 2026",duree:"6 min",img:"https://images.unsplash.com/photo-1568992687947-868a62a9f521?w=400&auto=format&fit=crop"},
-    {titre:"Décentralisation : les régions veulent plus de pouvoir fiscal",extrait:"Un rapport sénatorial préconise de transférer une partie de la fiscalité nationale aux régions.",auteur:"Isabelle Fontaine",date:"25 mars 2026",duree:"5 min",img:"https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=400&auto=format&fit=crop"},
-    {titre:"Le Parlement européen face à la montée des partis nationalistes",extrait:"Analyse des dynamiques politiques à Bruxelles un an après les élections européennes de 2025.",auteur:"Nicolas Petrov",date:"22 mars 2026",duree:"10 min",img:"https://images.unsplash.com/photo-1555848962-6e79363ec58f?w=400&auto=format&fit=crop"},
-    {titre:"Réforme constitutionnelle : les limites du pouvoir exécutif en question",extrait:"Un projet d'amendement relance le débat sur l'équilibre des pouvoirs sous la Ve République.",auteur:"Lucie Marchand",date:"19 mars 2026",duree:"7 min",img:"https://images.unsplash.com/photo-1589262804704-c5aa9e6def89?w=400&auto=format&fit=crop"},
-  ],
-  "Société":[
-    {titre:"Logement : les jeunes de moins de 30 ans exclus des grandes villes",extrait:"La hausse des loyers repoussent les jeunes actifs vers la périphérie.",auteur:"Camille Renard",date:"28 mars 2026",duree:"6 min",img:"https://images.unsplash.com/photo-1573497491765-dccce02b29df?w=400&auto=format&fit=crop"},
-    {titre:"Santé mentale au travail : la France à la traîne des pays nordiques",extrait:"Malgré les plans gouvernementaux, le burn-out reste sous-diagnostiqué.",auteur:"Claire Bernard",date:"26 mars 2026",duree:"5 min",img:"https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&auto=format&fit=crop"},
-    {titre:"Le vieillissement de la population redessine la carte des services publics",extrait:"Les régions rurales font face à une pénurie de médecins et de structures d'accueil.",auteur:"François Duval",date:"23 mars 2026",duree:"8 min",img:"https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400&auto=format&fit=crop"},
-  ],
-  "Science":[
-    {titre:"Un vaccin contre Alzheimer entre en phase III d'essai clinique",extrait:"Des résultats préliminaires laissent espérer un traitement préventif d'ici 2030.",auteur:"Pr. Jean Lefebvre",date:"31 mars 2026",duree:"9 min",img:"https://images.unsplash.com/photo-1579165466741-7f35e4755660?w=400&auto=format&fit=crop"},
-    {titre:"CRISPR : les promesses et les limites de l'édition génétique en 2026",extrait:"La technique révolutionnaire se heurte à des obstacles éthiques et techniques.",auteur:"Dr. Alice Morin",date:"27 mars 2026",duree:"7 min",img:"https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=400&auto=format&fit=crop"},
-    {titre:"Le CERN annonce une nouvelle particule candidate",extrait:"Une anomalie dans les données du LHC suscite l'enthousiasme de la physique des particules.",auteur:"Hugo Marceau",date:"20 mars 2026",duree:"6 min",img:"https://images.unsplash.com/photo-1628595351029-c2bf17511435?w=400&auto=format&fit=crop"},
-  ],
-  "Environnement":[
-    {titre:"Sécheresse : l'Espagne perd 40 % de ses réserves d'eau potable en un an",extrait:"La crise hydrique s'intensifie sur le pourtour méditerranéen avec des effets directs sur l'agriculture.",auteur:"Carla Ramos",date:"30 mars 2026",duree:"7 min",img:"https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&auto=format&fit=crop"},
-    {titre:"Biodiversité marine : un tiers des récifs coralliens menacés",extrait:"Le réchauffement des océans accélère le blanchissement des coraux à un rythme sans précédent.",auteur:"Marine Bel",date:"25 mars 2026",duree:"8 min",img:"https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=400&auto=format&fit=crop"},
-  ],
-  "Économie & Entreprise":[
-    {titre:"La BCE maintient ses taux face à une inflation persistante",extrait:"Les gouverneurs ont voté à l'unanimité pour le maintien des taux directeurs.",auteur:"Pierre Vidal",date:"28 mars 2026",duree:"5 min",img:"https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&auto=format&fit=crop"},
-    {titre:"Les PME françaises face à la hausse du coût de l'énergie industrielle",extrait:"Malgré les aides publiques, de nombreuses petites entreprises envisagent de délocaliser.",auteur:"Thomas Martin",date:"30 mars 2026",duree:"6 min",img:"https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&auto=format&fit=crop"},
-    {titre:"Startups françaises : le difficile accès aux grands marchés européens",extrait:"Les jeunes pousses hexagonales peinent à s'imposer face aux acteurs allemands et nordiques.",auteur:"Éléonore Baudin",date:"22 mars 2026",duree:"5 min",img:"https://images.unsplash.com/photo-1559526324-593bc073d938?w=400&auto=format&fit=crop"},
-  ],
-  "Culture":[
-    {titre:"Le retour des librairies indépendantes face à Amazon",extrait:"Portées par un mouvement de consommation locale, les librairies de quartier résistent mieux qu'attendu.",auteur:"Julien Fabre",date:"26 mars 2026",duree:"5 min",img:"https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=400&auto=format&fit=crop"},
-    {titre:"IA et création littéraire : la frontière s'efface",extrait:"Les outils génératifs s'invitent dans l'écriture romanesque, soulevant des questions sur le droit d'auteur.",auteur:"Nadia Korel",date:"24 mars 2026",duree:"7 min",img:"https://images.unsplash.com/photo-1455390582262-044cdead277a?w=400&auto=format&fit=crop"},
-  ],
-  "International":[
-    {titre:"Taïwan et la Chine : un statu quo de plus en plus fragile",extrait:"Les manoeuvres militaires chinoises dans le détroit testent la réponse diplomatique des États-Unis.",auteur:"Paul Chen",date:"29 mars 2026",duree:"9 min",img:"https://images.unsplash.com/photo-1555848962-6e79363ec58f?w=400&auto=format&fit=crop"},
-    {titre:"Sommet G20 : les pays du Sud réclament une réforme du FMI",extrait:"Les économies émergentes dénoncent des règles de vote jugées archaïques.",auteur:"Amara Diop",date:"25 mars 2026",duree:"8 min",img:"https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=400&auto=format&fit=crop"},
-  ],
-  "Éducation":[
-    {titre:"Décrochage scolaire : que nous disent vraiment les chiffres officiels ?",extrait:"Les statistiques gouvernementales minimisent l'ampleur réelle du phénomène.",auteur:"Sophie Leclerc",date:"29 mars 2026",duree:"6 min",img:"https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&auto=format&fit=crop"},
-    {titre:"École inclusive : les promesses non tenues de la loi de 2005",extrait:"Vingt ans après, les enfants en situation de handicap se heurtent encore à de nombreux obstacles.",auteur:"Rémi Laporte",date:"24 mars 2026",duree:"7 min",img:"https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=400&auto=format&fit=crop"},
-  ],
-  "Critique":[
-    {titre:"Le dernier Houellebecq ou le roman comme autopsie du présent",extrait:"Dans son nouveau roman, l'auteur dissèque les désillusions d'une génération face à l'effondrement des utopies modernes.",auteur:"Isabelle Caron",date:"5 avril 2026",duree:"8 min",img:"https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&auto=format&fit=crop"},
-    {titre:"Exposition Soulages au Centre Pompidou : la lumière par l'outrenoir",extrait:"La rétrospective offre une plongée inédite dans l'oeuvre du peintre.",auteur:"Dr. Marc Tessier",date:"2 avril 2026",duree:"6 min",img:"https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&auto=format&fit=crop"},
-    {titre:"Cinéma africain : une nouvelle vague qui dérange et fascine",extrait:"Une sélection de films venus du Sahel et d'Afrique australe bouscule les codes narratifs du cinéma mondial.",auteur:"Aminata Sow",date:"29 mars 2026",duree:"7 min",img:"https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400&auto=format&fit=crop"},
-  ],
-  "Histoire":[
-    {titre:"80 ans après, Nuremberg résonne encore dans le droit international",extrait:"Les principes établis lors du procès continuent d'influencer la justice pénale internationale.",auteur:"Prof. Hélène Bauer",date:"27 mars 2026",duree:"10 min",img:"https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=400&auto=format&fit=crop"},
-    {titre:"La Commune de Paris de 1871, matrice oubliée de la République sociale",extrait:"Historiens et politologues revisitent cet épisode fondateur à la lumière des débats actuels.",auteur:"Laurent Giry",date:"20 mars 2026",duree:"9 min",img:"https://images.unsplash.com/photo-1599930113854-d6d7fd522504?w=400&auto=format&fit=crop"},
-  ],
-};
 
-function getParamfunction getParam(n){return new URLSearchParams(window.location.search).get(n);}
-
-function init(){
-  let cat=getParam('cat')||'Politique';
-  if(cat==='Économie'||cat==='Entreprise') cat='Économie & Entreprise';
-  const display=cat==='Éducation'?'Éducation &amp; Jeunesse':cat==='Économie & Entreprise'?'Économie &amp; Entreprise':cat;
-  document.title=cat+' - Oeil Euclide';
-  document.getElementById('cat-title').innerHTML=display;
-  const arts=DATA[cat]||DATA['Politique'];
-  document.getElementById('cat-count').textContent=arts.length+' articles';
-
-  // nav active
-  const originalCat = getParam('cat') || 'Politique';
-  document.querySelectorAll('nav#cats a').forEach(a=>{
-    a.classList.remove('active');
-    const href = a.getAttribute('href') || '';
-    if(href.includes('cat='+originalCat)) a.classList.add('active');
-    // Cas spécial Économie & Entreprise
-    if((originalCat==='Économie'||originalCat==='Entreprise') && href.includes('cat=Économie')) a.classList.add('active');
-  });
-
-  const list=document.getElementById('article-list');
-  list.innerHTML=arts.map((a,i)=>`
-    <div class="article-row">
-      <a href="article.html?titre=${encodeURIComponent(a.titre)}" style="display:block;flex-shrink:0;">
-        <div class="img-box r32" style="background-image:url('${a.img||'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&auto=format&fit=crop'}');background-size:cover;background-position:center;"></div>
-      </a>
-      <div>
-        <span class="rub-pill">${display}</span>
-        <h2><a href="article.html?titre=${encodeURIComponent(a.titre)}">${a.titre}</a></h2>
-        <p class="excr">${a.extrait}</p>
-        <p class="meta"><b>${a.auteur}</b> &nbsp;·&nbsp; ${a.date} &nbsp;·&nbsp; ${a.duree} de lecture</p>
-      </div>
-    </div>
-  `).join('');
-}
-
-document.querySelectorAll('.filter-btn').forEach(b=>{
-  b.addEventListener('click',function(){
-    document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));
-    this.classList.add('active');
-  });
-});
-
-init();
-</script>
 
 
 
@@ -295,46 +225,88 @@ import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10
 const _a = getApps().length ? getApps()[0] : initializeApp({apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",authDomain:"l-oeil-d-euclyde.firebaseapp.com",projectId:"l-oeil-d-euclyde",storageBucket:"l-oeil-d-euclyde.firebasestorage.app",messagingSenderId:"179241004963",appId:"1:179241004963:web:c7c7afa926e03032653416"});
 const _au = getAuth(_a), _db2 = getFirestore(_a);
 window._db = _db2; window._auth = _au;
+const _dt = document.getElementById("topbar-date");
+if (_dt) _dt.textContent = new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).replace(/^./,function(c){return c.toUpperCase();});
+async function init() {
+  let cat = new URLSearchParams(window.location.search).get('cat') || 'Politique';
+  if (cat === 'Économie' || cat === 'Entreprise') cat = 'Économie & Entreprise';
+  const display = cat === 'Éducation' ? 'Éducation &amp; Jeunesse' : cat === 'Économie & Entreprise' ? 'Économie &amp; Entreprise' : cat;
+  document.title = cat + ' — L\'Œil d\'Euclide';
+  var catTitle = document.getElementById('cat-title');
+  if (catTitle) catTitle.innerHTML = display;
 
-function buildBurger(p, auth, signOut) {
-  var el = document.getElementById("topbar-right");
-  if (!el) return;
-  var RL = {"super-admin":"Super-administrateur","moderateur-redaction":"Moderateur de redaction","redacteur":"Redacteur","moderateur-comments":"Moderateur commentaires","lecteur-commentateur":"Lecteur-commentateur","lecteur":"Lecteur"};
-  var isSA = p.role === "super-admin";
-  var isMod = isSA || p.role === "moderateur-redaction";
-  var isWriter = isMod || p.role === "redacteur";
-  function lnk(href, txt) { return "<a href=\"" + href + "\" style=\"display:block;padding:10px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;\">" + txt + "</a>"; }
-  function sep() { return "<div style=\"height:1px;background:rgba(255,255,255,.08);margin:6px 0;\"></div>"; }
-  var mi = "";
-  mi += "<div style=\"padding:10px 20px 4px;font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;\">" + p.prenom + " " + p.nom + "</div>";
-  mi += "<div style=\"padding:2px 20px 8px;font-size:11px;color:rgba(255,255,255,.4);\">" + (RL[p.role] || p.role) + "</div>";
-  mi += sep();
-  mi += lnk("profil.html", "Mon profil");
-  if (isWriter) mi += lnk("creer-article.html", "Creer un article");
-  if (isMod) { mi += sep(); mi += lnk("moderation.html", "Moderation"); mi += lnk("disposition.html", "Disposition"); }
-  if (isSA) { mi += sep(); mi += lnk("gestion-comptes.html", "Gestion des comptes"); mi += lnk("auteurs.html", "Base auteurs"); mi += lnk("permissions.html", "Permissions"); }
-  mi += sep();
-  mi += "<button id=\"_deco_btn\" style=\"display:block;width:100%;text-align:left;padding:10px 20px;font-size:13px;color:rgba(255,255,255,.8);background:none;border:none;cursor:pointer;font-family:inherit;\">Deconnexion</button>";
-  var bars = "<span style=\"color:rgba(255,255,255,.6);font-size:11px;margin-right:10px;\">" + p.prenom + " " + p.nom + "</span>";
-  bars += "<button id=\"burger-btn\" onclick=\"window._toggleBurger()\" style=\"background:none;border:none;cursor:pointer;padding:4px 6px;display:inline-flex;flex-direction:column;gap:4px;vertical-align:middle;\">";
-  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
-  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
-  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
-  bars += "</button>";
-  bars += "<div id=\"burger-menu\" style=\"position:absolute;top:100%;right:0;min-width:220px;background:#2A2A3E;border:1px solid rgba(255,255,255,.08);border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.35);z-index:300;padding:8px 0;\">" + mi + "</div>";
-  el.innerHTML = bars;
-  document.getElementById("_deco_btn").addEventListener("click", function() { signOut(auth).then(function() { window.location.href = "connexion.html"; }); });
+  // Nav active
+  document.querySelectorAll('nav#cats a').forEach(function(a) {
+    a.classList.remove('active');
+    if ((a.getAttribute('href')||'').includes('cat=' + encodeURIComponent(cat))) a.classList.add('active');
+  });
+
+  // Articles statiques
+  var DATA = window._CATEGORIE_DATA || {};
+  var arts = (DATA[cat] || DATA['Politique'] || []).slice();
+
+  // Articles Firebase publiés
+  try {
+    const { getDocs, collection } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    const snap = await getDocs(collection(_db2, 'articles'));
+    snap.forEach(function(d) {
+      var a = d.data();
+      var rub = (a.rubrique || '').toLowerCase().trim();
+      var catLow = cat.toLowerCase().trim();
+      var match = rub === catLow || rub.includes(catLow) || catLow.includes(rub);
+      if (a.statut === 'publie' && match) {
+        arts.unshift({
+          id: d.id,
+          titre: a.titre || '',
+          extrait: a.chapeau || '',
+          auteur: a.auteurNom || a.auteur || '',
+          date: a.publieLe ? new Date((a.publieLe.seconds||0)*1000).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}) : '',
+          duree: a.duree || '5 min',
+          img: a.imageTitre || ''
+        });
+      }
+    });
+  } catch(e) { console.warn('Firebase categorie:', e); }
+
+  var countEl = document.getElementById('cat-count');
+  if (countEl) countEl.textContent = arts.length + ' articles';
+
+  var list = document.getElementById('article-list');
+  if (!list) return;
+  if (!arts.length) { list.innerHTML = '<p style="color:var(--text3);padding:40px 0;text-align:center;">Aucun article dans cette catégorie.</p>'; return; }
+
+  list.innerHTML = arts.map(function(a) {
+    var href = a.id ? 'article.html?id=' + a.id : 'article.html?titre=' + encodeURIComponent(a.titre);
+    var img = a.img || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&auto=format&fit=crop';
+    return '<div class="article-row">'
+      + '<a href="' + href + '" style="display:block;flex-shrink:0;">'
+        + '<div class="img-box r32" style="background-image:url(\'' + img + '\');background-size:cover;background-position:center;"></div>'
+      + '</a>'
+      + '<div>'
+        + '<span class="rub-pill">' + display + '</span>'
+        + '<h2><a href="' + href + '">' + a.titre + '</a></h2>'
+        + '<p class="excr">' + (a.extrait||'') + '</p>'
+        + '<p class="meta"><b>' + (a.auteur||'') + '</b>'
+          + (a.date ? ' &nbsp;·&nbsp; ' + a.date : '')
+          + (a.duree ? ' &nbsp;·&nbsp; ' + a.duree + (a.duree.includes('lecture')?'':' de lecture') : '')
+        + '</p>'
+      + '</div>'
+    + '</div>';
+  }).join('');
 }
 
+var _initDone = false;
 onAuthStateChanged(_au, async function(user) {
   var el = document.getElementById("topbar-right");
   if (!el) return;
-  if (!user) { el.innerHTML = "<a href=\"connexion.html\" style=\"color:#EDE0CC;font-size:11px;\">Connexion</a>"; return; }
-  try {
-    var snap = await getDoc(doc(_db2, "users", user.uid));
-    if (!snap.exists()) return;
-    buildBurger(snap.data(), _au, signOut);
-  } catch(e) { console.error(e); }
+  if (!user) { el.innerHTML = "<a href=\"connexion.html\" style=\"color:#EDE0CC;font-size:11px;\">Connexion</a>"; }
+  else {
+    try {
+      var snap = await getDoc(doc(_db2, "users", user.uid));
+      if (snap.exists()) window.buildBurger(snap.data(), _au, signOut);
+    } catch(e) { console.error(e); }
+  }
+  if (!_initDone) { _initDone = true; init(); }
 });
 </script>
 </body>

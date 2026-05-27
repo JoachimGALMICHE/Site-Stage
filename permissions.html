@@ -135,6 +135,10 @@ nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
 #burger-menu .menu-badge.dark{background:rgba(255,255,255,.15);}
 #topbar{position:relative;}
 </style>
+
+
+
+
 <script>
 window._toggleBurger = function() {
   var m = document.getElementById("burger-menu");
@@ -151,6 +155,32 @@ document.addEventListener("click", function(e) {
     if (b) b.classList.remove("open");
   }
 });
+window.buildBurger = function(p, auth, signOutFn) {
+  var el = document.getElementById("topbar-right");
+  if (!el) return;
+  var RL = {"super-admin":"Super-administrateur","moderateur-redaction":"Moderateur redaction","redacteur":"Redacteur","moderateur-comments":"Moderateur commentaires","lecteur-commentateur":"Lecteur+","lecteur":"Lecteur"};
+  var isSA=(p.role==="super-admin"), isMod=isSA||(p.role==="moderateur-redaction"), isW=isMod||(p.role==="redacteur");
+  var menu=document.createElement("div"); menu.id="burger-menu";
+  menu.style.cssText="display:none;position:absolute;top:100%;right:0;min-width:210px;background:#2A2A3E;border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.4);z-index:9999;padding:6px 0;";
+  function row(href,txt){var a=document.createElement("a");a.href=href;a.textContent=txt;a.style.cssText="display:block;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;";a.onmouseover=function(){this.style.background="rgba(255,255,255,.07)";};a.onmouseout=function(){this.style.background="";};menu.appendChild(a);}
+  function sep(){var d=document.createElement("div");d.style.cssText="height:1px;background:rgba(255,255,255,.1);margin:4px 0;";menu.appendChild(d);}
+  var h=document.createElement("div");h.style.cssText="padding:9px 20px 3px;font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;";h.textContent=p.prenom+" "+p.nom;menu.appendChild(h);
+  var r=document.createElement("div");r.style.cssText="padding:2px 20px 8px;font-size:11px;color:rgba(255,255,255,.4);";r.textContent=RL[p.role]||p.role;menu.appendChild(r);
+  sep();row("profil.html","Mon profil");
+  if(isW)row("creer-article.html","Creer un article");
+  if(isMod){sep();row("moderation.html","Moderation");row("disposition.html","Disposition");}
+  if(isSA){sep();row("gestion-comptes.html","Comptes");row("auteurs.html","Auteurs");row("permissions.html","Permissions");}
+  sep();
+  var dBtn=document.createElement("button");dBtn.textContent="Deconnexion";dBtn.style.cssText="display:block;width:100%;text-align:left;padding:9px 20px;font-size:13px;color:rgba(255,255,255,.85);background:none;border:none;cursor:pointer;font-family:inherit;";
+  dBtn.onmouseover=function(){this.style.background="rgba(255,255,255,.07)";};dBtn.onmouseout=function(){this.style.background="";};
+  dBtn.onclick=function(){signOutFn(auth).then(function(){window.location.href="connexion.html";});};
+  menu.appendChild(dBtn);
+  var bBtn=document.createElement("button");bBtn.id="burger-btn";bBtn.onclick=window._toggleBurger;
+  bBtn.style.cssText="background:none;border:none;cursor:pointer;padding:4px 6px;display:inline-flex;flex-direction:column;gap:4px;vertical-align:middle;";
+  for(var i=0;i<3;i++){var bar=document.createElement("span");bar.style.cssText="display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;";bBtn.appendChild(bar);}
+  var ns=document.createElement("span");ns.style.cssText="color:rgba(255,255,255,.6);font-size:11px;margin-right:8px;";ns.textContent=p.prenom+" "+p.nom;
+  el.innerHTML="";el.appendChild(ns);el.appendChild(bBtn);el.appendChild(menu);
+};
 </script>
 </head>
 <body>
@@ -242,269 +272,65 @@ document.addEventListener("click", function(e) {
 <p style="font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;color:#B8956A;text-align:right;letter-spacing:.03em;margin-top:8px;">Mettre notre monde en perspective</p>
 </footer>
 
+
 <script>
-// ─── DÉFINITION DES GROUPES ET PERMISSIONS ──────────────────────────────────
-// Colonnes : [super-admin, mod-redaction, redacteur, mod-comments, lecteur-comment, lecteur]
-// Valeur : true = toujours coché (grisé), false = toujours décoché (grisé), true/false = modifiable
-
-var GROUPES = [
-  {
-    label: 'Lecture & navigation',
-    perms: [
-      { id:'read_articles',    label:'Lire les articles publiés',          desc:'Accès aux articles visibles sur le site',                      vals:[true,true,true,true,true,true] },
-      { id:'read_categories',  label:'Naviguer par catégorie',              desc:'Filtrer les articles par rubrique',                             vals:[true,true,true,true,true,true] },
-      { id:'save_articles',    label:'Sauvegarder des articles',            desc:'Mettre des articles en favoris',                                vals:[true,true,true,true,true,false] },
-      { id:'follow_categories',label:'Suivre des catégories',               desc:'Recevoir les nouveautés d\'une rubrique',                       vals:[true,true,true,true,false,false] },
-      { id:"newsletter",       label:'S\'abonner à la newsletter',          desc:'Recevoir la Lettre d\'Euclide',                               vals:[true,true,true,true,true,true] },
-    ]
-  },
-  {
-    label: 'Commentaires',
-    perms: [
-      { id:'read_comments',    label:'Lire les commentaires',               desc:'Voir les commentaires sous les articles',                       vals:[true,true,true,true,true,false] },
-      { id:'post_comments',    label:'Publier un commentaire',              desc:'Écrire un commentaire sur un article',                          vals:[true,true,true,true,true,false] },
-      { id:'edit_own_comment', label:'Modifier son propre commentaire',     desc:'Éditer un commentaire que l\'on a posté',                       vals:[true,true,true,true,false,false] },
-      { id:'delete_own_comment',label:'Supprimer son propre commentaire',   desc:'Retirer un de ses commentaires',                               vals:[true,true,true,true,false,false] },
-      { id:'report_comment',   label:'Signaler un commentaire',             desc:'Envoyer un signalement à la modération',                        vals:[true,true,true,true,true,false] },
-    ]
-  },
-  {
-    label: 'Modération des commentaires',
-    perms: [
-      { id:'view_reported',    label:'Voir les commentaires signalés',      desc:'Accéder à la file de signalements',                             vals:[true,true,false,true,false,false] },
-      { id:'approve_comment',  label:'Approuver un commentaire',            desc:'Valider un commentaire en attente',                             vals:[true,true,false,true,false,false] },
-      { id:'delete_any_comment',label:'Supprimer n\'importe quel commentaire',desc:'Retirer un commentaire d\'un autre utilisateur',              vals:[true,true,false,true,false,false] },
-      { id:'ban_user_comment', label:'Bannir un utilisateur des commentaires',desc:'Empêcher un compte de commenter',                             vals:[true,false,false,false,false,false] },
-    ]
-  },
-  {
-    label: 'Rédaction & articles',
-    perms: [
-      { id:'submit_article',   label:'Soumettre un article',                desc:'Envoyer un article à la modération éditoriale',                 vals:[true,true,true,false,false,false] },
-      { id:'edit_own_article', label:'Modifier son propre article',         desc:'Éditer un article que l\'on a rédigé',                          vals:[true,true,true,false,false,false] },
-      { id:'save_draft',       label:'Enregistrer un brouillon',            desc:'Sauvegarder un article non finalisé',                           vals:[true,true,true,false,false,false] },
-    ]
-  },
-  {
-    label: 'Modération éditoriale',
-    perms: [
-      { id:'view_pending',     label:'Voir les articles en attente',        desc:'Accéder à la file d\'articles soumis',                          vals:[true,true,false,false,false,false] },
-      { id:'approve_article',  label:'Publier un article',                  desc:'Valider et mettre en ligne un article soumis',                  vals:[true,true,false,false,false,false] },
-      { id:'reject_article',   label:'Refuser un article',                  desc:'Renvoyer un article avec commentaires',                         vals:[true,true,false,false,false,false] },
-      { id:'edit_any_article', label:'Modifier n\'importe quel article',    desc:'Éditer un article d\'un autre auteur',                          vals:[true,true,false,false,false,false] },
-      { id:'delete_article',   label:'Supprimer un article',                desc:'Retirer définitivement un article publié',                      vals:[true,false,false,false,false,false] },
-      { id:'feature_article',  label:'Mettre en avant un article',          desc:'Définir l\'importance 1/2/3/4 d\'un article',                   vals:[true,true,false,false,false,false] },
-    ]
-  },
-  {
-    label: 'Gestion des utilisateurs',
-    perms: [
-      { id:'view_users',       label:'Voir la liste des utilisateurs',      desc:'Accéder au tableau des comptes inscrits',                       vals:[true,false,false,false,false,false] },
-      { id:'assign_role',      label:'Attribuer un rôle à un utilisateur',  desc:'Changer le rôle d\'un compte (sauf super-admin)',                vals:[true,false,false,false,false,false] },
-      { id:'assign_superadmin',label:'Attribuer le rôle super-administrateur',desc:'Promouvoir un compte au niveau le plus élevé',                vals:[true,false,false,false,false,false] },
-      { id:'suspend_user',     label:'Suspendre un compte',                 desc:'Désactiver temporairement l\'accès d\'un utilisateur',           vals:[true,false,false,false,false,false] },
-      { id:'delete_user',      label:'Supprimer un compte',                 desc:'Effacer définitivement un compte du système',                   vals:[true,false,false,false,false,false] },
-    ]
-  },
-  {
-    label: 'Administration du site',
-    perms: [
-      { id:'manage_categories',label:'Gérer les catégories',                desc:'Créer, renommer, supprimer des rubriques',                      vals:[true,false,false,false,false,false] },
-      { id:'manage_perms',     label:'Modifier les permissions des rôles',  desc:'Accéder à cette page et modifier les droits',                   vals:[true,false,false,false,false,false] },
-      { id:'view_stats',       label:'Voir les statistiques du site',       desc:'Accéder aux données de trafic et d\'engagement',                vals:[true,false,false,false,false,false] },
-      { id:'manage_newsletter',label:'Gérer la newsletter',                 desc:'Envoyer et programmer les lettres d\'information',              vals:[true,false,false,false,false,false] },
-      { id:'site_settings',    label:'Paramètres généraux du site',         desc:'Modifier le nom, les métadonnées, la configuration',            vals:[true,false,false,false,false,false] },
-    ]
-  }
-];
-
-// ─── ÉTAT DES PERMISSIONS (chargé depuis localStorage) ──────────────────────
-function getPermsState() {
-  try {
-    var raw = localStorage.getItem('euclide_perms');
-    if (raw) return JSON.parse(raw);
-  } catch(e) {}
-  // État par défaut : on prend les valeurs initiales (true/false)
-  var state = {};
-  GROUPES.forEach(function(g) {
-    g.perms.forEach(function(p) {
-      state[p.id] = p.vals.map(function(v) {
-        return v === true ? true : v === false ? false : v;
-      });
-    });
-  });
-  return state;
-}
-
-function savePermsState(state) {
-  try { localStorage.setItem('euclide_perms', JSON.stringify(state)); } catch(e) {}
-}
-
-// ─── RENDU DU TABLEAU ────────────────────────────────────────────────────────
-var state = getPermsState();
-
 function renderTable() {
-  var tbody = document.getElementById('perms-body');
-  tbody.innerHTML = '';
-
-  GROUPES.forEach(function(groupe) {
-    // Ligne de groupe
-    var gtr = document.createElement('tr');
-    gtr.className = 'group-row';
-    gtr.innerHTML = '<td colspan="7">' + groupe.label + '</td>';
-    tbody.appendChild(gtr);
-
-    groupe.perms.forEach(function(perm) {
-      var tr = document.createElement('tr');
-      tr.className = 'perm-row';
-
-      // Label
-      var tdLabel = document.createElement('td');
-      tdLabel.className = 'perm-label';
-      tdLabel.innerHTML = perm.label + '<div class="perm-desc">' + perm.desc + '</div>';
-      tr.appendChild(tdLabel);
-
-      // Cellules par rôle
-      perm.vals.forEach(function(v, colIdx) {
-        var td = document.createElement('td');
-        td.className = 'perm-cell';
-
-        var cb = document.createElement('input');
-        cb.type = 'checkbox';
-        cb.className = 'perm-check';
-        cb.checked = (state[perm.id] !== undefined) ? state[perm.id][colIdx] : v;
-        cb.dataset.permId = perm.id;
-        cb.dataset.col = colIdx;
-        cb.addEventListener('change', function() {
-          if (!state[this.dataset.permId]) {
-            state[this.dataset.permId] = perm.vals.slice();
-          }
-          state[this.dataset.permId][parseInt(this.dataset.col)] = this.checked;
-          document.getElementById('save-status').textContent = 'Modifications non enregistrées — pensez à enregistrer';
-          document.getElementById('save-status').style.color = 'var(--orange)';
-        });
-        td.appendChild(cb);
-        tr.appendChild(td);
-      });
-
-      tbody.appendChild(tr);
+  var ROLES = [
+    {label:"Super-administrateur", perms:{lire:1,commenter:1,ecrire:1,moderer:1,publier:1,admin:1}},
+    {label:"Mod. de redaction",     perms:{lire:1,commenter:1,ecrire:1,moderer:1,publier:1,admin:0}},
+    {label:"Redacteur",             perms:{lire:1,commenter:1,ecrire:1,moderer:0,publier:0,admin:0}},
+    {label:"Mod. commentaires",     perms:{lire:1,commenter:1,ecrire:0,moderer:0,publier:0,admin:0}},
+    {label:"Lecteur-commentateur",  perms:{lire:1,commenter:1,ecrire:0,moderer:0,publier:0,admin:0}},
+    {label:"Lecteur",               perms:{lire:1,commenter:0,ecrire:0,moderer:0,publier:0,admin:0}},
+  ];
+  var COLS = [
+    {k:"lire",l:"Lire"},
+    {k:"commenter",l:"Commenter"},
+    {k:"ecrire",l:"Ecrire"},
+    {k:"moderer",l:"Moderer"},
+    {k:"publier",l:"Publier"},
+    {k:"admin",l:"Admin"}
+  ];
+  var tbody = document.getElementById("perms-body");
+  if (!tbody) return;
+  var rows = "";
+  ROLES.forEach(function(role) {
+    rows += "<tr><td style=\"padding:12px 16px;font-weight:500;color:var(--violet);border-bottom:1px solid var(--line);\">" + role.label + "</td>";
+    COLS.forEach(function(col) {
+      var ok = role.perms[col.k];
+      rows += "<td style=\"text-align:center;padding:12px 16px;border-bottom:1px solid var(--line);color:" + (ok ? "#1A5C32" : "#8A8A9A") + ";font-size:18px;\">" + (ok ? "&#10003;" : "&#8211;") + "</td>";
     });
+    rows += "</tr>";
   });
-}
-
-// ─── SAVE ───────────────────────────────────────────────────────────────────
-function savePerms() {
-  savePermsState(state);
-  var status = document.getElementById('save-status');
-  status.textContent = 'Enregistré';
-  status.style.color = "var(--green)";
-  var toast = document.getElementById("toast");
-  toast.classList.add("show");
-  setTimeout(function() { toast.classList.remove("show"); }, 2500);
-  setTimeout(function() { status.textContent = 'Toutes les modifications sont enregistrées'; status.style.color = "var(--text3)"; }, 3000);
-}
-
-// ─── CONTRÔLE D'ACCÈS ────────────────────────────────────────────────────────
-(function() {
-  var ROLES_LABEL = {
-    "super-admin":'Super-administrateur',
-    "moderateur-redaction":'Modérateur de rédaction',
-    "redacteur":'Rédacteur',
-    "moderateur-comments":'Modérateur de commentaires',
-    "lecteur-commentateur":'Lecteur-commentateur',
-    "lecteur":'Lecteur'
-  };
-
-  var session = null;
-
-  // Accès via Firebase Auth (le topbar unifié a déjà initialisé _auth)
-  // On attend que _auth soit disponible
-  function checkAccess() {
-    if (!window._auth || !window._db) {
-      setTimeout(checkAccess, 100); return;
-    }
-    window._auth.onAuthStateChanged(async function(user) {
-      if (!user) {
-        document.getElementById("access-denied").style.display = "block";
-        document.getElementById("main-content").style.display = "none";
-        return;
-      }
-      try {
-        const { getDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-        var snap = await getDoc(doc(window._db, "users", user.uid));
-        if (!snap.exists() || snap.data().role !== "super-admin") {
-          document.getElementById("access-denied").style.display = "block";
-          document.getElementById("main-content").style.display = "none";
-          return;
-        }
-        document.getElementById("main-content").style.display = "block";
-        document.getElementById("access-denied").style.display = "none";
-        renderTable();
-      } catch(e) {
-        document.getElementById("access-denied").style.display = "block";
-      }
-    });
-  }
-  checkAccess();
-})();
-
-function deconnexion() {
-  if (window._auth) window._auth.signOut().then(function(){ window.location.href="connexion.html"; });
-  else window.location.href="connexion.html";
+  tbody.innerHTML = rows;
 }
 </script>
-
-
 
 <script type="module">
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-const _a = getApps().length ? getApps()[0] : initializeApp({apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",authDomain:"l-oeil-d-euclyde.firebaseapp.com",projectId:"l-oeil-d-euclyde",storageBucket:"l-oeil-d-euclyde.firebasestorage.app",messagingSenderId:"179241004963",appId:"1:179241004963:web:c7c7afa926e03032653416"});
-const _au = getAuth(_a), _db2 = getFirestore(_a);
-window._db = _db2; window._auth = _au;
-
-function buildBurger(p, auth, signOut) {
-  var el = document.getElementById("topbar-right");
-  if (!el) return;
-  var RL = {"super-admin":"Super-administrateur","moderateur-redaction":"Moderateur de redaction","redacteur":"Redacteur","moderateur-comments":"Moderateur commentaires","lecteur-commentateur":"Lecteur-commentateur","lecteur":"Lecteur"};
-  var isSA = p.role === "super-admin";
-  var isMod = isSA || p.role === "moderateur-redaction";
-  var isWriter = isMod || p.role === "redacteur";
-  function lnk(href, txt) { return "<a href=\"" + href + "\" style=\"display:block;padding:10px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;\">" + txt + "</a>"; }
-  function sep() { return "<div style=\"height:1px;background:rgba(255,255,255,.08);margin:6px 0;\"></div>"; }
-  var mi = "";
-  mi += "<div style=\"padding:10px 20px 4px;font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;\">" + p.prenom + " " + p.nom + "</div>";
-  mi += "<div style=\"padding:2px 20px 8px;font-size:11px;color:rgba(255,255,255,.4);\">" + (RL[p.role] || p.role) + "</div>";
-  mi += sep();
-  mi += lnk("profil.html", "Mon profil");
-  if (isWriter) mi += lnk("creer-article.html", "Creer un article");
-  if (isMod) { mi += sep(); mi += lnk("moderation.html", "Moderation"); mi += lnk("disposition.html", "Disposition"); }
-  if (isSA) { mi += sep(); mi += lnk("gestion-comptes.html", "Gestion des comptes"); mi += lnk("auteurs.html", "Base auteurs"); mi += lnk("permissions.html", "Permissions"); }
-  mi += sep();
-  mi += "<button id=\"_deco_btn\" style=\"display:block;width:100%;text-align:left;padding:10px 20px;font-size:13px;color:rgba(255,255,255,.8);background:none;border:none;cursor:pointer;font-family:inherit;\">Deconnexion</button>";
-  var bars = "<span style=\"color:rgba(255,255,255,.6);font-size:11px;margin-right:10px;\">" + p.prenom + " " + p.nom + "</span>";
-  bars += "<button id=\"burger-btn\" onclick=\"window._toggleBurger()\" style=\"background:none;border:none;cursor:pointer;padding:4px 6px;display:inline-flex;flex-direction:column;gap:4px;vertical-align:middle;\">";
-  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
-  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
-  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
-  bars += "</button>";
-  bars += "<div id=\"burger-menu\" style=\"position:absolute;top:100%;right:0;min-width:220px;background:#2A2A3E;border:1px solid rgba(255,255,255,.08);border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.35);z-index:300;padding:8px 0;\">" + mi + "</div>";
-  el.innerHTML = bars;
-  document.getElementById("_deco_btn").addEventListener("click", function() { signOut(auth).then(function() { window.location.href = "connexion.html"; }); });
-}
-
+const _app = getApps().length ? getApps()[0] : initializeApp({apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",authDomain:"l-oeil-d-euclyde.firebaseapp.com",projectId:"l-oeil-d-euclyde",storageBucket:"l-oeil-d-euclyde.firebasestorage.app",messagingSenderId:"179241004963",appId:"1:179241004963:web:c7c7afa926e03032653416"});
+const _au = getAuth(_app), _db = getFirestore(_app);
+window._db = _db; window._auth = _au;
+var _dt = document.getElementById("topbar-date");
+if (_dt) _dt.textContent = new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).replace(/^./,function(c){return c.toUpperCase();});
 onAuthStateChanged(_au, async function(user) {
   var el = document.getElementById("topbar-right");
-  if (!el) return;
-  if (!user) { el.innerHTML = "<a href=\"connexion.html\" style=\"color:#EDE0CC;font-size:11px;\">Connexion</a>"; return; }
+  if (!user) {
+    if(el) el.innerHTML = "<a href=\"connexion.html\" style=\"color:#EDE0CC;\">Connexion</a>";
+    document.getElementById("access-denied").style.display = "block"; return;
+  }
   try {
-    var snap = await getDoc(doc(_db2, "users", user.uid));
-    if (!snap.exists()) return;
-    buildBurger(snap.data(), _au, signOut);
-  } catch(e) { console.error(e); }
+    var snap = await getDoc(doc(_db,"users",user.uid));
+    if (!snap.exists() || snap.data().role !== "super-admin") {
+      document.getElementById("access-denied").style.display = "block"; return;
+    }
+    window.buildBurger(snap.data(), _au, signOut);
+    document.getElementById("main-content").style.display = "block";
+    renderTable();
+  } catch(e) { document.getElementById("access-denied").style.display = "block"; }
 });
 </script>
-
 </body>
 </html>

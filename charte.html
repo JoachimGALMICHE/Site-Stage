@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>À propos — L'Œil d'Euclide</title>
+<title>Charte éditoriale — L'Œil d'Euclide</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -12,8 +12,7 @@
 body{font-family:'DM Sans',sans-serif;background:var(--beige);color:var(--text);-webkit-font-smoothing:antialiased;}
 a{color:inherit;text-decoration:none;}
 #topbar{background:var(--violet);color:var(--violet-l);padding:6px 40px;font-size:11px;letter-spacing:.07em;display:flex;justify-content:space-between;align-items:center;position:relative;}
-#topbar a{color:var(--violet-xl);transition:color .2s;}
-#topbar a:hover{color:#fff;}
+#topbar a{color:var(--violet-xl);}
 header{padding:32px 40px 0;border-bottom:1px solid var(--line2);}
 .header-top{display:flex;align-items:flex-end;justify-content:space-between;padding-bottom:18px;}
 .site-name{font-family:'Cormorant Garamond',serif;font-size:74px;font-weight:300;letter-spacing:-3px;line-height:1;color:var(--violet);}
@@ -22,7 +21,7 @@ nav{overflow-x:auto;white-space:nowrap;scrollbar-width:none;}
 nav::-webkit-scrollbar{display:none;}
 nav a{display:inline-block;padding:13px 16px;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);border-bottom:2px solid transparent;transition:color .2s,border-color .2s;}
 nav a:first-child{padding-left:0;}
-nav a:hover{color:var(--violet);border-bottom-color:var(--line2);}
+nav a:hover{color:var(--violet);}
 nav a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
 .page-wrap{max-width:860px;margin:0 auto;padding:64px 40px 96px;}
 .page-label{font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--violet-m);margin-bottom:20px;}
@@ -30,10 +29,11 @@ h1{font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:300;line-he
 .lead{font-size:20px;line-height:1.75;color:var(--text2);font-weight:300;border-left:3px solid var(--violet-m);padding-left:20px;margin-bottom:40px;}
 .body-text p{font-size:17px;line-height:1.85;color:var(--text);font-weight:300;margin-bottom:22px;}
 .body-text em{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;color:var(--text2);}
-.sig{margin-top:40px;padding-top:28px;border-top:1px solid var(--line);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:19px;color:var(--text2);}
-.sig strong{font-weight:600;color:var(--violet);}
-.devenir-btn{display:inline-block;margin-top:40px;background:var(--violet);color:var(--violet-xl);padding:12px 28px;font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;border-radius:2px;transition:background .2s;}
-.devenir-btn:hover{background:var(--violet2);}
+.principe{background:var(--beige2);border:1px solid var(--line);border-radius:3px;padding:24px 28px;margin:32px 0;}
+.principe-num{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--violet-m);margin-bottom:8px;}
+.principe h3{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;color:var(--violet);margin-bottom:10px;}
+.principe p{font-size:15px;line-height:1.7;color:var(--text2);font-weight:300;}
+.sig{margin-top:48px;padding-top:28px;border-top:1px solid var(--line);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:19px;color:var(--text2);}
 footer{background:var(--violet);color:var(--violet-l);padding:40px;}
 .f-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;margin-bottom:32px;}
 .f-brand-name{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:#fff;margin-bottom:8px;}
@@ -41,18 +41,12 @@ footer{background:var(--violet);color:var(--violet-l);padding:40px;}
 footer h4{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--violet-l);margin-bottom:14px;}
 footer ul{list-style:none;}
 footer ul li{margin-bottom:8px;}
-footer ul li a{font-size:13px;color:rgba(255,255,255,.5);transition:color .2s;font-weight:300;}
+footer ul li a{font-size:13px;color:rgba(255,255,255,.5);font-weight:300;}
 footer ul li a:hover{color:#fff;}
 .f-bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:20px;display:flex;justify-content:space-between;align-items:center;}
 .f-copy{font-size:11px;color:rgba(255,255,255,.25);}
-/* BURGER */
-#topbar{position:relative;}
-#burger-btn.open span:nth-child(1){transform:translateY(5.5px) rotate(45deg);}
-#burger-btn.open span:nth-child(2){opacity:0;}
-#burger-btn.open span:nth-child(3){transform:translateY(-5.5px) rotate(-45deg);}
 #burger-menu.show{display:block !important;}
-@media(max-width:900px){.f-grid{grid-template-columns:1fr 1fr;}}
-@media(max-width:600px){header,.page-wrap,#topbar,footer{padding-left:20px;padding-right:20px;}.site-name{font-size:44px;}.f-grid{grid-template-columns:1fr;}}
+@media(max-width:600px){header,.page-wrap,#topbar,footer{padding-left:20px;padding-right:20px;}.site-name{font-size:44px;}}
 </style>
 </head>
 <body>
@@ -102,31 +96,49 @@ document.addEventListener("click", function(e) {
     <a href="categorie.html?cat=Éducation">Éducation &amp; Jeunesse</a>
     <a href="categorie.html?cat=Histoire">Histoire</a>
     <a href="categorie.html?cat=Critique">Critique litt. &amp; artistique</a>
-    <a href="apropos.html" class="active">À propos</a>
+    <a href="apropos.html">À propos</a>
   </nav>
 </header>
 
 <div class="page-wrap">
-  <p class="page-label">Le projet</p>
-  <h1>À propos de L'Œil d'Euclide</h1>
+  <p class="page-label">Notre engagement</p>
+  <h1 href="charte.html">Charte éditoriale</h1>
 
-  <p class="lead">L'Œil d'Euclide est né d'un constat simple : dans un monde saturé d'informations, la compréhension recule souvent à mesure que le flux s'accélère.</p>
+  <p class="lead">L'Œil d'Euclide repose sur une exigence simple : expliquer avec rigueur, sans céder ni à la facilité ni à la posture.</p>
 
   <div class="body-text">
-    <p>Entre simplifications excessives et analyses réservées aux spécialistes, il manque un espace capable de prendre le temps d'expliquer sans appauvrir.</p>
-
-    <p>Ce site propose un regard différent. Non pas pour convaincre, mais pour éclairer. Non pas pour trancher, mais pour mettre en perspective. Chaque article cherche à rendre lisibles des sujets complexes en les replaçant dans leurs contextes économiques, industriels, sociaux ou géopolitiques.</p>
-
-    <p>L'Œil d'Euclide s'adresse à celles et ceux qui ne se satisfont ni des évidences ni des oppositions trop simples. À celles et ceux qui considèrent que comprendre demande du temps, de la rigueur, et parfois d'accepter l'inconfort de la nuance.</p>
-
-    <p>Le site peut accueillir des contributions extérieures, dès lors qu'elles participent à cette même exigence de clarté, de rigueur et de mise en perspective. Chaque texte proposé s'inscrit dans une démarche éditoriale cohérente, attentive à la qualité du fond comme à la précision de la forme.</p>
-
-    <p><em>Mettre notre monde en perspective : telle est l'ambition.</em></p>
+    <p>Les contenus publiés privilégient l'analyse à la réaction, la compréhension à la prise de position.</p>
   </div>
 
-  <p class="sig"><strong>Xavier Galmiche</strong>, rédacteur en chef</p>
+  <div class="principe">
+    <div class="principe-num">Principe 01</div>
+    <h3>Clarifier, pas défendre</h3>
+    <p>Chaque article s'inscrit dans une démarche de clarification. Il ne s'agit pas de défendre une opinion, mais de rendre visibles les mécanismes, les contraintes et les arbitrages qui structurent les réalités contemporaines. Cette approche suppose de croiser les points de vue, de replacer les faits dans leur contexte et d'éviter toute simplification abusive.</p>
+  </div>
 
-  <a href="devenir-auteur.html" class="devenir-btn">Contribuer au site →</a>
+  <div class="principe">
+    <div class="principe-num">Principe 02</div>
+    <h3>Refus de la polémique immédiate</h3>
+    <p>Le site refuse le registre de l'émotion immédiate et de la polémique. Il n'a pas vocation à suivre l'actualité au fil de l'eau, mais à proposer des éclairages durables, capables de rester pertinents au-delà du moment.</p>
+  </div>
+
+  <div class="principe">
+    <div class="principe-num">Principe 03</div>
+    <h3>Ouverture aux contributions extérieures</h3>
+    <p>Les contributions extérieures, notamment sous forme de témoignages, sont les bienvenues dès lors qu'elles apportent un éclairage concret, sincère et argumenté. Elles s'inscrivent dans la même exigence de fond : informer sans déformer, exposer sans accuser.</p>
+  </div>
+
+  <div class="principe">
+    <div class="principe-num">Principe 04</div>
+    <h3>Ton sobre, précis et accessible</h3>
+    <p>La rédaction veille à maintenir un ton sobre, précis et accessible, afin que la complexité du réel puisse être partagée sans être diluée.</p>
+  </div>
+
+  <div class="body-text" style="margin-top:40px;">
+    <p><em>Euclide a fondé la perspective. Elle ne décide pas de la beauté d'une œuvre, mais en révèle le relief nécessaire à sa compréhension.</em></p>
+  </div>
+
+  <p class="sig"><em>L'équipe de rédaction</em></p>
 </div>
 
 <footer>
@@ -183,7 +195,7 @@ function buildBurger(p, auth, signOut) {
   if (isW) mi += lnk("creer-article.html","Creer un article");
   if (isMod) { mi+=sep(); mi+=lnk("moderation.html","Moderation"); mi+=lnk("disposition.html","Disposition"); }
   if (isSA) { mi+=sep(); mi+=lnk("gestion-comptes.html","Comptes"); mi+=lnk("auteurs.html","Auteurs"); mi+=lnk("permissions.html","Permissions"); }
-  mi+=sep()+'<button id="_db" style="display:block;width:100%;text-align:left;padding:9px 20px;font-size:13px;color:rgba(255,255,255,.85);background:none;border:none;cursor:pointer;">Deconnexion</button>';
+  mi+=sep()+"<button id=\"_deco\" style=\"display:block;width:100%;text-align:left;padding:9px 20px;font-size:13px;color:rgba(255,255,255,.85);background:none;border:none;cursor:pointer;\">Deconnexion</button>";
   el.innerHTML = "<span style=\"color:rgba(255,255,255,.6);font-size:11px;margin-right:8px;\">"+p.prenom+" "+p.nom+"</span>"
     +"<button onclick=\"window._toggleBurger()\" style=\"background:none;border:none;cursor:pointer;padding:4px 6px;display:inline-flex;flex-direction:column;gap:4px;vertical-align:middle;\">"
     +"<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>"
@@ -191,7 +203,7 @@ function buildBurger(p, auth, signOut) {
     +"<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>"
     +"</button>"
     +"<div id=\"burger-menu\" style=\"display:none;position:absolute;top:100%;right:0;min-width:200px;background:#2A2A3E;border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.4);z-index:9999;padding:6px 0;\">"+mi+"</div>";
-  document.getElementById("_db").addEventListener("click",function(){signOut(auth).then(function(){window.location.href="connexion.html";});});
+  document.getElementById("_deco").addEventListener("click",function(){signOut(auth).then(function(){window.location.href="connexion.html";});});
 }
 onAuthStateChanged(_au, async function(user) {
   var el = document.getElementById("topbar-right"); if (!el) return;

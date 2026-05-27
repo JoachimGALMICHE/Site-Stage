@@ -150,6 +150,12 @@ footer a{color:var(--violet-l);}
 #burger-menu .menu-badge.dark{background:rgba(255,255,255,.15);}
 #topbar{position:relative;}
 </style>
+
+
+
+
+
+
 <script>
 window._toggleBurger = function() {
   var m = document.getElementById("burger-menu");
@@ -166,6 +172,31 @@ document.addEventListener("click", function(e) {
     if (b) b.classList.remove("open");
   }
 });
+window.buildBurger = function(p, auth, signOutFn) {
+  var el = document.getElementById("topbar-right");
+  if (!el) return;
+  var RL = {"super-admin":"Super-administrateur","moderateur-redaction":"Moderateur","redacteur":"Redacteur","moderateur-comments":"Mod.commentaires","lecteur-commentateur":"Lecteur+","lecteur":"Lecteur"};
+  var isSA=(p.role==="super-admin"), isMod=isSA||(p.role==="moderateur-redaction"), isW=isMod||(p.role==="redacteur");
+  var menu=document.createElement("div"); menu.id="burger-menu";
+  menu.style.cssText="display:none;position:absolute;top:100%;right:0;min-width:210px;background:#2A2A3E;border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.4);z-index:9999;padding:6px 0;";
+  function row(href,txt){var a=document.createElement("a");a.href=href;a.textContent=txt;a.style.cssText="display:block;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;";a.onmouseover=function(){this.style.background="rgba(255,255,255,.07)";};a.onmouseout=function(){this.style.background="";};menu.appendChild(a);}
+  function sep(){var d=document.createElement("div");d.style.cssText="height:1px;background:rgba(255,255,255,.1);margin:4px 0;";menu.appendChild(d);}
+  var h=document.createElement("div");h.style.cssText="padding:9px 20px 3px;font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;";h.textContent=p.prenom+" "+p.nom;menu.appendChild(h);
+  var r=document.createElement("div");r.style.cssText="padding:2px 20px 8px;font-size:11px;color:rgba(255,255,255,.4);";r.textContent=RL[p.role]||p.role;menu.appendChild(r);
+  sep();row("profil.html","Mon profil");
+  if(isW)row("creer-article.html","Creer un article");
+  if(isMod){sep();row("moderation.html","Moderation");row("disposition.html","Disposition");}
+  if(isSA){sep();row("gestion-comptes.html","Comptes");row("auteurs.html","Auteurs");row("permissions.html","Permissions");}
+  sep();
+  var dBtn=document.createElement("button");dBtn.textContent="Deconnexion";dBtn.style.cssText="display:block;width:100%;text-align:left;padding:9px 20px;font-size:13px;color:rgba(255,255,255,.85);background:none;border:none;cursor:pointer;font-family:inherit;";
+  dBtn.onclick=function(){signOutFn(auth).then(function(){window.location.href="connexion.html";});};
+  menu.appendChild(dBtn);
+  var bBtn=document.createElement("button");bBtn.id="burger-btn";bBtn.onclick=window._toggleBurger;
+  bBtn.style.cssText="background:none;border:none;cursor:pointer;padding:4px 6px;display:inline-flex;flex-direction:column;gap:4px;vertical-align:middle;";
+  for(var i=0;i<3;i++){var bar=document.createElement("span");bar.style.cssText="display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;";bBtn.appendChild(bar);}
+  var ns=document.createElement("span");ns.style.cssText="color:rgba(255,255,255,.6);font-size:11px;margin-right:8px;";ns.textContent=p.prenom+" "+p.nom;
+  el.innerHTML="";el.appendChild(ns);el.appendChild(bBtn);el.appendChild(menu);
+};
 </script>
 </head>
 <body>
@@ -251,35 +282,6 @@ import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, getDocs, updateDoc, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-function buildBurger(p, auth, signOut) {
-  var el = document.getElementById("topbar-right");
-  if (!el) return;
-  var RL = {"super-admin":"Super-administrateur","moderateur-redaction":"Moderateur de redaction","redacteur":"Redacteur","moderateur-comments":"Moderateur commentaires","lecteur-commentateur":"Lecteur-commentateur","lecteur":"Lecteur"};
-  var isSA = p.role === "super-admin";
-  var isMod = isSA || p.role === "moderateur-redaction";
-  var isWriter = isMod || p.role === "redacteur";
-  function lnk(href, txt) { return "<a href=\"" + href + "\" style=\"display:block;padding:10px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;\">" + txt + "</a>"; }
-  function sep() { return "<div style=\"height:1px;background:rgba(255,255,255,.08);margin:6px 0;\"></div>"; }
-  var mi = "";
-  mi += "<div style=\"padding:10px 20px 4px;font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;\">" + p.prenom + " " + p.nom + "</div>";
-  mi += "<div style=\"padding:2px 20px 8px;font-size:11px;color:rgba(255,255,255,.4);\">" + (RL[p.role] || p.role) + "</div>";
-  mi += sep();
-  mi += lnk("profil.html", "Mon profil");
-  if (isWriter) mi += lnk("creer-article.html", "Creer un article");
-  if (isMod) { mi += sep(); mi += lnk("moderation.html", "Moderation"); mi += lnk("disposition.html", "Disposition"); }
-  if (isSA) { mi += sep(); mi += lnk("gestion-comptes.html", "Gestion des comptes"); mi += lnk("auteurs.html", "Base auteurs"); mi += lnk("permissions.html", "Permissions"); }
-  mi += sep();
-  mi += "<button id=\"_deco_btn\" style=\"display:block;width:100%;text-align:left;padding:10px 20px;font-size:13px;color:rgba(255,255,255,.8);background:none;border:none;cursor:pointer;font-family:inherit;\">Deconnexion</button>";
-  var bars = "<span style=\"color:rgba(255,255,255,.6);font-size:11px;margin-right:10px;\">" + p.prenom + " " + p.nom + "</span>";
-  bars += "<button id=\"burger-btn\" onclick=\"window._toggleBurger()\" style=\"background:none;border:none;cursor:pointer;padding:4px 6px;display:inline-flex;flex-direction:column;gap:4px;vertical-align:middle;\">";
-  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
-  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
-  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
-  bars += "</button>";
-  bars += "<div id=\"burger-menu\" style=\"position:absolute;top:100%;right:0;min-width:220px;background:#2A2A3E;border:1px solid rgba(255,255,255,.08);border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.35);z-index:300;padding:8px 0;\">" + mi + "</div>";
-  el.innerHTML = bars;
-  document.getElementById("_deco_btn").addEventListener("click", function() { signOut(auth).then(function() { window.location.href = "connexion.html"; }); });
-}
 
 const app = getApps().length ? getApps()[0] : initializeApp({
   apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",
@@ -307,17 +309,36 @@ onAuthStateChanged(auth, async user => {
       document.getElementById("access-denied").style.display = "block"; return;
     }
     currentUser = {...snap.data(), uid: user.uid};
-    buildBurger(snap.data(), auth, signOut);
     document.getElementById("main-content").style.display = "block";
+    window.buildBurger(snap.data(), auth, signOut);
     await loadArticles();
   } catch(e) { document.getElementById("access-denied").style.display = "block"; }
 });
 
+const ARTICLES_DEMO = [
+  {id:'article1',titre:"La réforme des retraites fragilise le dialogue social en France",chapeau:"Les syndicats annoncent une mobilisation nationale après l'échec des négociations.",rubrique:'Politique',auteurNom:'Marie Dupont',statut:'publie',soumisLe:{seconds:1711843200},publieLe:{seconds:1711843200}},
+  {id:'article2',titre:"Un vaccin contre Alzheimer entre en phase III d'essai clinique",chapeau:"Des résultats préliminaires laissent espérer un traitement préventif d'ici 2030.",rubrique:'Science',auteurNom:'Pr. Jean Lefebvre',statut:'publie',soumisLe:{seconds:1711756800},publieLe:{seconds:1711756800}},
+  {id:'article3',titre:"Sécheresse : l'Espagne perd 40 % de ses réserves d'eau en un an",chapeau:"La crise hydrique s'intensifie sur le pourtour méditerranéen.",rubrique:'Environnement',auteurNom:'Carla Ramos',statut:'publie',soumisLe:{seconds:1711670400},publieLe:{seconds:1711670400}},
+  {id:'article4',titre:"La BCE maintient ses taux face à l'inflation persistante",chapeau:"Les gouverneurs ont voté à l'unanimité pour le maintien des taux directeurs.",rubrique:'Économie',auteurNom:'Pierre Vidal',statut:'publie',soumisLe:{seconds:1711584000},publieLe:{seconds:1711584000}},
+  {id:'article5',titre:"Logement : les jeunes de moins de 30 ans exclus des grandes villes",chapeau:"La hausse des loyers repousse les jeunes actifs vers la périphérie.",rubrique:'Société',auteurNom:'Camille Renard',statut:'publie',soumisLe:{seconds:1711497600},publieLe:{seconds:1711497600}},
+  {id:'article6',titre:"80 ans après, Nuremberg résonne encore dans le droit international",chapeau:"Les principes établis continuent d'influencer la justice pénale internationale.",rubrique:'Histoire',auteurNom:'Prof. Hélène Bauer',statut:'publie',soumisLe:{seconds:1711411200},publieLe:{seconds:1711411200}},
+  {id:'article7',titre:"IA et création littéraire : la frontière s'efface",chapeau:"Les outils génératifs s'invitent dans l'écriture romanesque.",rubrique:'Culture',auteurNom:'Nadia Korel',statut:'publie',soumisLe:{seconds:1711324800},publieLe:{seconds:1711324800}},
+  {id:'article8',titre:"G20 : les pays du Sud réclament une réforme du FMI",chapeau:"Les économies émergentes dénoncent des règles de vote jugées archaïques.",rubrique:'International',auteurNom:'Amara Diop',statut:'publie',soumisLe:{seconds:1711238400},publieLe:{seconds:1711238400}},
+];
+
 async function loadArticles() {
   try {
     const snap = await getDocs(collection(db, "articles"));
-    allArticles = snap.docs.map(d => ({id: d.id, ...d.data()}));
-    allArticles.sort((a,b) => (b.soumisLe?.seconds||0) - (a.soumisLe?.seconds||0));
+    const fbArticles = snap.docs.map(d => ({id: d.id, ...d.data()}));
+    // Fusionner articles Firebase + articles démo (sans doublons)
+    const fbIds = new Set(fbArticles.map(a => a.id));
+    const demoArticles = ARTICLES_DEMO.filter(a => !fbIds.has(a.id));
+    allArticles = [...fbArticles, ...demoArticles];
+    allArticles.sort((a,b) => {
+      const sa = a.soumisLe ? (a.soumisLe.seconds||0) : 0;
+      const sb = b.soumisLe ? (b.soumisLe.seconds||0) : 0;
+      return sb - sa;
+    });
     updateStats(); renderList();
   } catch(e) {
     document.getElementById("articles-list").innerHTML = '<p class="empty-state">Erreur: ' + e.message + '</p>';
@@ -367,6 +388,7 @@ function renderList() {
     html += "</div><div class=\"art-right\">";
     if (a.imageTitre) html += "<img class=\"art-img\" src=\"" + a.imageTitre + "\" alt=\"\">";
     html += "<button class=\"btn btn-preview\" onclick=\"event.stopPropagation();window.openPreview('" + a.id + "')\">Apercu</button>";
+    html += "<a class=\"btn btn-ghost\" href=\"creer-article.html?edit=" + a.id + "\" style=\"text-decoration:none;\" onclick=\"event.stopPropagation()\">✏ Modifier</a>";
     if (pending) {
       html += "<button class=\"btn btn-approve\" onclick=\"event.stopPropagation();window.approveArticle('" + a.id + "')\">Publier</button>";
       html += "<button class=\"btn btn-reject\" onclick=\"event.stopPropagation();window.showRejectForm('" + a.id + "')\">Refuser</button>";
@@ -388,12 +410,17 @@ function renderList() {
   list.innerHTML = rows.join("");
 }
 
-window.toggleDetail = id => document.getElementById('item-' + id)?.classList.toggle("expanded");
+window.toggleDetail = id => document.getElementById('item-' + id) && document.getElementById('item-' + id).classList.toggle("expanded");
 
 window.approveArticle = async function(id) {
+  const a = allArticles.find(x => x.id === id);
+  // Article démo statique : juste mettre à jour localement
+  if (id.startsWith('article') && !id.match(/^\d{12}/)) {
+    if (a) a.statut = "publie";
+    updateStats(); renderList(); toast('Publié (local) !', 'ok'); return;
+  }
   try {
     await updateDoc(doc(db, "articles", id), {statut: "publie", publieLe: new Date()});
-    const a = allArticles.find(x => x.id === id);
     if (a) a.statut = "publie";
     updateStats(); renderList(); toast('Publié !', 'ok');
   } catch(e) { toast('Erreur: ' + e.message); }
@@ -402,25 +429,35 @@ window.approveArticle = async function(id) {
 window.showRejectForm = function(id) {
   const f = document.getElementById('reject-form-' + id);
   if (f) f.style.display = "block";
-  document.getElementById('item-' + id)?.classList.add("expanded");
+  const item = document.getElementById('item-' + id);
+  if (item) item.classList.add("expanded");
 };
 window.hideRejectForm = id => { const f = document.getElementById('reject-form-' + id); if (f) f.style.display = "none"; };
 
 window.confirmReject = async function(id) {
-  const txt = document.getElementById('reject-txt-' + id)?.value.trim();
+  const txtEl = document.getElementById('reject-txt-' + id);
+  const txt = txtEl ? txtEl.value.trim() : '';
   if (!txt) { toast('Entrez un motif'); return; }
+  const a = allArticles.find(x => x.id === id);
+  if (id.startsWith('article') && !id.match(/^\d{12}/)) {
+    if (a) { a.statut = "refuse"; a.moderationComment = txt; }
+    updateStats(); renderList(); toast('Refusé (local)', 'ok'); return;
+  }
   try {
     await updateDoc(doc(db, "articles", id), {statut: "refuse", moderationComment: txt});
-    const a = allArticles.find(x => x.id === id);
     if (a) { a.statut = "refuse"; a.moderationComment = txt; }
     updateStats(); renderList(); toast('Refusé', 'ok');
   } catch(e) { toast('Erreur: ' + e.message); }
 };
 
 window.resetStatus = async function(id) {
+  const a = allArticles.find(x => x.id === id);
+  if (id.startsWith('article') && !id.match(/^\d{12}/)) {
+    if (a) { a.statut = "soumis"; a.moderationComment = ''; }
+    updateStats(); renderList(); toast('Remis en attente'); return;
+  }
   try {
     await updateDoc(doc(db, "articles", id), {statut: "soumis", moderationComment: ''});
-    const a = allArticles.find(x => x.id === id);
     if (a) { a.statut = "soumis"; a.moderationComment = ''; }
     updateStats(); renderList(); toast('Remis en attente');
   } catch(e) { toast('Erreur: ' + e.message); }

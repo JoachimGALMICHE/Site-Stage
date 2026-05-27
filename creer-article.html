@@ -225,6 +225,7 @@ nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
 #burger-menu .menu-badge.dark{background:rgba(255,255,255,.15);}
 #topbar{position:relative;}
 </style>
+
 <script>
 window._toggleBurger = function() {
   var m = document.getElementById("burger-menu");
@@ -241,6 +242,31 @@ document.addEventListener("click", function(e) {
     if (b) b.classList.remove("open");
   }
 });
+window.buildBurger = function(p, auth, signOutFn) {
+  var el = document.getElementById("topbar-right");
+  if (!el) return;
+  var RL = {"super-admin":"Super-administrateur","moderateur-redaction":"Moderateur","redacteur":"Redacteur","moderateur-comments":"Mod.commentaires","lecteur-commentateur":"Lecteur+","lecteur":"Lecteur"};
+  var isSA=(p.role==="super-admin"), isMod=isSA||(p.role==="moderateur-redaction"), isW=isMod||(p.role==="redacteur");
+  var menu=document.createElement("div"); menu.id="burger-menu";
+  menu.style.cssText="display:none;position:absolute;top:100%;right:0;min-width:210px;background:#2A2A3E;border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.4);z-index:9999;padding:6px 0;";
+  function row(href,txt){var a=document.createElement("a");a.href=href;a.textContent=txt;a.style.cssText="display:block;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;";a.onmouseover=function(){this.style.background="rgba(255,255,255,.07)";};a.onmouseout=function(){this.style.background="";};menu.appendChild(a);}
+  function sep(){var d=document.createElement("div");d.style.cssText="height:1px;background:rgba(255,255,255,.1);margin:4px 0;";menu.appendChild(d);}
+  var h=document.createElement("div");h.style.cssText="padding:9px 20px 3px;font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;";h.textContent=p.prenom+" "+p.nom;menu.appendChild(h);
+  var r=document.createElement("div");r.style.cssText="padding:2px 20px 8px;font-size:11px;color:rgba(255,255,255,.4);";r.textContent=RL[p.role]||p.role;menu.appendChild(r);
+  sep();row("profil.html","Mon profil");
+  if(isW)row("creer-article.html","Creer un article");
+  if(isMod){sep();row("moderation.html","Moderation");row("disposition.html","Disposition");}
+  if(isSA){sep();row("gestion-comptes.html","Comptes");row("auteurs.html","Auteurs");row("permissions.html","Permissions");}
+  sep();
+  var dBtn=document.createElement("button");dBtn.textContent="Deconnexion";dBtn.style.cssText="display:block;width:100%;text-align:left;padding:9px 20px;font-size:13px;color:rgba(255,255,255,.85);background:none;border:none;cursor:pointer;font-family:inherit;";
+  dBtn.onclick=function(){signOutFn(auth).then(function(){window.location.href="connexion.html";});};
+  menu.appendChild(dBtn);
+  var bBtn=document.createElement("button");bBtn.id="burger-btn";bBtn.onclick=window._toggleBurger;
+  bBtn.style.cssText="background:none;border:none;cursor:pointer;padding:4px 6px;display:inline-flex;flex-direction:column;gap:4px;vertical-align:middle;";
+  for(var i=0;i<3;i++){var bar=document.createElement("span");bar.style.cssText="display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;";bBtn.appendChild(bar);}
+  var ns=document.createElement("span");ns.style.cssText="color:rgba(255,255,255,.6);font-size:11px;margin-right:8px;";ns.textContent=p.prenom+" "+p.nom;
+  el.innerHTML="";el.appendChild(ns);el.appendChild(bBtn);el.appendChild(menu);
+};
 </script>
 </head>
 <body>
@@ -388,29 +414,33 @@ document.addEventListener("click", function(e) {
     <div class="sidebar-section">
       <p class="sidebar-title">Ajouter un bloc</p>
       <div class="block-palette">
-        <div class="palette-item" onclick="addBlock('title')">
+        <div class="palette-item" draggable="true" onclick="addBlock('title')">
           <span class="palette-icon">H</span>
           <div><div class="palette-label">Titre de section</div><div class="palette-desc">Grand titre entre paragraphes</div></div>
         </div>
-        <div class="palette-item" onclick="addBlock('subtitle')">
+        <div class="palette-item" draggable="true" onclick="addBlock('subtitle')">
           <span class="palette-icon">h</span>
           <div><div class="palette-label">Sous-titre</div><div class="palette-desc">Titre secondaire, italique</div></div>
         </div>
-        <div class="palette-item" onclick="addBlock('text')">
+        <div class="palette-item" draggable="true" onclick="addBlock('text')">
           <span class="palette-icon">¶</span>
           <div><div class="palette-label">Paragraphe</div><div class="palette-desc">Bloc de texte principal</div></div>
         </div>
-        <div class="palette-item" onclick="addBlock('quote')">
+        <div class="palette-item" draggable="true" onclick="addBlock('quote')">
           <span class="palette-icon">"</span>
           <div><div class="palette-label">Citation</div><div class="palette-desc">Mise en avant d'une phrase</div></div>
         </div>
-        <div class="palette-item" onclick="addBlock('image')">
+        <div class="palette-item" draggable="true" onclick="addBlock('image')">
           <span class="palette-icon">🖼</span>
           <div><div class="palette-label">Image</div><div class="palette-desc">Photo + légende optionnelle</div></div>
         </div>
-        <div class="palette-item" onclick="addBlock('separator')">
+        <div class="palette-item" draggable="true" onclick="addBlock('separator')">
           <span class="palette-icon">—</span>
           <div><div class="palette-label">Séparateur</div><div class="palette-desc">Ligne de séparation</div></div>
+        </div>
+        <div class="palette-item" draggable="true" onclick="addBlock('pub')">
+          <span class="palette-icon">📢</span>
+          <div><div class="palette-label">Bandeau pub</div><div class="palette-desc">Image + titre + lien</div></div>
         </div>
       </div>
       <p style="font-size:11px;color:var(--text3);margin-top:10px;text-align:center;">Cliquez sur un bloc pour l'ajouter</p>
@@ -475,795 +505,7 @@ document.addEventListener("click", function(e) {
 <p style="font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;color:#B8956A;text-align:right;letter-spacing:.03em;margin-top:8px;">Mettre notre monde en perspective</p>
 </footer>
 
-<script>
-// ── ÉTAT ─────────────────────────────────────────────────────────────
-var blocks = [];
-var tags = [];
-var unsaved = false;
-var dragSrcType = null;   // 'palette' ou 'block'
-var dragSrcIndex = null;
 
-// ── UTILS ─────────────────────────────────────────────────────────────
-function uid() { return 'b' + Math.random().toString(36).slice(2,8); }
-
-function markUnsaved() {
-  unsaved = true;
-  var dot = document.getElementById('status-dot');
-  var lbl = document.getElementById('save-label');
-  if (dot) dot.classList.remove('saved');
-  if (lbl) lbl.innerHTML = '<span class="status-dot" id="status-dot"></span>Non sauvegardé';
-}
-
-function markSaved() {
-  unsaved = false;
-  var dot = document.getElementById('status-dot');
-  var lbl = document.getElementById('save-label');
-  if (dot) dot.className = 'status-dot saved';
-  if (lbl) lbl.innerHTML = '<span class="status-dot saved" id="status-dot"></span>Sauvegardé';
-}
-
-function toast(msg) {
-  var t = document.getElementById("toast");
-  t.textContent = msg;
-  t.classList.add("show");
-  setTimeout(function(){ t.classList.remove("show"); }, 2200);
-}
-
-function autoResize(el) {
-  el.style.height = 'auto';
-  el.style.height = el.scrollHeight + 'px';
-}
-
-
-// ── STATS ─────────────────────────────────────────────────────────────
-function updateStats() {
-  var allText = document.getElementById('f-titre').value + ' ' + document.getElementById('f-chapeau').value;
-  blocks.forEach(function(b) {
-    if (b.type === 'text' || b.type === 'title' || b.type === 'subtitle' || b.type === 'quote') {
-      var el = document.getElementById('input-' + b.id);
-      if (el) allText += ' ' + el.value;
-    }
-  });
-  allText = allText.trim();
-  var words = allText ? allText.split(/\s+/).filter(function(w){ return w.length > 0; }).length : 0;
-  var chars = allText.replace(/\s/g,'').length;
-  var readMin = Math.max(1, Math.round(words / 200));
-  document.getElementById('stat-words').textContent = words;
-  document.getElementById('stat-blocks').textContent = blocks.length;
-  document.getElementById('stat-chars').textContent = chars;
-  document.getElementById('stat-read').textContent = readMin + "'";
-}
-
-// ── RENDU CANVAS ──────────────────────────────────────────────────────
-function renderCanvas() {
-  var canvas = document.getElementById('canvas');
-
-  // Toujours vider proprement
-  canvas.innerHTML = '';
-
-  if (blocks.length === 0) {
-    var emptyDiv = document.createElement("div");
-    emptyDiv.className = 'canvas-empty';
-    emptyDiv.id = 'canvas-empty';
-    emptyDiv.textContent = 'Cliquez sur un bloc à droite pour construire votre article';
-    canvas.appendChild(emptyDiv);
-    updateStats();
-    return;
-  }
-
-  canvas.appendChild(makeDropSep(0));
-  blocks.forEach(function(block, idx) {
-    canvas.appendChild(makeBlockEl(block, idx));
-    canvas.appendChild(makeDropSep(idx + 1));
-  });
-
-  updateStats();
-}
-
-function makeDropSep(insertIdx) {
-  var div = document.createElement("div");
-  div.className = 'drop-sep';
-  div.dataset.insertIdx = insertIdx;
-  div.addEventListener('dragover', function(e){ e.preventDefault(); this.classList.add('active'); });
-  div.addEventListener('dragleave', function(){ this.classList.remove('active'); });
-  div.addEventListener('drop', function(e){ e.preventDefault(); this.classList.remove('active'); handleDrop(parseInt(this.dataset.insertIdx)); });
-  return div;
-}
-
-function makeBlockEl(block, idx) {
-  var outer = document.createElement("div");
-  outer.className = 'block';
-  outer.id = 'block-' + block.id;
-  outer.draggable = true;
-  outer.dataset.idx = idx;
-
-  // Toolbar
-  var tb = document.createElement("div");
-  tb.className = 'block-toolbar';
-  tb.innerHTML =
-    '<span class="tb-btn drag-handle" title="Déplacer">⠿</span>' +
-    '<button class="tb-btn" title="Monter" onclick="moveBlock(' + idx + ',-1)">↑</button>' +
-    '<button class="tb-btn" title="Descendre" onclick="moveBlock(' + idx + ',1)">↓</button>' +
-    '<button class="tb-btn" title="Dupliquer" onclick="duplicateBlock(' + idx + ')">⎘</button>' +
-    '<button class="tb-btn" title="Supprimer" onclick="removeBlock(' + idx + ')" style="color:#c44">✕</button>';
-  outer.appendChild(tb);
-
-  // Contenu
-  var inner = makeBlockContent(block);
-  outer.appendChild(inner);
-
-  // Drag events sur le bloc
-  outer.addEventListener('dragstart', function(e){
-    dragSrcType = 'block';
-    dragSrcIndex = idx;
-    setTimeout(function(){ outer.classList.add('dragging'); }, 0);
-  });
-  outer.addEventListener('dragend', function(){
-    outer.classList.remove('dragging');
-  });
-
-  return outer;
-}
-
-function makeBlockContent(block) {
-  var wrap = document.createElement("div");
-
-  if (block.type === 'title') {
-    var inp = document.createElement('input');
-    inp.type = 'text';
-    inp.className = 'block-title-el';
-    inp.id = 'input-' + block.id;
-    inp.placeholder = 'Titre de section…';
-    inp.value = block.content || '';
-    inp.addEventListener('input', function(){ block.content = this.value; markUnsaved(); updateStats(); });
-    wrap.appendChild(inp);
-
-  } else if (block.type === 'subtitle') {
-    var inp = document.createElement('input');
-    inp.type = 'text';
-    inp.className = 'block-subtitle-el';
-    inp.id = 'input-' + block.id;
-    inp.placeholder = 'Sous-titre…';
-    inp.value = block.content || '';
-    inp.addEventListener('input', function(){ block.content = this.value; markUnsaved(); updateStats(); });
-    wrap.appendChild(inp);
-
-  } else if (block.type === 'text') {
-    var ta = document.createElement('textarea');
-    ta.className = 'block-text-el';
-    ta.id = 'input-' + block.id;
-    ta.placeholder = 'Rédigez votre paragraphe ici…';
-    ta.value = block.content || '';
-    ta.addEventListener('input', function(){ block.content = this.value; markUnsaved(); updateStats(); autoResize(this); });
-    setTimeout(function(){ autoResize(ta); }, 0);
-    wrap.appendChild(ta);
-
-  } else if (block.type === 'quote') {
-    var qw = document.createElement("div");
-    qw.className = 'block-quote-wrap';
-    var ta = document.createElement('textarea');
-    ta.className = 'block-quote-el';
-    ta.id = 'input-' + block.id;
-    ta.placeholder = '« Citation… »';
-    ta.value = block.content || '';
-    ta.addEventListener('input', function(){ block.content = this.value; markUnsaved(); updateStats(); autoResize(this); });
-    setTimeout(function(){ autoResize(ta); }, 0);
-    qw.appendChild(ta);
-    wrap.appendChild(qw);
-
-  } else if (block.type === 'separator') {
-    var hr = document.createElement('hr');
-    hr.className = 'block-sep-el';
-    wrap.appendChild(hr);
-
-  } else if (block.type === 'image') {
-    var imgWrap = document.createElement("div");
-    imgWrap.className = 'block-img-wrap';
-
-    var dropZone = document.createElement("div");
-    dropZone.className = 'img-drop-zone' + (block.src ? ' has-img' : '');
-    dropZone.id = 'drop-' + block.id;
-
-    var fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/*';
-    fileInput.addEventListener('change', function(e){
-      var file = e.target.files[0];
-      if (!file) return;
-      var reader = new FileReader();
-      reader.onload = function(ev){
-        block.src = ev.target.result;
-        block.filename = file.name;
-        markUnsaved();
-        renderCanvas();
-      };
-      reader.readAsDataURL(file);
-    });
-
-    if (block.src) {
-      var img = document.createElement('img');
-      img.src = block.src;
-      var removeBtn = document.createElement('button');
-      removeBtn.className = 'img-remove-btn';
-      removeBtn.textContent = '✕ Changer';
-      removeBtn.addEventListener('click', function(e){
-        e.preventDefault(); e.stopPropagation();
-        block.src = null; block.filename = null;
-        markUnsaved(); renderCanvas();
-      });
-      dropZone.appendChild(fileInput);
-      dropZone.appendChild(img);
-      dropZone.appendChild(removeBtn);
-    } else {
-      var icon = document.createElement("div");
-      icon.style.fontSize = '28px';
-      icon.style.marginBottom = '8px';
-      icon.textContent = '🖼';
-      var txt = document.createElement("p");
-      txt.className = 'img-placeholder-txt';
-      txt.textContent = 'Cliquez ou glissez une image ici';
-      dropZone.appendChild(fileInput);
-      dropZone.appendChild(icon);
-      dropZone.appendChild(txt);
-    }
-
-    var caption = document.createElement('input');
-    caption.type = 'text';
-    caption.id = 'cap-' + block.id;
-    caption.className = 'img-caption-input';
-    caption.placeholder = 'Légende, source, crédit photo…';
-    caption.value = block.caption || '';
-    caption.addEventListener('input', function(){ block.caption = this.value; markUnsaved(); });
-
-    imgWrap.appendChild(dropZone);
-    imgWrap.appendChild(caption);
-    wrap.appendChild(imgWrap);
-  }
-
-  return wrap;
-}
-
-// ── ACTIONS BLOCS ─────────────────────────────────────────────────────
-function addBlock(type, insertAt) {
-  saveBlockContents(); // sauvegarder le contenu des inputs existants
-  var b = { id: uid(), type: type, content: '', src: null, caption: '' };
-  if (insertAt === undefined) insertAt = blocks.length;
-  blocks.splice(insertAt, 0, b);
-  markUnsaved();
-  renderCanvas();
-  setTimeout(function(){
-    var el = document.getElementById('input-' + b.id);
-    if (el) el.focus();
-  }, 80);
-}
-
-// Sauvegarder le contenu de tous les inputs dans blocks[] avant de recréer le DOM
-function saveBlockContents() {
-  blocks.forEach(function(b) {
-    var el = document.getElementById('input-' + b.id);
-    if (el) b.content = el.value;
-    var cap = document.getElementById('cap-' + b.id);
-    if (cap) b.caption = cap.value;
-  });
-}
-
-function updateBlockIndexes() {} // plus utilisée mais gardée pour éviter les erreurs
-
-function removeBlock(idx) {
-  saveBlockContents();
-  blocks.splice(idx, 1);
-  markUnsaved();
-  renderCanvas();
-}
-
-function moveBlock(idx, dir) {
-  saveBlockContents();
-  var newIdx = idx + dir;
-  if (newIdx < 0 || newIdx >= blocks.length) return;
-  var tmp = blocks[idx];
-  blocks[idx] = blocks[newIdx];
-  blocks[newIdx] = tmp;
-  markUnsaved();
-  renderCanvas();
-}
-
-function duplicateBlock(idx) {
-  saveBlockContents();
-  var orig = blocks[idx];
-  var copy = JSON.parse(JSON.stringify(orig));
-  copy.id = uid();
-  blocks.splice(idx + 1, 0, copy);
-  markUnsaved();
-  renderCanvas();
-}
-
-// ── DRAG & DROP ───────────────────────────────────────────────────────
-function paletteDragStart(e) {
-  dragSrcType = 'palette';
-  dragSrcIndex = null;
-  e.dataTransfer.setData('blockType', e.currentTarget.dataset.type);
-}
-
-function handleDrop(insertIdx) {
-  if (dragSrcType === 'palette') {
-    // Depuis la palette — récupérer le type
-    addBlock(window._lastDragType || 'text', insertIdx);
-  } else if (dragSrcType === 'block' && dragSrcIndex !== null) {
-    // Réorganiser
-    var moved = blocks.splice(dragSrcIndex, 1)[0];
-    var realIdx = dragSrcIndex < insertIdx ? insertIdx - 1 : insertIdx;
-    blocks.splice(realIdx, 0, moved);
-    markUnsaved();
-    renderCanvas();
-  }
-  dragSrcType = null;
-  dragSrcIndex = null;
-}
-
-// Stocker le type au dragstart palette
-document.querySelectorAll('.palette-item').forEach(function(item){
-  item.addEventListener('dragstart', function(e){
-    window._lastDragType = this.dataset.type;
-  });
-  // Clic = ajouter à la fin
-  item.addEventListener('click', function(){
-    addBlock(this.dataset.type);
-  });
-});
-
-// ── TAGS ──────────────────────────────────────────────────────────────
-document.getElementById('tag-input').addEventListener('keydown', function(e){
-  if (e.key !== 'Enter') return;
-  e.preventDefault();
-  var val = this.value.trim();
-  if (!val || tags.indexOf(val) !== -1) return;
-  tags.push(val);
-  this.value = '';
-  renderTags();
-  markUnsaved();
-});
-
-function renderTags() {
-  var wrap = document.getElementById('tags-wrap');
-  wrap.innerHTML = tags.map(function(t, i){
-    return '<span class="tag-item">' + t + '<span class="tag-remove" onclick="removeTag(' + i + ')">×</span></span>';
-  }).join('');
-}
-
-function removeTag(i) {
-  tags.splice(i, 1);
-  renderTags();
-  markUnsaved();
-}
-
-// ── IMAGE TITRE ───────────────────────────────────────────────────────
-var titreImgData = null;
-
-window.handleTitreImg = function(e) {
-  var file = e.target.files[0];
-  if (!file) return;
-  // Compresser l'image via Canvas (max 1200px, qualité 80%)
-  var reader = new FileReader();
-  reader.onload = function(ev) {
-    var img = new Image();
-    img.onload = function() {
-      var canvas = document.createElement('canvas');
-      var maxW = 1200, maxH = 800;
-      var w = img.width, h = img.height;
-      if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
-      if (h > maxH) { w = Math.round(w * maxH / h); h = maxH; }
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      titreImgData = canvas.toDataURL('image/jpeg', 0.80);
-      document.getElementById('titre-img-el').src = titreImgData;
-      document.getElementById('titre-img-preview').style.display = "block";
-      document.getElementById('titre-img-placeholder').style.display = "none";
-      document.getElementById('titre-img-drop').style.borderColor = "var(--violet-m)";
-      document.getElementById('titre-img-drop').style.borderStyle = 'solid';
-      var sizeKb = Math.round(titreImgData.length * 0.75 / 1024);
-      document.getElementById('titre-img-size') && (document.getElementById('titre-img-size').textContent = sizeKb + ' Ko');
-      markUnsaved();
-    };
-    img.src = ev.target.result;
-  };
-  reader.readAsDataURL(file);
-};
-
-window.removeTitreImg = function(e) {
-  e.stopPropagation();
-  titreImgData = null;
-  document.getElementById('titre-img-el').src = '';
-  document.getElementById('titre-img-preview').style.display = "none";
-  document.getElementById('titre-img-placeholder').style.display = "block";
-  document.getElementById('titre-img-drop').style.borderColor = 'var(--line2)';
-  document.getElementById('titre-img-drop').style.borderStyle = 'dashed';
-  document.getElementById('titre-img-input').value = '';
-  markUnsaved();
-};
-
-// ── PRÉVISUALISATION ──────────────────────────────────────────────────
-window.openPreview = function() {
-  saveBlockContents();
-  var titre   = document.getElementById('f-titre').value || 'Sans titre';
-  var chapeau = document.getElementById('f-chapeau').value || '';
-  var rubrique = document.getElementById('f-rubrique').value || '';
-  var duree   = document.getElementById('f-duree').value || '';
-  var legende = document.getElementById('f-img-legende') ? document.getElementById('f-img-legende').value : '';
-  var conflictEl = document.querySelector('input[name="article-conflict"]:checked');
-  var conflict = conflictEl ? conflictEl.value : 'none';
-  var conflictTxt = document.getElementById('f-conflict-txt') ? document.getElementById('f-conflict-txt').value : '';
-
-  // Auteur
-  var auteurSel = document.getElementById('f-auteur-select');
-  var auteurLabel = auteurSel && auteurSel.selectedIndex > 0
-    ? auteurSel.options[auteurSel.selectedIndex].text.split(' (')[0]
-    : '';
-
-  // Construire le contenu HTML
-  var html = '';
-  if (rubrique) html += '<p class="pm-cat">' + rubrique + '</p>';
-  html += '<h1 class="pm-titre">' + titre + '</h1>';
-  if (auteurLabel || duree) {
-    html += '<p class="pm-meta">';
-    if (auteurLabel) html += '<b>' + auteurLabel + '</b> &nbsp;·&nbsp; ';
-    html += new Date().toLocaleDateString("fr-FR", {day:"numeric",month:"long",year:"numeric"});
-    if (duree) html += ' &nbsp;·&nbsp; ' + duree + ' de lecture';
-    html += '</p>';
-  }
-  if (titreImgData) {
-    html += '<img class="pm-img" src="' + titreImgData + '" alt="Image principale">';
-    if (legende) html += '<p class="pm-legende">' + legende + '</p>';
-  }
-  if (chapeau) html += '<p class="pm-chapeau">' + chapeau + '</p>';
-
-  // Blocs
-  blocks.forEach(function(b) {
-    if (b.type === 'title') {
-      html += '<h2 class="pm-block-title">' + (b.content||'') + '</h2>';
-    } else if (b.type === 'subtitle') {
-      html += '<h3 class="pm-block-subtitle">' + (b.content||'') + '</h3>';
-    } else if (b.type === 'text') {
-      html += '<p class="pm-block-text">' + (b.content||'').replace(/\n/g, '</p><p class="pm-block-text">') + '</p>';
-    } else if (b.type === 'quote') {
-      html += '<blockquote class="pm-block-quote">' + (b.content||'') + '</blockquote>';
-    } else if (b.type === 'separator') {
-      html += '<hr class="pm-block-sep">';
-    } else if (b.type === 'image' && b.src) {
-      html += '<img class="pm-block-img" src="' + b.src + '" alt="">';
-      if (b.caption) html += '<p class="pm-legende">' + b.caption + '</p>';
-    }
-  });
-
-  // Conflit
-  if (conflict === 'none') {
-    html += '<div class="pm-conflict"><span>✓</span><span>L\'auteur(e) d\u00e9clare ne pas avoir de conflit d\u2019int\u00e9r\u00eats avec le sujet trait\u00e9 dans l\u2019article.</span></div>';
-  } else if (conflictTxt) {
-    html += '<div class="pm-conflict" style="border-color:#E8C4B8;background:#FDF3F0;color:#5C2A1A;"><span>\u26a0</span><span><strong>Conflit d\u2019int\u00e9r\u00eat d\u00e9clar\u00e9 :</strong> ' + conflictTxt + '</span></div>';
-  }
-
-  document.getElementById("pm-body").innerHTML = html;
-  document.getElementById("preview-modal").classList.add("show");
-  document.body.style.overflow = 'hidden';
-};
-
-window.closePreview = function() {
-  document.getElementById("preview-modal").classList.remove("show");
-  document.body.style.overflow = '';
-};
-function saveDraft(silent) {
-  saveBlockContents(); // toujours sauvegarder le contenu des inputs d'abord
-  try {
-    var conflictEl = document.querySelector('input[name="article-conflict"]:checked');
-    localStorage.setItem('euclide_draft', JSON.stringify({
-      titre:       document.getElementById('f-titre').value,
-      chapeau:     document.getElementById('f-chapeau').value,
-      auteurId:    document.getElementById('f-auteur-select') ? document.getElementById('f-auteur-select').value : '',
-      rubrique:    document.getElementById('f-rubrique').value,
-      duree:       document.getElementById('f-duree').value,
-      importance:  document.getElementById('f-importance').value,
-      conflict:    conflictEl ? conflictEl.value : 'none',
-      conflictTxt: document.getElementById('f-conflict-txt') ? document.getElementById('f-conflict-txt').value : '',
-      tags:        tags,
-      blocks:      blocks,
-      coauthors:   selectedCoauthors
-    }));
-  } catch(e) {}
-  markSaved();
-  if (!silent) toast('✓ Brouillon sauvegardé');
-}
-
-function loadDraft() {
-  try {
-    var raw = localStorage.getItem('euclide_draft');
-    if (!raw) return;
-    var d = JSON.parse(raw);
-    if (document.getElementById('f-titre'))    document.getElementById('f-titre').value = d.titre || '';
-    if (document.getElementById('f-chapeau'))  { document.getElementById('f-chapeau').value = d.chapeau || ''; autoResize(document.getElementById('f-chapeau')); }
-    if (d.rubrique && document.getElementById('f-rubrique'))   document.getElementById('f-rubrique').value = d.rubrique;
-    if (d.duree    && document.getElementById('f-duree'))      document.getElementById('f-duree').value = d.duree;
-    if (d.importance && document.getElementById('f-importance')) document.getElementById('f-importance').value = d.importance;
-    if (d.conflictTxt && document.getElementById('f-conflict-txt')) document.getElementById('f-conflict-txt').value = d.conflictTxt;
-    tags             = d.tags       || [];
-    blocks           = d.blocks     || [];
-    selectedCoauthors = d.coauthors || [];
-    renderTags();
-    renderCanvas();
-    renderCoauthors();
-    markSaved();
-    if (blocks.length > 0 || d.titre) toast('Brouillon restauré ✓');
-  } catch(e) {}
-}
-
-// Autosauvegarde toutes les 15 secondes si modifications non sauvegardées
-setInterval(function() {
-  if (unsaved) saveDraft(true);
-}, 15000);
-
-// Sauvegarder avant de quitter la page
-window.addEventListener('beforeunload', function() {
-  if (unsaved) saveDraft(true);
-});
-
-function submitArticle() {
-  if (!document.getElementById('f-titre').value.trim()) {
-    toast('\u26a0 Veuillez entrer un titre'); return;
-  }
-  if (!titreImgData) {
-    toast('\u26a0 L\'image principale est obligatoire'); return;
-  }
-  if (!document.getElementById('f-rubrique').value) {
-    toast('\u26a0 Veuillez choisir une rubrique'); return;
-  }
-  saveBlockContents();
-
-  // Récupérer les données
-  var titre    = document.getElementById('f-titre').value.trim();
-  var chapeau  = document.getElementById('f-chapeau').value.trim();
-  var rubrique = document.getElementById('f-rubrique').value;
-  var duree    = document.getElementById('f-duree').value;
-  var importance = document.getElementById('f-importance').value;
-  var legende  = document.getElementById('f-img-legende') ? document.getElementById('f-img-legende').value : '';
-  var conflictEl = document.querySelector('input[name="article-conflict"]:checked');
-  var conflict   = conflictEl ? conflictEl.value : 'none';
-  var conflictTxt = document.getElementById('f-conflict-txt') ? document.getElementById('f-conflict-txt').value : '';
-  var auteurSel  = document.getElementById('f-auteur-select');
-  var auteurId   = auteurSel ? auteurSel.value : '';
-  var auteurNom  = auteurSel && auteurSel.selectedIndex > 0 ? auteurSel.options[auteurSel.selectedIndex].text.split(' (')[0] : '';
-
-  var articleData = {
-    titre, chapeau, rubrique, duree, importance,
-    imageTitre: titreImgData,
-    imageLegende: legende,
-    auteurId, auteurNom,
-    coauteurs: selectedCoauthors,
-    conflict, conflictTxt,
-    tags: tags,
-    blocks: blocks,
-    statut: "soumis",
-    soumisLe: new Date()
-  };
-
-  // Générer l'ID au format YYYYMMDDHHMM
-  var now = new Date();
-  var pad = function(n){ return String(n).padStart(2,'0'); };
-  var articleId = now.getFullYear()
-    + pad(now.getMonth()+1)
-    + pad(now.getDate())
-    + pad(now.getHours())
-    + pad(now.getMinutes());
-
-  // Sauvegarder dans Firestore
-  var btn = document.querySelector('.btn-submit');
-  if (btn) { btn.disabled = true; btn.textContent = 'Envoi…'; }
-
-  // Utiliser le module Firebase déjà chargé
-  if (window._db && window._collection) {
-    import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js").then(function(fs) {
-      var docRef = fs.doc(window._db, "articles", articleId);
-      return fs.setDoc(docRef, articleData);
-    }).then(function() {
-      if (btn) { btn.disabled = false; btn.textContent = 'Soumettre \u2192'; }
-      try { localStorage.removeItem('euclide_draft'); } catch(e) {}
-      document.getElementById('success-overlay').classList.add("show");
-      toast('\u2713 Article soumis ! ID : ' + articleId);
-    }).catch(function(e) {
-      if (btn) { btn.disabled = false; btn.textContent = 'Soumettre \u2192'; }
-      toast('\u26a0 Erreur : ' + e.message);
-    });
-  } else {
-    // Firebase pas encore prêt, réessayer dans 1s
-    setTimeout(function() {
-      if (btn) { btn.disabled = false; btn.textContent = 'Soumettre →'; }
-      toast('⚠ Firebase non prêt, réessayez');
-    }, 1000);
-  }
-}
-
-function resetEditor() {
-  blocks = []; tags = [];
-  try { localStorage.removeItem('euclide_draft'); } catch(e) {}
-  document.getElementById('f-titre').value = '';
-  document.getElementById('f-chapeau').value = '';
-  document.getElementById('f-auteur').value = '';
-  document.getElementById('f-institution').value = '';
-  document.getElementById('f-rubrique').selectedIndex = 0;
-  document.getElementById('f-importance').selectedIndex = 0;
-  document.getElementById('f-conflict-txt').value = '';
-  document.querySelector('input[name=conflict][value=none]').checked = true;
-  toggleConflict(false);
-  renderTags();
-  renderCanvas();
-  document.getElementById('success-overlay').classList.remove("show");
-  markSaved();
-}
-
-// Autosave géré plus haut (toutes les 15s + beforeunload)
-
-// Init
-loadDraft();
-if (blocks.length === 0) renderCanvas();
-// populateAuthorSelects est appelé depuis onAuthStateChanged
-
-// ── AUTEURS ──────────────────────────────────────────────────────────
-var selectedCoauthors = [];
-var _allAuthors = [];
-
-async function populateAuthorSelects() {
-  const mainSel = document.getElementById('f-auteur-select');
-  const coSel   = document.getElementById('f-coauteur-select');
-  while (mainSel.options.length > 1) mainSel.remove(1);
-  while (coSel.options.length > 1)  coSel.remove(1);
-  try {
-    const db = window._db;
-    if (!db) { console.warn('DB pas encore prete'); return; }
-    const { getDocs, collection, getDoc, doc } =
-      await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-
-    // 1. Auteurs depuis Firestore
-    const aSnap = await getDocs(collection(db, "auteurs"));
-    _allAuthors = aSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-    // 2. Utilisateur connecté (lui-même) — s'il est rédacteur ou admin
-    const { getAuth } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
-    const user = getAuth().currentUser;
-    if (user) {
-      const uSnap = await getDoc(doc(db, "users", user.uid));
-      if (uSnap.exists()) {
-        const u = uSnap.data();
-        const WRITER_ROLES = ["super-admin","moderateur-redaction","redacteur"];
-        if (WRITER_ROLES.includes(u.role)) {
-          const exists = _allAuthors.find(a => a.prenom === u.prenom && a.nom === u.nom);
-          if (!exists) {
-            _allAuthors.push({
-              id: 'user_' + user.uid,
-              prenom: u.prenom, nom: u.nom,
-              institutions: ["L'Oeil d'Euclide"],
-              themes: [u.role === "super-admin" ? 'Administration' : 'Redaction'],
-              desc: u.role === "super-admin" ? 'Super-administrateur du site.' : 'Redacteur du site.'
-            });
-          }
-        }
-      }
-    }
-  } catch(e) { console.warn('Erreur chargement auteurs:', e); _allAuthors = []; }
-
-  _allAuthors.forEach(a => {
-    const label = a.prenom + ' ' + a.nom + (a.institutions && a.institutions.length ? ' (' + a.institutions[0] + ')' : '');
-    mainSel.appendChild(new Option(label, a.id));
-    coSel.appendChild(new Option(label, a.id));
-  });
-}
-
-function getAuthorById(id) { return _allAuthors.find(a=>a.id===id)||null; }
-window.populateAuthorSelects = populateAuthorSelects;
-
-function selectAuthor() {
-  var id = document.getElementById('f-auteur-select').value;
-  var preview = document.getElementById('author-preview');
-  var banner = document.getElementById('conflict-banner');
-  if (!id) {
-    preview.style.display = "none";
-    banner.style.display = "none";
-    return;
-  }
-  var a = getAuthorById(id);
-  if (!a) return;
-
-  // Preview auteur
-  preview.style.display = "block";
-  document.getElementById('ap-name').textContent = a.prenom + ' ' + a.nom;
-  document.getElementById('ap-institutions').textContent = (a.institutions||[]).join(' · ');
-  document.getElementById('ap-themes').innerHTML = (a.themes||[]).map(function(t){
-    return '<span style="font-size:10px;color:#B8956A;background:#EDE0CC;padding:2px 7px;border-radius:2px;">' + t + '</span>';
-  }).join('');
-
-  // Bandeau conflit automatique
-  banner.style.display = 'flex';
-  if (a.conflict === 'none') {
-    banner.style.background = '#EAF5EE';
-    banner.style.borderColor = '#B8DEC4';
-    banner.style.color = '#1A5C32';
-    var genre = a.prenom.slice(-1).toLowerCase() === 'e' ? "L'autrice" : "L'auteur";
-    banner.innerHTML = '<span style="font-size:16px;flex-shrink:0">\u2713</span><span>' + genre + ' d\u00e9clare ne pas avoir de conflit d\u2019int\u00e9r\u00eats avec le sujet trait\u00e9 dans l\u2019article.</span>';
-  } else {
-    banner.style.background = '#FDF3F0';
-    banner.style.borderColor = '#E8C4B8';
-    banner.style.color = '#5C2A1A';
-    banner.innerHTML = '<span style="font-size:16px;flex-shrink:0">\u26a0</span><span><strong>Conflit d\u2019int\u00e9r\u00eat d\u00e9clar\u00e9 :</strong> ' + (a.conflictTxt || 'Voir fiche auteur') + '</span>';
-  }
-  // Afficher la section conflit
-  document.getElementById('conflict-section').style.display = "block";
-  updateConflictBanner();
-  markUnsaved();
-}
-
-function updateConflictBanner() {
-  var authorId = document.getElementById('f-auteur-select').value;
-  var a = getAuthorById(authorId);
-  if (!a) return;
-
-  var conflict = document.querySelector('input[name="article-conflict"]:checked').value;
-  var conflictTxt = document.getElementById('f-conflict-txt').value.trim();
-  var detailWrap = document.getElementById('conflict-detail-wrap');
-  var preview = document.getElementById('conflict-preview');
-  var optNo = document.getElementById('opt-no-conflict');
-  var optYes = document.getElementById('opt-yes-conflict');
-
-  // Afficher/cacher le champ détail
-  detailWrap.style.display = conflict === 'declared' ? 'block' : 'none';
-
-  // Styles des options
-  optNo.style.borderColor = conflict === 'none' ? '#B8DEC4' : 'var(--line2)';
-  optNo.style.background = conflict === 'none' ? '#EAF5EE' : '';
-  optYes.style.borderColor = conflict === 'declared' ? '#E8C4B8' : 'var(--line2)';
-  optYes.style.background = conflict === 'declared' ? '#FDF3F0' : '';
-
-  // Bandeau preview
-  var genre = a.prenom.slice(-1).toLowerCase() === 'e' ? "L'autrice" : "L'auteur";
-  if (conflict === 'none') {
-    preview.style.background = '#EAF5EE';
-    preview.style.borderColor = '#B8DEC4';
-    preview.style.color = '#1A5C32';
-    preview.innerHTML = '<span style="font-size:16px;flex-shrink:0">\u2713</span><span>' + genre + ' d\u00e9clare ne pas avoir de conflit d\u2019int\u00e9r\u00eats avec le sujet trait\u00e9 dans l\u2019article.</span>';
-  } else {
-    preview.style.background = '#FDF3F0';
-    preview.style.borderColor = '#E8C4B8';
-    preview.style.color = '#5C2A1A';
-    preview.innerHTML = '<span style="font-size:16px;flex-shrink:0">\u26a0</span><div><strong>Conflit d\u2019int\u00e9r\u00eat d\u00e9clar\u00e9</strong>' + (conflictTxt ? ' : ' + conflictTxt : ' \u2014 veuillez pr\u00e9ciser ci-dessus.') + '</div>';
-  }
-}
-
-function addCoauthor() {
-  var sel = document.getElementById('f-coauteur-select');
-  var id = sel.value;
-  if (!id) return;
-  if (selectedCoauthors.indexOf(id) !== -1) { sel.value = ''; return; }
-  // Ne pas ajouter l'auteur principal
-  if (id === document.getElementById('f-auteur-select').value) { sel.value = ''; return; }
-  selectedCoauthors.push(id);
-  sel.value = '';
-  renderCoauthors();
-  markUnsaved();
-}
-
-function removeCoauthor(id) {
-  selectedCoauthors = selectedCoauthors.filter(function(x){ return x !== id; });
-  renderCoauthors();
-  markUnsaved();
-}
-
-function renderCoauthors() {
-  var authors = _allAuthors;
-  var list = document.getElementById('coauthors-list');
-  list.innerHTML = selectedCoauthors.map(function(id) {
-    var a = authors.find(function(x){ return x.id === id; });
-    if (!a) return '';
-    return '<span style="font-size:12px;background:var(--beige3);border:1px solid var(--line);border-radius:2px;padding:4px 10px;display:flex;align-items:center;gap:6px;">' +
-      a.prenom + ' ' + a.nom +
-      '<span onclick="removeCoauthor(\'' + id + '\')" style="cursor:pointer;opacity:.5;font-size:14px;">\u00d7</span></span>';
-  }).join('');
-}
-</script>
 
 
 <script type="module">
@@ -1314,6 +556,46 @@ onAuthStateChanged(_au2, async function(user) {
     var snap = await getDoc(doc(_db3, "users", user.uid));
     if (!snap.exists()) return;
     buildBurger(snap.data(), _au2, signOut);
+    await populateAuthorSelects();
+
+    // Mode édition : charger l'article existant
+    var editId = new URLSearchParams(window.location.search).get('edit');
+    if (editId) {
+      try {
+        var artSnap = await getDoc(doc(_db3, 'articles', editId));
+        if (artSnap.exists()) {
+          var a = artSnap.data();
+          // Remplir les champs
+          document.getElementById('f-titre').value = a.titre || '';
+          if (document.getElementById('f-chapeau')) document.getElementById('f-chapeau').value = a.chapeau || '';
+          if (document.getElementById('f-rubrique')) document.getElementById('f-rubrique').value = a.rubrique || '';
+          if (document.getElementById('f-duree')) document.getElementById('f-duree').value = a.duree || '';
+          // Image
+          if (a.imageTitre) {
+            titreImgData = a.imageTitre;
+            var imgEl = document.getElementById('titre-img-el');
+            if (imgEl) { imgEl.src = a.imageTitre; }
+            var prev = document.getElementById('titre-img-preview');
+            if (prev) prev.style.display = 'block';
+            var ph = document.getElementById('titre-img-placeholder');
+            if (ph) ph.style.display = 'none';
+          }
+          // Blocs
+          if (a.blocks && a.blocks.length) {
+            blocks = a.blocks.map(function(b, i) {
+              return { id: 'b' + Date.now() + i, type: b.type, content: b.content || '' };
+            });
+            renderCanvas();
+          }
+          // Changer le titre du bouton
+          var btnSubmit = document.querySelector('.btn-submit');
+          if (btnSubmit) btnSubmit.textContent = 'Mettre à jour \u2192';
+          var pageTitle = document.querySelector('h1');
+          if (pageTitle) pageTitle.textContent = "Modifier l'article";
+          toast('\u2713 Article chargé — mode édition');
+        }
+      } catch(e) { console.error('Erreur chargement article:', e); }
+    }
   } catch(e) { console.error(e); }
 });
 </script>
