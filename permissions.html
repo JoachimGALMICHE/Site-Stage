@@ -139,6 +139,7 @@ nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
 
 
 
+
 <script>
 window._toggleBurger = function() {
   var m = document.getElementById("burger-menu");
@@ -158,7 +159,7 @@ document.addEventListener("click", function(e) {
 window.buildBurger = function(p, auth, signOutFn) {
   var el = document.getElementById("topbar-right");
   if (!el) return;
-  var RL = {"super-admin":"Super-administrateur","moderateur-redaction":"Moderateur redaction","redacteur":"Redacteur","moderateur-comments":"Moderateur commentaires","lecteur-commentateur":"Lecteur+","lecteur":"Lecteur"};
+  var RL = {"super-admin":"Super-administrateur","moderateur-redaction":"Moderateur","redacteur":"Redacteur","moderateur-comments":"Mod.commentaires","lecteur-commentateur":"Lecteur+","lecteur":"Lecteur"};
   var isSA=(p.role==="super-admin"), isMod=isSA||(p.role==="moderateur-redaction"), isW=isMod||(p.role==="redacteur");
   var menu=document.createElement("div"); menu.id="burger-menu";
   menu.style.cssText="display:none;position:absolute;top:100%;right:0;min-width:210px;background:#2A2A3E;border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.4);z-index:9999;padding:6px 0;";
@@ -172,7 +173,6 @@ window.buildBurger = function(p, auth, signOutFn) {
   if(isSA){sep();row("gestion-comptes.html","Comptes");row("auteurs.html","Auteurs");row("permissions.html","Permissions");}
   sep();
   var dBtn=document.createElement("button");dBtn.textContent="Deconnexion";dBtn.style.cssText="display:block;width:100%;text-align:left;padding:9px 20px;font-size:13px;color:rgba(255,255,255,.85);background:none;border:none;cursor:pointer;font-family:inherit;";
-  dBtn.onmouseover=function(){this.style.background="rgba(255,255,255,.07)";};dBtn.onmouseout=function(){this.style.background="";};
   dBtn.onclick=function(){signOutFn(auth).then(function(){window.location.href="connexion.html";});};
   menu.appendChild(dBtn);
   var bBtn=document.createElement("button");bBtn.id="burger-btn";bBtn.onclick=window._toggleBurger;
@@ -235,31 +235,26 @@ window.buildBurger = function(p, auth, signOutFn) {
     </div>
   </div>
 
-  <div class="save-bar">
-    <p class="save-status" id="save-status">Modifications non enregistrées</p>
+  <div class="save-bar" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+    <p class="save-status" id="save-status" style="font-size:12px;color:var(--text3);">Chargement…</p>
+    <button onclick="window.savePerms()" style="background:var(--violet);color:#fff;border:none;padding:8px 20px;font-size:12px;font-weight:500;cursor:pointer;border-radius:2px;font-family:'DM Sans',sans-serif;">Enregistrer</button>
   </div>
 
   <div class="table-wrap">
     <table id="perms-table">
       <thead>
         <tr>
-          <th>Permission</th>
-          <th class="role-th"><span class="role-name">Super-admin</span><span class="role-badge">Accès total</span></th>
-          <th class="role-th"><span class="role-name">Mod. rédaction</span><span class="role-badge">Contenu</span></th>
-          <th class="role-th"><span class="role-name">Rédacteur</span><span class="role-badge">Écriture</span></th>
-          <th class="role-th"><span class="role-name">Mod. commentaires</span><span class="role-badge">Modération</span></th>
-          <th class="role-th"><span class="role-name">Lecteur-comment.</span><span class="role-badge">Communauté</span></th>
-          <th class="role-th"><span class="role-name">Lecteur</span><span class="role-badge">Consultation</span></th>
+          <th style="text-align:left;padding:12px 16px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);border-bottom:2px solid var(--line);min-width:180px;">Permission</th>
+          <th style="text-align:center;padding:14px 16px;font-size:13px;font-weight:600;color:#fff;background:var(--violet);border-bottom:2px solid var(--violet);">Super-admin</th>
+          <th style="text-align:center;padding:14px 16px;font-size:13px;font-weight:600;color:#fff;background:var(--violet);border-bottom:2px solid var(--violet);">Mod. rédaction</th>
+          <th style="text-align:center;padding:14px 16px;font-size:13px;font-weight:600;color:#fff;background:var(--violet);border-bottom:2px solid var(--violet);">Rédacteur</th>
+          <th style="text-align:center;padding:14px 16px;font-size:13px;font-weight:600;color:#fff;background:var(--violet);border-bottom:2px solid var(--violet);">Mod. commentaires</th>
+          <th style="text-align:center;padding:14px 16px;font-size:13px;font-weight:600;color:#fff;background:var(--violet);border-bottom:2px solid var(--violet);">Lecteur-comment.</th>
+          <th style="text-align:center;padding:14px 16px;font-size:13px;font-weight:600;color:#fff;background:var(--violet);border-bottom:2px solid var(--violet);">Lecteur</th>
         </tr>
       </thead>
-      <tbody id="perms-body">
-        <!-- Rempli par JS -->
-      </tbody>
+      <tbody id="perms-body"></tbody>
     </table>
-  </div>
-
-  <div class="legend">
-    <div class="legend-item"><div class="legend-dot leg-free"></div> Toutes les cases sont modifiables librement</div>
   </div>
 
 </div>
@@ -273,37 +268,81 @@ window.buildBurger = function(p, auth, signOutFn) {
 </footer>
 
 
+
+
 <script>
+var PERMS_DATA = {
+  "super-admin":          {lire:1,commenter:1,ecrire:1,soumettre:1,moderer:1,publier:1,gerer:1},
+  "moderateur-redaction": {lire:1,commenter:1,ecrire:1,soumettre:1,moderer:1,publier:1,gerer:0},
+  "redacteur":            {lire:1,commenter:1,ecrire:1,soumettre:1,moderer:0,publier:0,gerer:0},
+  "moderateur-comments":  {lire:1,commenter:1,ecrire:0,soumettre:0,moderer:0,publier:0,gerer:0},
+  "lecteur-commentateur": {lire:1,commenter:1,ecrire:0,soumettre:0,moderer:0,publier:0,gerer:0},
+  "lecteur":              {lire:1,commenter:0,ecrire:0,soumettre:0,moderer:0,publier:0,gerer:0},
+};
+var ROLES_LIST = [
+  {slug:"super-admin",           label:"Super-admin",        fixed:true},
+  {slug:"moderateur-redaction",  label:"Mod. rédaction",     fixed:false},
+  {slug:"redacteur",             label:"Rédacteur",          fixed:false},
+  {slug:"moderateur-comments",   label:"Mod. commentaires",  fixed:false},
+  {slug:"lecteur-commentateur",  label:"Lecteur-comment.",   fixed:false},
+  {slug:"lecteur",               label:"Lecteur",            fixed:false},
+];
+var COLS = [
+  {k:"lire",      l:"Lire les articles"},
+  {k:"commenter", l:"Commenter"},
+  {k:"ecrire",    l:"Écrire un article"},
+  {k:"soumettre", l:"Soumettre"},
+  {k:"moderer",   l:"Modérer"},
+  {k:"publier",   l:"Publier"},
+  {k:"gerer",     l:"Administrer"},
+];
+
 function renderTable() {
-  var ROLES = [
-    {label:"Super-administrateur", perms:{lire:1,commenter:1,ecrire:1,moderer:1,publier:1,admin:1}},
-    {label:"Mod. de redaction",     perms:{lire:1,commenter:1,ecrire:1,moderer:1,publier:1,admin:0}},
-    {label:"Redacteur",             perms:{lire:1,commenter:1,ecrire:1,moderer:0,publier:0,admin:0}},
-    {label:"Mod. commentaires",     perms:{lire:1,commenter:1,ecrire:0,moderer:0,publier:0,admin:0}},
-    {label:"Lecteur-commentateur",  perms:{lire:1,commenter:1,ecrire:0,moderer:0,publier:0,admin:0}},
-    {label:"Lecteur",               perms:{lire:1,commenter:0,ecrire:0,moderer:0,publier:0,admin:0}},
-  ];
-  var COLS = [
-    {k:"lire",l:"Lire"},
-    {k:"commenter",l:"Commenter"},
-    {k:"ecrire",l:"Ecrire"},
-    {k:"moderer",l:"Moderer"},
-    {k:"publier",l:"Publier"},
-    {k:"admin",l:"Admin"}
-  ];
   var tbody = document.getElementById("perms-body");
   if (!tbody) return;
-  var rows = "";
-  ROLES.forEach(function(role) {
-    rows += "<tr><td style=\"padding:12px 16px;font-weight:500;color:var(--violet);border-bottom:1px solid var(--line);\">" + role.label + "</td>";
-    COLS.forEach(function(col) {
-      var ok = role.perms[col.k];
-      rows += "<td style=\"text-align:center;padding:12px 16px;border-bottom:1px solid var(--line);color:" + (ok ? "#1A5C32" : "#8A8A9A") + ";font-size:18px;\">" + (ok ? "&#10003;" : "&#8211;") + "</td>";
-    });
-    rows += "</tr>";
-  });
-  tbody.innerHTML = rows;
+  // Lignes = permissions, colonnes = rôles
+  tbody.innerHTML = COLS.map(function(col, ci) {
+    var bg = ci % 2 === 0 ? "var(--beige)" : "var(--beige2)";
+    return "<tr style=\"background:"+bg+"\">"
+      + "<td style=\"padding:10px 16px;font-weight:500;color:var(--text);border-bottom:1px solid var(--line);\">" + col.l + "</td>"
+      + ROLES_LIST.map(function(role) {
+          var ok = PERMS_DATA[role.slug] ? PERMS_DATA[role.slug][col.k] : 0;
+          if (role.fixed) {
+            return "<td style=\"text-align:center;padding:10px 16px;border-bottom:1px solid var(--line);\"><span style=\"color:#1A5C32;font-size:18px;\">✓</span></td>";
+          }
+          return "<td style=\"text-align:center;padding:10px 16px;border-bottom:1px solid var(--line);\">"
+            + "<input type=\"checkbox\" " + (ok?"checked":"") + " "
+            + "onchange=\"togglePerm('"+role.slug+"','"+col.k+"',this.checked)\" "
+            + "style=\"width:16px;height:16px;cursor:pointer;accent-color:var(--violet-m);\">"
+            + "</td>";
+        }).join("")
+      + "</tr>";
+  }).join("");
+  var statusEl = document.getElementById("save-status");
+  if (statusEl) { statusEl.textContent = "À jour"; statusEl.style.color = "var(--text3)"; }
 }
+
+function togglePerm(slug, key, val) {
+  if (!PERMS_DATA[slug]) PERMS_DATA[slug] = {};
+  PERMS_DATA[slug][key] = val ? 1 : 0;
+  var statusEl = document.getElementById("save-status");
+  if (statusEl) { statusEl.textContent = "Modifications non enregistrées"; statusEl.style.color = "var(--violet-m)"; }
+}
+
+window.savePerms = function() {
+  // Sauvegarder dans localStorage pour persistance locale
+  try {
+    localStorage.setItem("euclide_perms", JSON.stringify(PERMS_DATA));
+    var statusEl = document.getElementById("save-status");
+    if (statusEl) { statusEl.textContent = "Sauvegardé ✓"; statusEl.style.color = "#1A5C32"; }
+  } catch(e) { alert("Erreur sauvegarde: " + e.message); }
+};
+
+// Charger les perms sauvegardées
+try {
+  var saved = localStorage.getItem("euclide_perms");
+  if (saved) PERMS_DATA = JSON.parse(saved);
+} catch(e) {}
 </script>
 
 <script type="module">

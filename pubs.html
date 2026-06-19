@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Base publicitaire — L'Œil d'Euclide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--beige:#F2EDE4;--beige2:#EAE4D8;--beige3:#DED6C8;--violet:#1C1C2E;--violet2:#2A2A3E;--violet-m:#B8956A;--violet-l:#D4B896;--violet-xl:#EDE0CC;--text:#1C1C2E;--text2:#3A3A4E;--text3:#8A8A9A;--line:#D8D0C4;--line2:#C8BEB0;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:"DM Sans",sans-serif;background:var(--beige);color:var(--text);}
+a{color:inherit;text-decoration:none;}
+#topbar{background:var(--violet);color:var(--violet-l);padding:6px 40px;font-size:11px;display:flex;justify-content:space-between;align-items:center;position:relative;}
+header{padding:28px 40px 0;border-bottom:1px solid var(--line2);}
+.site-name{font-family:"Cormorant Garamond",serif;font-size:60px;font-weight:300;letter-spacing:-3px;line-height:1;color:var(--violet);}
+nav a{display:inline-block;padding:12px 16px;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);}
+nav a:first-child{padding-left:0;}
+nav a:hover{color:var(--violet);}
+.page-wrap{max-width:1100px;margin:0 auto;padding:40px;}
+h1{font-family:"Cormorant Garamond",serif;font-size:42px;font-weight:300;color:var(--violet);margin-bottom:8px;}
+.sub{font-size:13px;color:var(--text3);margin-bottom:28px;}
+.toolbar{display:flex;justify-content:flex-end;margin-bottom:20px;}
+.btn{display:inline-block;padding:9px 20px;font-family:"DM Sans",sans-serif;font-size:12px;font-weight:500;cursor:pointer;border-radius:2px;border:none;}
+.btn-primary{background:var(--violet);color:#fff;}
+.btn-primary:hover{background:var(--violet2);}
+.btn-danger{background:#c0392b;color:#fff;}
+.btn-ghost{background:transparent;border:1px solid var(--line2);color:var(--text2);}
+.btn-ghost:hover{border-color:var(--violet-m);color:var(--violet-m);}
+.pubs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;}
+.pub-card{background:#fff;border:1px solid var(--line);border-radius:4px;overflow:hidden;}
+.pub-thumb{width:100%;height:140px;object-fit:cover;display:block;background:var(--beige2);}
+.pub-thumb-empty{width:100%;height:140px;background:var(--beige3);display:flex;align-items:center;justify-content:center;font-size:28px;}
+.pub-body{padding:16px;}
+.pub-name{font-size:15px;font-weight:500;color:var(--violet);margin-bottom:4px;}
+.pub-desc{font-size:12px;color:var(--text3);margin-bottom:8px;line-height:1.4;}
+.pub-lien{font-size:11px;color:var(--violet-m);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;margin-bottom:12px;}
+.pub-actions{display:flex;gap:8px;}
+.empty-state{text-align:center;padding:60px;color:var(--text3);font-size:14px;}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(28,28,46,.6);z-index:500;align-items:center;justify-content:center;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--beige);border-radius:6px;width:100%;max-width:520px;padding:32px;max-height:90vh;overflow-y:auto;}
+.modal h2{font-family:"Cormorant Garamond",serif;font-size:28px;font-weight:300;color:var(--violet);margin-bottom:20px;}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;font-size:12px;font-weight:500;letter-spacing:.06em;color:var(--text2);margin-bottom:6px;}
+.form-group input,.form-group textarea{width:100%;border:1px solid var(--line2);padding:9px 14px;font-family:"DM Sans",sans-serif;font-size:14px;background:#fff;color:var(--text);border-radius:2px;outline:none;}
+.form-group input:focus,.form-group textarea:focus{border-color:var(--violet-m);}
+.img-drop{border:2px dashed var(--line2);border-radius:3px;padding:20px;text-align:center;cursor:pointer;margin-bottom:6px;}
+.img-drop:hover{border-color:var(--violet-m);}
+.img-drop img{max-width:100%;max-height:120px;object-fit:cover;border-radius:2px;display:block;margin:0 auto;}
+.img-drop p{font-size:13px;color:var(--text3);}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;}
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--violet);color:#fff;padding:10px 20px;border-radius:3px;font-size:13px;display:none;z-index:999;}
+.toast.show{display:block;}
+/* ACCESS DENIED */
+#access-denied{display:none;text-align:center;padding:80px 20px;color:var(--text3);}
+</style>
+<script>
+window._toggleBurger = function() {
+  var m = document.getElementById("burger-menu"), b = document.getElementById("burger-btn");
+  if (!m) return;
+  m.style.display = (m.style.display === "block") ? "none" : "block";
+  if (b) b.classList.toggle("open");
+};
+document.addEventListener("click", function(e) {
+  var m = document.getElementById("burger-menu"), b = document.getElementById("burger-btn");
+  if (m && b && !m.contains(e.target) && !b.contains(e.target)) { m.style.display="none"; if(b) b.classList.remove("open"); }
+});
+window.buildBurger = function(p, auth, signOutFn) {
+  var el = document.getElementById("topbar-right"); if (!el) return;
+  var RL = {"super-admin":"Super-administrateur","moderateur-redaction":"Moderateur","redacteur":"Redacteur","moderateur-comments":"Mod.commentaires","lecteur-commentateur":"Lecteur+","lecteur":"Lecteur"};
+  var isSA=(p.role==="super-admin"), isMod=isSA||(p.role==="moderateur-redaction"), isW=isMod||(p.role==="redacteur");
+  var menu=document.createElement("div"); menu.id="burger-menu";
+  menu.style.cssText="display:none;position:absolute;top:100%;right:0;min-width:210px;background:#2A2A3E;border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.4);z-index:9999;padding:6px 0;";
+  function row(href,txt){var a=document.createElement("a");a.href=href;a.textContent=txt;a.style.cssText="display:block;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;";a.onmouseover=function(){this.style.background="rgba(255,255,255,.07)";};a.onmouseout=function(){this.style.background="";};menu.appendChild(a);}
+  function sep(){var d=document.createElement("div");d.style.cssText="height:1px;background:rgba(255,255,255,.1);margin:4px 0;";menu.appendChild(d);}
+  var h=document.createElement("div");h.style.cssText="padding:9px 20px 3px;font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;";h.textContent=p.prenom+" "+p.nom;menu.appendChild(h);
+  var r=document.createElement("div");r.style.cssText="padding:2px 20px 8px;font-size:11px;color:rgba(255,255,255,.4);";r.textContent=RL[p.role]||p.role;menu.appendChild(r);
+  sep();row("profil.html","Mon profil");
+  if(isW)row("creer-article.html","Creer un article");
+  if(isMod){sep();row("moderation.html","Moderation");row("disposition.html","Disposition");row("pubs.html","Base publicitaire");}
+  if(isSA){sep();row("gestion-comptes.html","Comptes");row("auteurs.html","Auteurs");row("permissions.html","Permissions");}
+  sep();
+  var dBtn=document.createElement("button");dBtn.textContent="Deconnexion";dBtn.style.cssText="display:block;width:100%;text-align:left;padding:9px 20px;font-size:13px;color:rgba(255,255,255,.85);background:none;border:none;cursor:pointer;font-family:inherit;";
+  dBtn.onclick=function(){signOutFn(auth).then(function(){window.location.href="connexion.html";});};
+  menu.appendChild(dBtn);
+  var bBtn=document.createElement("button");bBtn.id="burger-btn";bBtn.onclick=window._toggleBurger;
+  bBtn.style.cssText="background:none;border:none;cursor:pointer;padding:4px 6px;display:inline-flex;flex-direction:column;gap:4px;vertical-align:middle;";
+  for(var i=0;i<3;i++){var bar=document.createElement("span");bar.style.cssText="display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;";bBtn.appendChild(bar);}
+  var ns=document.createElement("span");ns.style.cssText="color:rgba(255,255,255,.6);font-size:11px;margin-right:8px;";ns.textContent=p.prenom+" "+p.nom;
+  el.innerHTML="";el.appendChild(ns);el.appendChild(bBtn);el.appendChild(menu);
+};
+</script>
+</head>
+<body>
+
+<div id="topbar"><span id="topbar-date"></span><span id="topbar-right" style="position:relative;"></span></div>
+
+<header>
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;padding-bottom:16px;">
+    <div>
+      <a href="index.html" style="display:flex;align-items:center;gap:12px;">
+        <svg width="44" height="44" viewBox="0 0 52 52" fill="none"><rect x="4" y="4" width="28" height="28" stroke="#B8956A" stroke-width="0.8" fill="none"/><circle cx="18" cy="18" r="14" stroke="#B8956A" stroke-width="0.8" fill="none"/><line x1="4" y1="18" x2="32" y2="18" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="18" y1="4" x2="18" y2="32" stroke="#B8956A" stroke-width="0.5" opacity="0.6"/><line x1="32" y1="32" x2="44" y2="44" stroke="#B8956A" stroke-width="0.8" opacity="0.5"/></svg>
+        <div class="site-name">L'Œil d'Euclide</div>
+      </a>
+    </div>
+  </div>
+  <nav>
+    <a href="index.html">Accueil</a>
+    <a href="moderation.html">Modération</a>
+    <a href="disposition.html">Disposition</a>
+    <a href="pubs.html" style="color:var(--violet);border-bottom:2px solid var(--violet-m);">Base pub</a>
+    <a href="gestion-comptes.html">Comptes</a>
+  </nav>
+</header>
+
+<div class="page-wrap">
+  <div id="access-denied">
+    <p style="font-size:40px;margin-bottom:16px;">🔒</p>
+    <h2 style="font-family:Cormorant Garamond,serif;font-size:32px;font-weight:300;color:var(--violet);margin-bottom:8px;">Accès restreint</h2>
+    <p>Cette page est réservée aux modérateurs. <a href="connexion.html" style="color:var(--violet-m);">Connectez-vous</a></p>
+  </div>
+
+  <div id="main-content" style="display:none;">
+    <h1>Base publicitaire</h1>
+    <p class="sub">Gérez vos annonceurs et réutilisez-les facilement dans la disposition.</p>
+
+    <div class="toolbar">
+      <button class="btn btn-primary" onclick="window.openModal()">+ Nouvel annonceur</button>
+    </div>
+
+    <div id="pubs-grid" class="pubs-grid">
+      <div class="empty-state">Chargement…</div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)window.closeModal()">
+  <div class="modal">
+    <h2 id="modal-title">Nouvel annonceur</h2>
+    <div class="form-group">
+      <label>Nom de l'annonceur *</label>
+      <input type="text" id="f-nom" placeholder="Ex: Fondation exemple">
+    </div>
+    <div class="form-group">
+      <label>Description courte *</label>
+      <input type="text" id="f-desc" placeholder="Ex: Recherche médicale indépendante">
+    </div>
+    <div class="form-group">
+      <label>Lien (URL)</label>
+      <input type="url" id="f-lien" placeholder="https://...">
+    </div>
+    <div class="form-group">
+      <label>Image / logo</label>
+      <div class="img-drop" id="img-drop" onclick="document.getElementById('img-input').click()">
+        <img id="img-preview" style="display:none;">
+        <p id="img-placeholder">📷 Cliquer pour ajouter une image</p>
+      </div>
+      <input type="file" id="img-input" accept="image/*" style="display:none" onchange="window.handleImg(event)">
+    </div>
+    <div id="modal-error" style="color:#c0392b;font-size:13px;display:none;margin-top:8px;"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="window.closeModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="window.savePub()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const _app = getApps().length ? getApps()[0] : initializeApp({apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",authDomain:"l-oeil-d-euclyde.firebaseapp.com",projectId:"l-oeil-d-euclyde",storageBucket:"l-oeil-d-euclyde.firebasestorage.app",messagingSenderId:"179241004963",appId:"1:179241004963:web:c7c7afa926e03032653416"});
+const auth = getAuth(_app), db = getFirestore(_app);
+window._db = db; window._auth = auth;
+
+var _dt = document.getElementById("topbar-date");
+if (_dt) _dt.textContent = new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).replace(/^./,function(c){return c.toUpperCase();});
+
+var allPubs = [], editingId = null, imgData = null;
+var ALLOWED = ["super-admin","moderateur-redaction"];
+
+onAuthStateChanged(auth, async function(user) {
+  var el = document.getElementById("topbar-right");
+  if (!user) {
+    if(el) el.innerHTML = "<a href=\"connexion.html\" style=\"color:#EDE0CC;\">Connexion</a>";
+    document.getElementById("access-denied").style.display = "block"; return;
+  }
+  try {
+    var snap = await getDoc(doc(db,"users",user.uid));
+    if (!snap.exists() || !ALLOWED.includes(snap.data().role)) {
+      document.getElementById("access-denied").style.display = "block"; return;
+    }
+    window.buildBurger(snap.data(), auth, signOut);
+    document.getElementById("main-content").style.display = "block";
+    await loadPubs();
+  } catch(e) { document.getElementById("access-denied").style.display = "block"; }
+});
+
+async function loadPubs() {
+  try {
+    var snap = await getDocs(collection(db,"pubs"));
+    allPubs = snap.docs.map(function(d){ return {id:d.id,...d.data()}; });
+    allPubs.sort(function(a,b){ return (a.nom||"").localeCompare(b.nom||""); });
+    render();
+  } catch(e) { toast("Erreur: "+e.message); }
+}
+
+function render() {
+  var grid = document.getElementById("pubs-grid");
+  if (!allPubs.length) {
+    grid.innerHTML = "<div class=\"empty-state\">Aucun annonceur enregistré.<br>Cliquez sur + Nouvel annonceur pour commencer.</div>";
+    return;
+  }
+  grid.innerHTML = "";
+  allPubs.forEach(function(p) {
+    var card = document.createElement("div");
+    card.className = "pub-card";
+    var thumb = p.img
+      ? "<img class=\"pub-thumb\" src=\""+p.img+"\" alt=\""+p.nom+"\">"
+      : "<div class=\"pub-thumb-empty\">📢</div>";
+    card.innerHTML = thumb
+      + "<div class=\"pub-body\">"
+        + "<div class=\"pub-name\">"+p.nom+"</div>"
+        + "<div class=\"pub-desc\">"+(p.desc||"")+"</div>"
+        + (p.lien ? "<a class=\"pub-lien\" href=\""+p.lien+"\" target=\"_blank\">"+p.lien+"</a>" : "")
+        + "<div class=\"pub-actions\">"
+          + "<button class=\"btn btn-ghost\" style=\"font-size:11px;padding:5px 12px;\" onclick=\"window.editPub('"+p.id+"')\">Modifier</button>"
+          + "<button class=\"btn btn-danger\" style=\"font-size:11px;padding:5px 12px;\" onclick=\"window.deletePub('"+p.id+"')\">Supprimer</button>"
+          + "<button class=\"btn btn-primary\" style=\"font-size:11px;padding:5px 12px;\" onclick=\"window.usePub('"+p.id+"')\">Utiliser →</button>"
+        + "</div>"
+      + "</div>";
+    grid.appendChild(card);
+  });
+}
+
+window.openModal = function(pub) {
+  editingId = pub ? pub.id : null;
+  imgData = pub ? (pub.img||null) : null;
+  document.getElementById("modal-title").textContent = pub ? "Modifier" : "Nouvel annonceur";
+  document.getElementById("f-nom").value = pub ? (pub.nom||"") : "";
+  document.getElementById("f-desc").value = pub ? (pub.desc||"") : "";
+  document.getElementById("f-lien").value = pub ? (pub.lien||"") : "";
+  document.getElementById("modal-error").style.display = "none";
+  var prev = document.getElementById("img-preview");
+  var ph = document.getElementById("img-placeholder");
+  if (imgData) { prev.src=imgData; prev.style.display="block"; ph.style.display="none"; }
+  else { prev.style.display="none"; ph.style.display="block"; }
+  document.getElementById("modal").classList.add("show");
+};
+window.closeModal = function() { document.getElementById("modal").classList.remove("show"); editingId=null; imgData=null; };
+
+window.handleImg = function(e) {
+  var file = e.target.files[0]; if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var img = new Image(); img.onload = function() {
+      var cv = document.createElement("canvas");
+      var mW=400, w=img.width, h=img.height;
+      if(w>mW){h=Math.round(h*mW/w);w=mW;}
+      cv.width=w; cv.height=h;
+      cv.getContext("2d").drawImage(img,0,0,w,h);
+      imgData = cv.toDataURL("image/jpeg",0.75);
+      var prev=document.getElementById("img-preview"); prev.src=imgData; prev.style.display="block";
+      document.getElementById("img-placeholder").style.display="none";
+    }; img.src=ev.target.result;
+  }; reader.readAsDataURL(file);
+};
+
+window.savePub = async function() {
+  var nom = document.getElementById("f-nom").value.trim();
+  var desc = document.getElementById("f-desc").value.trim();
+  var lien = document.getElementById("f-lien").value.trim();
+  var errEl = document.getElementById("modal-error");
+  if (!nom) { errEl.textContent="Nom obligatoire."; errEl.style.display="block"; return; }
+  if (!desc) { errEl.textContent="Description obligatoire."; errEl.style.display="block"; return; }
+  var data = {nom, desc, lien, img: imgData||null};
+  try {
+    if (editingId) {
+      await updateDoc(doc(db,"pubs",editingId), data);
+      var idx = allPubs.findIndex(function(p){return p.id===editingId;});
+      if(idx!==-1) allPubs[idx]={id:editingId,...data};
+      toast("Annonceur mis à jour");
+    } else {
+      var ref = await addDoc(collection(db,"pubs"), data);
+      allPubs.push({id:ref.id,...data});
+      allPubs.sort(function(a,b){return (a.nom||"").localeCompare(b.nom||"");});
+      toast("Annonceur ajouté");
+    }
+    window.closeModal(); render();
+  } catch(e) { errEl.textContent="Erreur: "+e.message; errEl.style.display="block"; }
+};
+
+window.editPub = function(id) { var p=allPubs.find(function(x){return x.id===id;}); if(p) window.openModal(p); };
+
+window.deletePub = async function(id) {
+  if (!confirm("Supprimer cet annonceur ?")) return;
+  try {
+    await deleteDoc(doc(db,"pubs",id));
+    allPubs = allPubs.filter(function(p){return p.id!==id;});
+    toast("Supprimé"); render();
+  } catch(e) { toast("Erreur: "+e.message); }
+};
+
+// Copier dans disposition - ouvre disposition avec l'id pré-sélectionné
+window.usePub = function(id) {
+  window.location.href = "disposition.html?pub=" + id;
+};
+
+function toast(msg) {
+  var t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show");
+  setTimeout(function(){t.classList.remove("show");},2200);
+}
+</script>
+</body>
+</html>

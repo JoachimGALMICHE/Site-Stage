@@ -86,6 +86,7 @@ nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
 #burger-menu .menu-badge.dark{background:rgba(255,255,255,.15);}
 #topbar{position:relative;}
 </style>
+
 <script>
 window._toggleBurger = function() {
   var m = document.getElementById("burger-menu");
@@ -102,6 +103,31 @@ document.addEventListener("click", function(e) {
     if (b) b.classList.remove("open");
   }
 });
+window.buildBurger = function(p, auth, signOutFn) {
+  var el = document.getElementById("topbar-right");
+  if (!el) return;
+  var RL = {"super-admin":"Super-administrateur","moderateur-redaction":"Moderateur","redacteur":"Redacteur","moderateur-comments":"Mod.commentaires","lecteur-commentateur":"Lecteur+","lecteur":"Lecteur"};
+  var isSA=(p.role==="super-admin"), isMod=isSA||(p.role==="moderateur-redaction"), isW=isMod||(p.role==="redacteur");
+  var menu=document.createElement("div"); menu.id="burger-menu";
+  menu.style.cssText="display:none;position:absolute;top:100%;right:0;min-width:210px;background:#2A2A3E;border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.4);z-index:9999;padding:6px 0;";
+  function row(href,txt){var a=document.createElement("a");a.href=href;a.textContent=txt;a.style.cssText="display:block;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;";a.onmouseover=function(){this.style.background="rgba(255,255,255,.07)";};a.onmouseout=function(){this.style.background="";};menu.appendChild(a);}
+  function sep(){var d=document.createElement("div");d.style.cssText="height:1px;background:rgba(255,255,255,.1);margin:4px 0;";menu.appendChild(d);}
+  var h=document.createElement("div");h.style.cssText="padding:9px 20px 3px;font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;";h.textContent=p.prenom+" "+p.nom;menu.appendChild(h);
+  var r=document.createElement("div");r.style.cssText="padding:2px 20px 8px;font-size:11px;color:rgba(255,255,255,.4);";r.textContent=RL[p.role]||p.role;menu.appendChild(r);
+  sep();row("profil.html","Mon profil");
+  if(isW)row("creer-article.html","Creer un article");
+  if(isMod){sep();row("moderation.html","Moderation");row("disposition.html","Disposition");}
+  if(isSA){sep();row("gestion-comptes.html","Comptes");row("auteurs.html","Auteurs");row("permissions.html","Permissions");}
+  sep();
+  var dBtn=document.createElement("button");dBtn.textContent="Deconnexion";dBtn.style.cssText="display:block;width:100%;text-align:left;padding:9px 20px;font-size:13px;color:rgba(255,255,255,.85);background:none;border:none;cursor:pointer;font-family:inherit;";
+  dBtn.onclick=function(){signOutFn(auth).then(function(){window.location.href="connexion.html";});};
+  menu.appendChild(dBtn);
+  var bBtn=document.createElement("button");bBtn.id="burger-btn";bBtn.onclick=window._toggleBurger;
+  bBtn.style.cssText="background:none;border:none;cursor:pointer;padding:4px 6px;display:inline-flex;flex-direction:column;gap:4px;vertical-align:middle;";
+  for(var i=0;i<3;i++){var bar=document.createElement("span");bar.style.cssText="display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;";bBtn.appendChild(bar);}
+  var ns=document.createElement("span");ns.style.cssText="color:rgba(255,255,255,.6);font-size:11px;margin-right:8px;";ns.textContent=p.prenom+" "+p.nom;
+  el.innerHTML="";el.appendChild(ns);el.appendChild(bBtn);el.appendChild(menu);
+};
 </script>
 </head>
 <body>
@@ -220,7 +246,7 @@ document.addEventListener("click", function(e) {
     <div class="propose-block">
       <h3>Vous êtes chercheur ou expert ?</h3>
       <p>Proposez un article à notre rédaction. Nous publions des textes d'experts sur tous nos sujets de couverture.</p>
-      <a href="contact.html">Proposer un article →</a>
+      <a href="charte.html">Proposer un article →</a>
     </div>
   </div>
 
@@ -229,7 +255,7 @@ document.addEventListener("click", function(e) {
 <footer>
   <div class="footer-links">
     <a href="apropos.html">À propos</a>
-    <a href="contact.html">Contact</a>
+    <a href="charte.html">Contact</a>
     <a href="#">Mentions légales</a>
     <a href="#">Politique de confidentialité</a>
     <a href="#">Notre charte éditoriale</a>
@@ -245,37 +271,12 @@ import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10
 const _a = getApps().length ? getApps()[0] : initializeApp({apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",authDomain:"l-oeil-d-euclyde.firebaseapp.com",projectId:"l-oeil-d-euclyde",storageBucket:"l-oeil-d-euclyde.firebasestorage.app",messagingSenderId:"179241004963",appId:"1:179241004963:web:c7c7afa926e03032653416"});
 const _au = getAuth(_a), _db2 = getFirestore(_a);
 window._db = _db2; window._auth = _au;
-
-function buildBurger(p, auth, signOut) {
-  var el = document.getElementById("topbar-right");
-  if (!el) return;
-  var RL = {"super-admin":"Super-administrateur","moderateur-redaction":"Moderateur de redaction","redacteur":"Redacteur","moderateur-comments":"Moderateur commentaires","lecteur-commentateur":"Lecteur-commentateur","lecteur":"Lecteur"};
-  var isSA = p.role === "super-admin";
-  var isMod = isSA || p.role === "moderateur-redaction";
-  var isWriter = isMod || p.role === "redacteur";
-  function lnk(href, txt) { return "<a href=\"" + href + "\" style=\"display:block;padding:10px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;\">" + txt + "</a>"; }
-  function sep() { return "<div style=\"height:1px;background:rgba(255,255,255,.08);margin:6px 0;\"></div>"; }
-  var mi = "";
-  mi += "<div style=\"padding:10px 20px 4px;font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;\">" + p.prenom + " " + p.nom + "</div>";
-  mi += "<div style=\"padding:2px 20px 8px;font-size:11px;color:rgba(255,255,255,.4);\">" + (RL[p.role] || p.role) + "</div>";
-  mi += sep();
-  mi += lnk("profil.html", "Mon profil");
-  if (isWriter) mi += lnk("creer-article.html", "Creer un article");
-  if (isMod) { mi += sep(); mi += lnk("moderation.html", "Moderation"); mi += lnk("disposition.html", "Disposition"); }
-  if (isSA) { mi += sep(); mi += lnk("gestion-comptes.html", "Gestion des comptes"); mi += lnk("auteurs.html", "Base auteurs"); mi += lnk("permissions.html", "Permissions"); }
-  mi += sep();
-  mi += "<button id=\"_deco_btn\" style=\"display:block;width:100%;text-align:left;padding:10px 20px;font-size:13px;color:rgba(255,255,255,.8);background:none;border:none;cursor:pointer;font-family:inherit;\">Deconnexion</button>";
-  var bars = "<span style=\"color:rgba(255,255,255,.6);font-size:11px;margin-right:10px;\">" + p.prenom + " " + p.nom + "</span>";
-  bars += "<button id=\"burger-btn\" onclick=\"window._toggleBurger()\" style=\"background:none;border:none;cursor:pointer;padding:4px 6px;display:inline-flex;flex-direction:column;gap:4px;vertical-align:middle;\">";
-  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
-  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
-  bars += "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>";
-  bars += "</button>";
-  bars += "<div id=\"burger-menu\" style=\"position:absolute;top:100%;right:0;min-width:220px;background:#2A2A3E;border:1px solid rgba(255,255,255,.08);border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.35);z-index:300;padding:8px 0;\">" + mi + "</div>";
-  el.innerHTML = bars;
-  document.getElementById("_deco_btn").addEventListener("click", function() { signOut(auth).then(function() { window.location.href = "connexion.html"; }); });
+const _dt = document.getElementById("topbar-date");
+if (_dt) _dt.textContent = new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).replace(/^./,function(c){return c.toUpperCase();});
+function L(href, txt) {
+  return "<a href=\"" + href + "\" style=\"display:block;padding:10px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;transition:background .15s;\" onmouseover=\"this.style.background='rgba(255,255,255,.07)'\" onmouseout=\"this.style.background=''\">" + txt + "</a>";
 }
-
+function SEP() { return "<div style=\"height:1px;background:rgba(255,255,255,.08);margin:6px 0;\"></div>"; }
 onAuthStateChanged(_au, async function(user) {
   var el = document.getElementById("topbar-right");
   if (!el) return;
@@ -284,6 +285,31 @@ onAuthStateChanged(_au, async function(user) {
     var snap = await getDoc(doc(_db2, "users", user.uid));
     if (!snap.exists()) return;
     buildBurger(snap.data(), _au, signOut);
+    var p = snap.data();
+    var RL = {"super-admin":"Super-administrateur","moderateur-redaction":"Moderateur de redaction","redacteur":"Redacteur","moderateur-comments":"Moderateur commentaires","lecteur-commentateur":"Lecteur-commentateur","lecteur":"Lecteur"};
+    var isSA = p.role === "super-admin";
+    var isMod = p.role === "super-admin" || p.role === "moderateur-redaction";
+    var isWriter = isMod || p.role === "redacteur";
+    var mi = "";
+    mi += "<div style=\"padding:10px 20px 4px;font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;font-weight:500;\">" + p.prenom + " " + p.nom + "</div>";
+    mi += "<div style=\"padding:2px 20px 8px;font-size:11px;color:rgba(255,255,255,.4);\">" + (RL[p.role]||p.role) + "</div>";
+    mi += SEP();
+    mi += L("profil.html", "Mon profil");
+    if (isWriter) mi += L("creer-article.html", "Creer un article");
+    if (isMod) { mi += SEP(); mi += L("moderation.html", "Moderation"); mi += L("disposition.html", "Disposition"); }
+    if (isSA) { mi += SEP(); mi += L("gestion-comptes.html", "Gestion des comptes"); mi += L("auteurs.html", "Base auteurs"); mi += L("permissions.html", "Permissions"); }
+    mi += SEP();
+    mi += "<button id=\"_deco_btn\" style=\"display:block;width:100%;text-align:left;padding:10px 20px;font-size:13px;color:rgba(255,255,255,.8);background:none;border:none;cursor:pointer;font-family:inherit;\">Deconnexion</button>";
+    el.innerHTML = "<span style=\"color:rgba(255,255,255,.6);font-size:11px;margin-right:10px;\">" + p.prenom + " " + p.nom + "</span>"
+      + "<button id=\"burger-btn\" onclick=\"window._toggleBurger()\" style=\"background:none;border:none;cursor:pointer;padding:4px 6px;display:inline-flex;flex-direction:column;gap:4px;vertical-align:middle;\">"
+      + "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>"
+      + "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>"
+      + "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>"
+      + "</button>"
+      + "<div id=\"burger-menu\" style=\"position:absolute;top:100%;right:0;min-width:220px;background:#2A2A3E;border:1px solid rgba(255,255,255,.08);border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.35);z-index:300;padding:8px 0;\">" + mi + "</div>";
+    document.getElementById("_deco_btn").addEventListener("click", async function() {
+      await signOut(_au); window.location.href = "connexion.html";
+    });
   } catch(e) { console.error(e); }
 });
 </script>

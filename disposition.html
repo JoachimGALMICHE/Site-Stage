@@ -168,6 +168,7 @@ footer a{color:var(--violet-l);}
 
 
 
+
 <script>
 window._toggleBurger = function() {
   var m = document.getElementById("burger-menu");
@@ -187,7 +188,7 @@ document.addEventListener("click", function(e) {
 window.buildBurger = function(p, auth, signOutFn) {
   var el = document.getElementById("topbar-right");
   if (!el) return;
-  var RL = {"super-admin":"Super-administrateur","moderateur-redaction":"Moderateur redaction","redacteur":"Redacteur","moderateur-comments":"Moderateur commentaires","lecteur-commentateur":"Lecteur+","lecteur":"Lecteur"};
+  var RL = {"super-admin":"Super-administrateur","moderateur-redaction":"Moderateur","redacteur":"Redacteur","moderateur-comments":"Mod.commentaires","lecteur-commentateur":"Lecteur+","lecteur":"Lecteur"};
   var isSA=(p.role==="super-admin"), isMod=isSA||(p.role==="moderateur-redaction"), isW=isMod||(p.role==="redacteur");
   var menu=document.createElement("div"); menu.id="burger-menu";
   menu.style.cssText="display:none;position:absolute;top:100%;right:0;min-width:210px;background:#2A2A3E;border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.4);z-index:9999;padding:6px 0;";
@@ -201,7 +202,6 @@ window.buildBurger = function(p, auth, signOutFn) {
   if(isSA){sep();row("gestion-comptes.html","Comptes");row("auteurs.html","Auteurs");row("permissions.html","Permissions");}
   sep();
   var dBtn=document.createElement("button");dBtn.textContent="Deconnexion";dBtn.style.cssText="display:block;width:100%;text-align:left;padding:9px 20px;font-size:13px;color:rgba(255,255,255,.85);background:none;border:none;cursor:pointer;font-family:inherit;";
-  dBtn.onmouseover=function(){this.style.background="rgba(255,255,255,.07)";};dBtn.onmouseout=function(){this.style.background="";};
   dBtn.onclick=function(){signOutFn(auth).then(function(){window.location.href="connexion.html";});};
   menu.appendChild(dBtn);
   var bBtn=document.createElement("button");bBtn.id="burger-btn";bBtn.onclick=window._toggleBurger;
@@ -328,6 +328,15 @@ window.buildBurger = function(p, auth, signOutFn) {
     <!-- BANDEAU PUB -->
     <div class="tools-section" id="pub-form-section" style="display:none;">
       <p class="tools-title">Configurer le bandeau pub</p>
+
+      <!-- Pubs enregistrées -->
+      <div style="margin-bottom:12px;">
+        <p style="font-size:11px;font-weight:500;color:var(--text2);margin-bottom:6px;">Annonceurs enregistrés <a href="pubs.html" style="color:var(--violet-m);font-weight:400;margin-left:6px;">Gérer →</a></p>
+        <div id="pub-list" style="max-height:180px;overflow-y:auto;border:1px solid var(--line);border-radius:2px;background:#fff;"></div>
+      </div>
+
+      <p style="font-size:11px;color:var(--text3);margin-bottom:10px;padding-top:10px;border-top:1px solid var(--line);">Ou configurer manuellement :</p>
+
       <div class="pub-form">
         <div>
           <span class="f-label-sm">Image</span>
@@ -411,6 +420,7 @@ onAuthStateChanged(auth, async user => {
     if (!snap.exists() || !EDITORS.includes(snap.data().role)) { window.location.href = "index.html"; return; }
     window.buildBurger(snap.data(), auth, signOut);
     await loadArticles();
+    await loadPubs();
     await loadDispo();
     render();
   } catch(e) { console.error(e); }
@@ -425,6 +435,52 @@ async function loadArticles() {
   } catch(e) { allArticles = [...ARTS_STATIC]; }
   renderArtList(allArticles);
 }
+
+var allPubs = [];
+async function loadPubs() {
+  try {
+    var snap = await getDocs(collection(db, "pubs"));
+    allPubs = snap.docs.map(function(d){ return {id:d.id,...d.data()}; });
+    renderPubList();
+    // Si ?pub=id → pré-sélectionner
+    var pubId = new URLSearchParams(window.location.search).get("pub");
+    if (pubId) {
+      var pub = allPubs.find(function(p){ return p.id===pubId; });
+      if (pub) {
+        var pending = bandeaux.find(function(b){ return b.type==="pub" && !b.pub; });
+        if (pending) { applyPubToBlock(pending.id, pub); }
+      }
+    }
+  } catch(e) { console.warn("Pubs:", e); }
+}
+
+function renderPubList() {
+  var el = document.getElementById("pub-list");
+  if (!el) return;
+  if (!allPubs.length) { el.innerHTML="<p style=\"font-size:12px;color:var(--text3);padding:8px;\">Aucun annonceur. <a href=\"pubs.html\" style=\"color:var(--violet-m);\">Créer →</a></p>"; return; }
+  el.innerHTML = allPubs.map(function(p) {
+    return "<div class=\"pub-item\" onclick=\"window.selectPub('"+p.id+"')\" style=\"display:flex;align-items:center;gap:10px;padding:8px;cursor:pointer;border-bottom:1px solid var(--line);transition:background .15s;\" onmouseover=\"this.style.background='var(--beige2)'\" onmouseout=\"this.style.background=''\">  "
+      + (p.img ? "<img src=\""+p.img+"\" style=\"width:44px;height:32px;object-fit:cover;border-radius:2px;flex-shrink:0;\">" : "<div style=\"width:44px;height:32px;background:var(--beige3);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:16px;\">📢</div>")
+      + "<div><div style=\"font-size:12px;font-weight:500;color:var(--violet);\">"+p.nom+"</div><div style=\"font-size:11px;color:var(--text3);\">"+p.desc+"</div></div>"
+      + "</div>";
+  }).join("");
+}
+
+function applyPubToBlock(bid, pub) {
+  var b = bandeaux.find(function(bnd){ return bnd.id===bid; });
+  if (b) {
+    b.pub = {img:pub.img||null, titre:pub.nom, texte:pub.desc, lien:pub.lien||""};
+    window._activePubId = bid; activePubId = bid;
+    render(); toast("Pub appliquée");
+  }
+}
+
+window.selectPub = function(pubId) {
+  var pub = allPubs.find(function(p){ return p.id===pubId; });
+  var pid = activePubId || window._activePubId;
+  if (!pid) { toast("Ajoutez d'abord un bandeau pub"); return; }
+  if (pub) { applyPubToBlock(pid, pub); }
+};
 
 function renderArtList(list) {
   const el = document.getElementById("art-list");

@@ -111,7 +111,7 @@ select.f-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg x
 .drag-handle:active{cursor:grabbing;}
 
 /* BLOC TITRE */
-.block-title-el{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;color:var(--violet);width:100%;border:none;background:transparent;outline:none;padding:8px 10px;line-height:1.2;}
+.block-title-el{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;color:var(--violet);width:100%;border:none;background:#fff;outline:none;padding:8px 10px;line-height:1.2;border-radius:2px;}
 .block-title-el::placeholder{color:var(--violet-xl);}
 
 /* BLOC SOUS-TITRE */
@@ -123,7 +123,7 @@ select.f-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg x
 .block-text-el::placeholder{color:var(--text3);}
 
 /* BLOC CITATION */
-.block-quote-wrap{border-left:2px solid var(--violet-m);padding-left:14px;margin:4px 10px;}
+.block-quote-wrap{border-left:2px solid var(--violet-m);padding-left:14px;margin:4px 10px;background:#fff;border-radius:0 2px 2px 0;}
 .block-quote-el{font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;color:var(--violet2);width:100%;border:none;background:transparent;outline:none;padding:6px 0;resize:none;min-height:60px;line-height:1.5;}
 .block-quote-el::placeholder{color:var(--violet-l);}
 
@@ -227,6 +227,13 @@ nav#cats a.active{color:var(--violet);border-bottom-color:var(--violet-m);}
 </style>
 
 <script>
+function toast(msg) {
+  var t = document.getElementById("toast");
+  if (!t) return;
+  t.textContent = msg; t.classList.add("show");
+  setTimeout(function() { t.classList.remove("show"); }, 2500);
+}
+window.toast = toast;
 window._toggleBurger = function() {
   var m = document.getElementById("burger-menu");
   var b = document.getElementById("burger-btn");
@@ -377,6 +384,10 @@ window.buildBurger = function(p, auth, signOutFn) {
             <option>10 min</option><option>15 min</option><option>20 min</option>
           </select>
         </div>
+        <div>
+          <span class="f-label">Date de publication</span>
+          <input type="date" class="f-input" id="f-date" onchange="markUnsaved()" style="background:var(--beige);">
+        </div>
       </div>
       <!-- CONFLIT — déclaration par article -->
       <div id="conflict-section" style="margin-top:14px;display:none;">
@@ -414,31 +425,31 @@ window.buildBurger = function(p, auth, signOutFn) {
     <div class="sidebar-section">
       <p class="sidebar-title">Ajouter un bloc</p>
       <div class="block-palette">
-        <div class="palette-item" draggable="true" onclick="addBlock('title')">
+        <div class="palette-item" draggable="true" data-type="title" onclick="window.addBlock('title')">
           <span class="palette-icon">H</span>
           <div><div class="palette-label">Titre de section</div><div class="palette-desc">Grand titre entre paragraphes</div></div>
         </div>
-        <div class="palette-item" draggable="true" onclick="addBlock('subtitle')">
+        <div class="palette-item" draggable="true" data-type="subtitle" onclick="window.addBlock('subtitle')">
           <span class="palette-icon">h</span>
           <div><div class="palette-label">Sous-titre</div><div class="palette-desc">Titre secondaire, italique</div></div>
         </div>
-        <div class="palette-item" draggable="true" onclick="addBlock('text')">
+        <div class="palette-item" draggable="true" data-type="text" onclick="window.addBlock('text')">
           <span class="palette-icon">¶</span>
           <div><div class="palette-label">Paragraphe</div><div class="palette-desc">Bloc de texte principal</div></div>
         </div>
-        <div class="palette-item" draggable="true" onclick="addBlock('quote')">
+        <div class="palette-item" draggable="true" data-type="quote" onclick="window.addBlock('quote')">
           <span class="palette-icon">"</span>
           <div><div class="palette-label">Citation</div><div class="palette-desc">Mise en avant d'une phrase</div></div>
         </div>
-        <div class="palette-item" draggable="true" onclick="addBlock('image')">
+        <div class="palette-item" draggable="true" data-type="image" onclick="window.addBlock('image')">
           <span class="palette-icon">🖼</span>
           <div><div class="palette-label">Image</div><div class="palette-desc">Photo + légende optionnelle</div></div>
         </div>
-        <div class="palette-item" draggable="true" onclick="addBlock('separator')">
+        <div class="palette-item" draggable="true" data-type="separator" onclick="window.addBlock('separator')">
           <span class="palette-icon">—</span>
           <div><div class="palette-label">Séparateur</div><div class="palette-desc">Ligne de séparation</div></div>
         </div>
-        <div class="palette-item" draggable="true" onclick="addBlock('pub')">
+        <div class="palette-item" draggable="true" data-type="pub" onclick="window.addBlock('pub')">
           <span class="palette-icon">📢</span>
           <div><div class="palette-label">Bandeau pub</div><div class="palette-desc">Image + titre + lien</div></div>
         </div>
@@ -508,6 +519,535 @@ window.buildBurger = function(p, auth, signOutFn) {
 
 
 
+<script>
+// ── ÉTAT ÉDITEUR ────────────────────────────────────────────────────
+var blocks = [];
+var tags = [];
+var selectedCoauthors = [];
+var titreImgData = null;
+var _allAuthors = [];
+var _unsaved = false;
+var _dragSrcIdx = null;
+var _dragSrcPalette = null;
+
+function uid() { return 'b' + Date.now() + Math.random().toString(36).slice(2, 5); }
+
+// ── TOPBAR ──────────────────────────────────────────────────────────
+function markUnsaved() { _unsaved = true; var s = document.getElementById('save-status'); if (s) s.textContent = 'Non sauvegardé'; }
+function markSaved()   { _unsaved = false; var s = document.getElementById('save-status'); if (s) s.textContent = 'Sauvegardé'; }
+
+// ── BLOCS ───────────────────────────────────────────────────────────
+window.addBlock = function(type, insertIdx) {
+  var block = { id: uid(), type: type, content: '' };
+  if (type === 'pub') { block.pubTitre = ''; block.pubTexte = ''; block.pubLien = ''; }
+  if (typeof insertIdx === 'number') blocks.splice(insertIdx, 0, block);
+  else blocks.push(block);
+  renderCanvas();
+  markUnsaved();
+};
+
+window.removeBlock = function(id) { blocks = blocks.filter(b => b.id !== id); renderCanvas(); markUnsaved(); };
+window.moveBlock   = function(id, dir) {
+  var idx = blocks.findIndex(b => b.id === id);
+  if (idx < 0) return;
+  var newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= blocks.length) return;
+  var tmp = blocks[idx]; blocks[idx] = blocks[newIdx]; blocks[newIdx] = tmp;
+  renderCanvas(); markUnsaved();
+};
+
+function renderCanvas() {
+  var canvas = document.getElementById('canvas');
+  if (!canvas) return;
+  // Cacher le placeholder vide
+  var empty = document.getElementById('canvas-empty');
+  if (empty) empty.style.display = blocks.length ? 'none' : 'block';
+  // Supprimer les blocs existants (garder canvas-empty)
+  Array.from(canvas.children).forEach(function(c) {
+    if (!c.id || c.id !== 'canvas-empty') canvas.removeChild(c);
+  });
+  canvas.innerHTML = '';
+  if (empty) canvas.appendChild(empty);
+  // Zone de dépôt initiale
+  canvas.appendChild(makeDropZone(0));
+  blocks.forEach(function(block, idx) {
+    canvas.appendChild(makeBlockEl(block, idx));
+    canvas.appendChild(makeDropZone(idx + 1));
+  });
+  updateStats();
+}
+
+function makeDropZone(insertIdx) {
+  var dz = document.createElement('div');
+  dz.className = 'drop-zone';
+  dz.dataset.insertIdx = insertIdx;
+  dz.addEventListener('dragover', function(e) { e.preventDefault(); this.classList.add('active'); });
+  dz.addEventListener('dragleave', function() { this.classList.remove('active'); });
+  dz.addEventListener('drop', function(e) {
+    e.preventDefault(); this.classList.remove('active');
+    var idx = parseInt(this.dataset.insertIdx);
+    if (_dragSrcPalette) {
+      window.addBlock(_dragSrcPalette, idx); _dragSrcPalette = null;
+    } else if (_dragSrcIdx !== null) {
+      var from = _dragSrcIdx;
+      var to = from < idx ? idx - 1 : idx;
+      if (from !== to) {
+        var b = blocks.splice(from, 1)[0];
+        blocks.splice(to, 0, b);
+        renderCanvas(); markUnsaved();
+      }
+      _dragSrcIdx = null;
+    }
+  });
+  return dz;
+}
+
+function makeBlockEl(block, idx) {
+  var outer = document.createElement('div');
+  outer.className = 'block';
+  outer.id = 'block-' + block.id;
+  outer.draggable = true;
+  outer.addEventListener('dragstart', function(e) {
+    _dragSrcIdx = idx; _dragSrcPalette = null;
+    setTimeout(function(){ outer.classList.add('dragging'); }, 0);
+    e.stopPropagation();
+  });
+  outer.addEventListener('dragend', function() { outer.classList.remove('dragging'); });
+
+  // Toolbar (apparaît au hover via CSS)
+  var toolbar = document.createElement('div');
+  toolbar.className = 'block-toolbar';
+  toolbar.innerHTML =
+    '<span class="tb-btn drag-handle" title="Déplacer">⠿</span>' +
+    '<button class="tb-btn" onclick="window.moveBlock(\'' + block.id + '\',-1)" title="Monter">↑</button>' +
+    '<button class="tb-btn" onclick="window.moveBlock(\'' + block.id + '\',1)" title="Descendre">↓</button>' +
+    '<button class="tb-btn" style="color:#c0392b" onclick="window.removeBlock(\'' + block.id + '\')" title="Supprimer">✕</button>';
+  outer.appendChild(toolbar);
+
+  // Contenu selon type
+  if (block.type === 'title') {
+    var inp = document.createElement('input');
+    inp.className = 'block-title-el';
+    inp.type = 'text';
+    inp.placeholder = 'Titre de section…';
+    inp.value = block.content || '';
+    inp.addEventListener('input', function() { block.content = this.value; updateStats(); markUnsaved(); });
+    outer.appendChild(inp);
+
+  } else if (block.type === 'subtitle') {
+    var inp2 = document.createElement('input');
+    inp2.className = 'block-subtitle-el';
+    inp2.type = 'text';
+    inp2.placeholder = 'Sous-titre…';
+    inp2.value = block.content || '';
+    inp2.addEventListener('input', function() { block.content = this.value; markUnsaved(); });
+    outer.appendChild(inp2);
+
+  } else if (block.type === 'text') {
+    var ta = document.createElement('textarea');
+    ta.className = 'block-text-el';
+    ta.placeholder = 'Rédigez votre paragraphe…';
+    ta.value = block.content || '';
+    ta.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = this.scrollHeight + 'px';
+      block.content = this.value; updateStats(); markUnsaved();
+    });
+    outer.appendChild(ta);
+    setTimeout(function() { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; }, 0);
+
+  } else if (block.type === 'quote') {
+    var qw = document.createElement('div');
+    qw.className = 'block-quote-wrap';
+    var ta2 = document.createElement('textarea');
+    ta2.className = 'block-quote-el';
+    ta2.placeholder = 'Texte de la citation…';
+    ta2.value = block.content || '';
+    ta2.addEventListener('input', function() { block.content = this.value; markUnsaved(); });
+    qw.appendChild(ta2);
+    outer.appendChild(qw);
+
+  } else if (block.type === 'separator') {
+    var hr = document.createElement('hr');
+    hr.className = 'block-sep-el';
+    outer.appendChild(hr);
+
+  } else if (block.type === 'image') {
+    var iw = document.createElement('div');
+    iw.className = 'block-img-wrap';
+    if (block.content) {
+      iw.innerHTML = '<img src="' + block.content + '" style="width:100%;max-height:300px;object-fit:cover;border-radius:3px;display:block;">';
+      var cap = document.createElement('input');
+      cap.type = 'text'; cap.placeholder = 'Légende (optionnelle)';
+      cap.className = 'block-text-el'; cap.style.cssText = 'font-size:12px;color:var(--text3);padding:4px 0;';
+      cap.value = block.caption || '';
+      cap.addEventListener('input', function() { block.caption = this.value; markUnsaved(); });
+      iw.appendChild(cap);
+    } else {
+      var dz = document.createElement('div');
+      dz.className = 'img-drop-zone';
+      dz.innerHTML = '<div class="img-drop-icon">📷</div><p class="img-drop-label">Cliquer pour ajouter une image</p>';
+      dz.onclick = function() { var fi = document.createElement('input'); fi.type='file'; fi.accept='image/*'; fi.onchange = function(e) {
+        var file = e.target.files[0]; if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+          var img = new Image(); img.onload = function() {
+            var cv = document.createElement('canvas');
+            var mW=800, w=img.width, h=img.height;
+            if(w>mW){h=Math.round(h*mW/w);w=mW;}
+            cv.width=w; cv.height=h;
+            cv.getContext('2d').drawImage(img,0,0,w,h);
+            var q=0.7, d=cv.toDataURL('image/jpeg',q);
+            while(d.length>700000&&q>0.3){q-=0.1;d=cv.toDataURL('image/jpeg',q);}
+            block.content=d; renderCanvas(); markUnsaved();
+          }; img.src=ev.target.result;
+        }; reader.readAsDataURL(file);
+      }; fi.click(); };
+      iw.appendChild(dz);
+    }
+    outer.appendChild(iw);
+
+  } else if (block.type === 'pub') {
+    var pw = document.createElement('div');
+    pw.style.cssText = 'padding:12px;background:var(--beige2);border-radius:3px;display:flex;flex-direction:column;gap:8px;';
+    pw.innerHTML = '<p style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--violet-m);">📢 Bandeau publicitaire</p>';
+    function pubInp(ph, key) {
+      var i = document.createElement('input');
+      i.type = key==='pubLien'?'url':'text';
+      i.className = 'block-text-el';
+      i.style.cssText = 'border:1px solid var(--line2);border-radius:2px;padding:6px 10px;font-size:13px;background:var(--beige);';
+      i.placeholder = ph; i.value = block[key]||'';
+      i.addEventListener('input', function(){ block[key]=this.value; markUnsaved(); });
+      pw.appendChild(i);
+    }
+    pubInp("Nom de l'annonceur", 'pubTitre');
+    pubInp('Courte description', 'pubTexte');
+    pubInp('Lien (https://...)', 'pubLien');
+    outer.appendChild(pw);
+  }
+
+  return outer;
+}
+
+// ── PALETTE DRAG ────────────────────────────────────────────────────
+// Utiliser la délégation d'événement sur le conteneur
+document.addEventListener('dragstart', function(e) {
+  var item = e.target.closest ? e.target.closest('.palette-item') : null;
+  if (item && item.dataset.type) {
+    _dragSrcPalette = item.dataset.type;
+    _dragSrcIdx = null;
+  }
+});
+
+// ── IMAGE TITRE ─────────────────────────────────────────────────────
+window.handleTitreImg = function(e) {
+  var file = e.target.files[0]; if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var img = new Image();
+    img.onload = function() {
+      var cv = document.createElement('canvas');
+      var maxW = 600, w = img.width, h = img.height;
+      if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+      cv.width = w; cv.height = h;
+      cv.getContext('2d').drawImage(img, 0, 0, w, h);
+      var q = 0.65, data = cv.toDataURL('image/jpeg', q);
+      while (data.length > 800000 && q > 0.2) { q -= 0.1; data = cv.toDataURL('image/jpeg', q); }
+      titreImgData = data;
+      var el = document.getElementById('titre-img-el');
+      if (el) { el.src = data; }
+      var prev = document.getElementById('titre-img-preview'); if (prev) prev.style.display = 'block';
+      var ph = document.getElementById('titre-img-placeholder'); if (ph) ph.style.display = 'none';
+      markUnsaved();
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+};
+
+window.removeTitreImg = function() {
+  titreImgData = null;
+  var prev = document.getElementById('titre-img-preview'); if (prev) prev.style.display = 'none';
+  var ph = document.getElementById('titre-img-placeholder'); if (ph) ph.style.display = 'block';
+  markUnsaved();
+};
+
+// ── AUTEURS ─────────────────────────────────────────────────────────
+window.populateAuthorSelects = async function() {
+  var mainSel = document.getElementById('f-auteur-select');
+  var coSel   = document.getElementById('f-coauteur-select');
+  if (!mainSel) return;
+  while (mainSel.options.length > 1) mainSel.remove(1);
+  if (coSel) while (coSel.options.length > 1) coSel.remove(1);
+  _allAuthors = [];
+  try {
+    var db = window._db; if (!db) return;
+    var { getDocs, collection } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    var WRITER_ROLES = ['super-admin','moderateur-redaction','redacteur','moderateur-comments'];
+    var aSnap = await getDocs(collection(db, 'auteurs'));
+    aSnap.docs.forEach(function(d) { _allAuthors.push({id: d.id, source: 'auteurs', ...d.data()}); });
+    var uSnap = await getDocs(collection(db, 'users'));
+    uSnap.docs.forEach(function(d) {
+      var u = d.data();
+      if (!WRITER_ROLES.includes(u.role)) return;
+      var exists = _allAuthors.find(a => a.prenom && u.prenom && a.prenom.toLowerCase() === u.prenom.toLowerCase() && a.nom && u.nom && a.nom.toLowerCase() === u.nom.toLowerCase());
+      if (!exists) _allAuthors.push({id: 'user_'+d.id, source: 'user', prenom: u.prenom||'', nom: u.nom||'', institutions: ["L'Oeil d'Euclide"], themes: [u.role]});
+    });
+  } catch(e) { console.warn('Auteurs:', e); }
+  _allAuthors.forEach(function(a) {
+    var label = (a.prenom||'') + ' ' + (a.nom||'') + (a.institutions && a.institutions[0] ? ' ('+a.institutions[0]+')' : '');
+    mainSel.appendChild(new Option(label.trim(), a.id));
+    if (coSel) coSel.appendChild(new Option(label.trim(), a.id));
+  });
+};
+
+// ── TAGS ────────────────────────────────────────────────────────────
+window.handleTagInput = function(e) {
+  if (e.key !== 'Enter' && e.key !== ',') return;
+  e.preventDefault();
+  var inp = document.getElementById('tag-input');
+  var val = inp.value.trim(); if (!val) return;
+  if (!tags.includes(val)) { tags.push(val); renderTags(); markUnsaved(); }
+  inp.value = '';
+};
+function renderTags() {
+  var wrap = document.getElementById('tags-wrap'); if (!wrap) return;
+  wrap.innerHTML = tags.map(function(t, i) {
+    return '<span class="tag-chip">' + t + '<span class="tag-remove" onclick="removeTag(' + i + ')">×</span></span>';
+  }).join('');
+}
+window.removeTag = function(i) { tags.splice(i, 1); renderTags(); markUnsaved(); };
+
+// ── STATS ────────────────────────────────────────────────────────────
+function updateStats() {
+  var allText = blocks.map(b => b.content||'').join(' ');
+  var words = allText.trim() ? allText.trim().split(/\s+/).length : 0;
+  var chars = allText.length;
+  var readMin = Math.max(1, Math.round(words / 200));
+  var sw = document.getElementById('stat-words'); if (sw) sw.textContent = words;
+  var sb = document.getElementById('stat-blocks'); if (sb) sb.textContent = blocks.length;
+  var sc = document.getElementById('stat-chars'); if (sc) sc.textContent = chars;
+  var sr = document.getElementById('stat-read'); if (sr) sr.textContent = readMin + "'";
+}
+
+// ── PRÉVISUALISATION ─────────────────────────────────────────────────
+window.openPreview = function() {
+  var body = document.getElementById('pm-body'); if (!body) return;
+  var titre = (document.getElementById('f-titre')||{}).value || 'Sans titre';
+  var rubrique = (document.getElementById('f-rubrique')||{}).value || '';
+  var chapeau = (document.getElementById('f-chapeau')||{}).value || '';
+  var html = '';
+  if (rubrique) html += '<p class="pm-cat">' + rubrique + '</p>';
+  html += '<h2 class="pm-titre">' + titre + '</h2>';
+  if (titreImgData) html += '<img class="pm-img" src="' + titreImgData + '">';
+  if (chapeau) html += '<p style="font-size:17px;line-height:1.7;color:var(--text2);font-weight:300;border-left:2px solid var(--violet-m);padding-left:16px;margin-bottom:20px;">' + chapeau + '</p>';
+  blocks.forEach(function(b) {
+    if (b.type==='text') html += '<p style="font-size:16px;line-height:1.85;margin-bottom:20px;font-weight:300;">' + (b.content||'').replace(/\n/g,'<br>') + '</p>';
+    else if (b.type==='title') html += '<h2 style="font-family:Cormorant Garamond,serif;font-size:30px;font-weight:400;color:var(--violet);margin:28px 0 12px;">' + (b.content||'') + '</h2>';
+    else if (b.type==='subtitle') html += '<h3 style="font-family:Cormorant Garamond,serif;font-size:22px;font-weight:400;color:var(--violet2);margin:20px 0 10px;">' + (b.content||'') + '</h3>';
+    else if (b.type==='quote') html += '<blockquote style="border-left:3px solid var(--violet-m);padding:14px 20px;margin:24px 0;font-family:Cormorant Garamond,serif;font-size:22px;font-style:italic;">«&nbsp;' + (b.content||'') + '&nbsp;»</blockquote>';
+    else if (b.type==='separator') html += '<hr style="border:none;border-top:1px solid var(--line);margin:28px 0;">';
+    else if (b.type==='image' && b.content) html += '<figure style="margin:24px 0;"><img src="' + b.content + '" style="width:100%;border-radius:3px;"><figcaption style="font-size:11px;color:var(--text3);margin-top:6px;">' + (b.caption||'') + '</figcaption></figure>';
+    else if (b.type==='pub') html += '<div style="background:var(--beige2);border:1px solid var(--line);border-radius:3px;padding:16px 20px;margin:20px 0;display:flex;gap:16px;align-items:center;"><span style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--violet-m);">Partenaire</span><div><strong>' + (b.pubTitre||'Annonceur') + '</strong><p style="font-size:12px;color:var(--text3);">' + (b.pubTexte||'') + '</p></div></div>';
+  });
+  body.innerHTML = html;
+  var modal = document.getElementById('preview-modal'); if (modal) modal.classList.add('show');
+  document.body.style.overflow = 'hidden';
+};
+window.closePreview = function() {
+  var modal = document.getElementById('preview-modal'); if (modal) modal.classList.remove('show');
+  document.body.style.overflow = '';
+};
+
+// ── SOUMISSION ───────────────────────────────────────────────────────
+window.submitArticle = function() {
+  var titre = (document.getElementById('f-titre')||{}).value || '';
+  if (!titre.trim()) { toast('Veuillez entrer un titre'); return; }
+  if (!titreImgData) { toast("L'image principale est obligatoire"); return; }
+  var rubrique = (document.getElementById('f-rubrique')||{}).value || '';
+  if (!rubrique) { toast('Veuillez choisir une rubrique'); return; }
+
+  var chapeau   = (document.getElementById('f-chapeau')||{}).value || '';
+  var duree     = (document.getElementById('f-duree')||{}).value || '';
+  var importance= (document.getElementById('f-importance')||{}).value || '';
+  var dateVal   = (document.getElementById('f-date')||{}).value || '';
+  var dateDisplay = '';
+  if (dateVal) {
+    var dObj = new Date(dateVal + 'T12:00:00');
+    dateDisplay = dObj.toLocaleDateString('fr-FR', {day:'numeric', month:'long', year:'numeric'});
+  }
+  var auteurSel = document.getElementById('f-auteur-select');
+  var auteurId  = auteurSel ? auteurSel.value : '';
+  var auteurNom = auteurSel && auteurSel.selectedIndex > 0 ? auteurSel.options[auteurSel.selectedIndex].text.split(' (')[0] : '';
+
+  var editId = new URLSearchParams(window.location.search).get('edit');
+  var articleData = {
+    titre: titre.trim() || '',
+    chapeau: chapeau || '',
+    rubrique: rubrique || '',
+    duree: duree || '',
+    importance: importance || '',
+    datePublication: dateVal || '',
+    dateDisplay: dateDisplay || '',
+    imageTitre: titreImgData || '',
+    auteurId: auteurId || '',
+    auteurNom: auteurNom || '',
+    tags: tags.slice(),
+    blocks: blocks.map(function(b) {
+      var obj = { type: b.type || '', content: b.content || '' };
+      if (b.type === 'pub') { obj.pubTitre = b.pubTitre||''; obj.pubTexte = b.pubTexte||''; obj.pubLien = b.pubLien||''; }
+      if (b.type === 'image') obj.caption = b.caption || '';
+      return obj;
+    }),
+    statut: editId ? 'publie' : 'soumis',
+  };
+  // Supprimer explicitement toute valeur undefined résiduelle
+  Object.keys(articleData).forEach(function(k) {
+    if (articleData[k] === undefined) articleData[k] = '';
+  });
+  if (!editId) articleData.soumisLe = new Date();
+  else articleData.modifieLe = new Date();
+
+  var now = new Date();
+  var pad = function(n) { return String(n).padStart(2,'0'); };
+  var articleId = editId || (now.getFullYear()+pad(now.getMonth()+1)+pad(now.getDate())+pad(now.getHours())+pad(now.getMinutes()));
+
+  var btn = document.querySelector('.btn-submit');
+  if (btn) { btn.disabled = true; btn.textContent = editId ? 'Mise à jour…' : 'Envoi…'; }
+
+  if (!window._db) { toast('Firebase non prêt'); if (btn) btn.disabled = false; return; }
+
+  import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(function(fs) {
+    var ref = fs.doc(window._db, 'articles', articleId);
+    return editId ? fs.updateDoc(ref, articleData) : fs.setDoc(ref, articleData);
+  }).then(function() {
+    if (btn) { btn.disabled = false; btn.textContent = editId ? 'Mettre à jour →' : 'Soumettre →'; }
+    markSaved();
+    try { localStorage.removeItem('euclide_draft'); } catch(e) {}
+    if (editId) { toast('Article mis à jour !'); setTimeout(function(){ window.location.href='article.html?id='+articleId; }, 1500); }
+    else { var ov=document.getElementById('success-overlay'); if(ov) ov.classList.add('show'); toast('Article soumis !'); }
+  }).catch(function(e) {
+    if (btn) { btn.disabled = false; btn.textContent = editId ? 'Mettre à jour →' : 'Soumettre →'; }
+    toast('Erreur : ' + e.message);
+  });
+};
+
+window.saveDraft = function() {
+  // Collecter toutes les données du formulaire
+  var draft = {
+    titre:      (document.getElementById('f-titre')     ||{}).value || '',
+    chapeau:    (document.getElementById('f-chapeau')   ||{}).value || '',
+    rubrique:   (document.getElementById('f-rubrique')  ||{}).value || '',
+    duree:      (document.getElementById('f-duree')     ||{}).value || '',
+    importance: (document.getElementById('f-importance')||{}).value || '',
+    date:       (document.getElementById('f-date')      ||{}).value || '',
+    auteurId:   (document.getElementById('f-auteur-select')||{}).value || '',
+    coauteurId: (document.getElementById('f-coauteur-select')||{}).value || '',
+    tags:       tags.slice(),
+    blocks:     blocks.map(function(b) {
+      return { id: b.id, type: b.type, content: b.content||'', caption: b.caption||'',
+               pubTitre: b.pubTitre||'', pubTexte: b.pubTexte||'', pubLien: b.pubLien||'' };
+    }),
+    titreImgData: titreImgData,
+    savedAt: new Date().toISOString()
+  };
+  try {
+    localStorage.setItem('euclide_draft', JSON.stringify(draft));
+    markSaved();
+    toast('\u2713 Brouillon sauvegardé');
+  } catch(e) {
+    toast('\u26a0 Impossible de sauvegarder : ' + e.message);
+  }
+};
+
+function loadDraft() {
+  // Ne pas charger si on est en mode édition
+  if (new URLSearchParams(window.location.search).get('edit')) return;
+  try {
+    var raw = localStorage.getItem('euclide_draft');
+    if (!raw) return;
+    var draft = JSON.parse(raw);
+    if (!draft) return;
+
+    // Remplir les champs texte
+    if (draft.titre    && document.getElementById('f-titre'))      document.getElementById('f-titre').value      = draft.titre;
+    if (draft.chapeau  && document.getElementById('f-chapeau'))    document.getElementById('f-chapeau').value    = draft.chapeau;
+    if (draft.rubrique && document.getElementById('f-rubrique'))   document.getElementById('f-rubrique').value   = draft.rubrique;
+    if (draft.duree    && document.getElementById('f-duree'))      document.getElementById('f-duree').value      = draft.duree;
+    if (draft.importance && document.getElementById('f-importance')) document.getElementById('f-importance').value = draft.importance;
+    if (draft.date     && document.getElementById('f-date'))        document.getElementById('f-date').value        = draft.date;
+
+    // Tags
+    if (draft.tags && draft.tags.length) { tags = draft.tags.slice(); renderTags(); }
+
+    // Blocs
+    if (draft.blocks && draft.blocks.length) {
+      blocks = draft.blocks.map(function(b) {
+        return { id: b.id || uid(), type: b.type, content: b.content||'',
+                 caption: b.caption||'', pubTitre: b.pubTitre||'',
+                 pubTexte: b.pubTexte||'', pubLien: b.pubLien||'' };
+      });
+      renderCanvas();
+    }
+
+    // Image principale
+    if (draft.titreImgData) {
+      titreImgData = draft.titreImgData;
+      var imgEl = document.getElementById('titre-img-el');
+      if (imgEl) imgEl.src = draft.titreImgData;
+      var prev = document.getElementById('titre-img-preview');
+      if (prev) prev.style.display = 'block';
+      var ph = document.getElementById('titre-img-placeholder');
+      if (ph) ph.style.display = 'none';
+    }
+
+    // Auteur et co-auteur — après chargement des selects
+    window._draftAuteurId   = draft.auteurId;
+    window._draftCoauteurId = draft.coauteurId;
+
+    if (draft.savedAt) {
+      var d = new Date(draft.savedAt);
+      toast('Brouillon du ' + d.toLocaleDateString('fr-FR') + ' à ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'}) + ' chargé');
+    }
+  } catch(e) { console.warn('loadDraft:', e); }
+}
+
+// Appliquer auteur/co-auteur après que les selects soient remplis
+function applyDraftAuthors() {
+  if (window._draftAuteurId) {
+    var sel = document.getElementById('f-auteur-select');
+    if (sel) sel.value = window._draftAuteurId;
+  }
+  if (window._draftCoauteurId) {
+    var coSel = document.getElementById('f-coauteur-select');
+    if (coSel) coSel.value = window._draftCoauteurId;
+  }
+}
+
+// Auto-save toutes les 60 secondes
+setInterval(function() {
+  if (_unsaved) window.saveDraft();
+}, 60000);
+
+// Avertir si on quitte sans sauvegarder
+window.addEventListener('beforeunload', function(e) {
+  if (_unsaved && blocks.length > 0) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+window.resetEditor = function() {
+  blocks=[]; tags=[]; titreImgData=null; _allAuthors=[];
+  var f=document.getElementById('f-titre'); if(f) f.value='';
+  var ov=document.getElementById('success-overlay'); if(ov) ov.classList.remove('show');
+  renderCanvas(); markSaved();
+};
+
+// Init
+renderCanvas();
+loadDraft();
+</script>
+
 <script type="module">
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -557,6 +1097,7 @@ onAuthStateChanged(_au2, async function(user) {
     if (!snap.exists()) return;
     buildBurger(snap.data(), _au2, signOut);
     await populateAuthorSelects();
+    applyDraftAuthors();
 
     // Mode édition : charger l'article existant
     var editId = new URLSearchParams(window.location.search).get('edit');
@@ -570,6 +1111,7 @@ onAuthStateChanged(_au2, async function(user) {
           if (document.getElementById('f-chapeau')) document.getElementById('f-chapeau').value = a.chapeau || '';
           if (document.getElementById('f-rubrique')) document.getElementById('f-rubrique').value = a.rubrique || '';
           if (document.getElementById('f-duree')) document.getElementById('f-duree').value = a.duree || '';
+          if (document.getElementById('f-date') && a.datePublication) document.getElementById('f-date').value = a.datePublication;
           // Image
           if (a.imageTitre) {
             titreImgData = a.imageTitre;

@@ -134,13 +134,48 @@ footer ul li a:hover{color:#fff;}
 #burger-menu .menu-badge.dark{background:rgba(255,255,255,.15);}
 #topbar{position:relative;}
 </style>
+
 <script>
+window._toggleBurger = function() {
+  var m = document.getElementById("burger-menu");
+  var b = document.getElementById("burger-btn");
+  if (!m) return;
+  m.style.display = (m.style.display === "block") ? "none" : "block";
+  if (b) b.classList.toggle("open");
+};
+document.addEventListener("click", function(e) {
+  var m = document.getElementById("burger-menu");
   var b = document.getElementById("burger-btn");
   if (m && b && !m.contains(e.target) && !b.contains(e.target)) {
     m.style.display = "none";
     if (b) b.classList.remove("open");
   }
 });
+window.buildBurger = function(p, auth, signOutFn) {
+  var el = document.getElementById("topbar-right");
+  if (!el) return;
+  var RL = {"super-admin":"Super-administrateur","moderateur-redaction":"Moderateur","redacteur":"Redacteur","moderateur-comments":"Mod.commentaires","lecteur-commentateur":"Lecteur+","lecteur":"Lecteur"};
+  var isSA=(p.role==="super-admin"), isMod=isSA||(p.role==="moderateur-redaction"), isW=isMod||(p.role==="redacteur");
+  var menu=document.createElement("div"); menu.id="burger-menu";
+  menu.style.cssText="display:none;position:absolute;top:100%;right:0;min-width:210px;background:#2A2A3E;border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.4);z-index:9999;padding:6px 0;";
+  function row(href,txt){var a=document.createElement("a");a.href=href;a.textContent=txt;a.style.cssText="display:block;padding:9px 20px;color:rgba(255,255,255,.85);text-decoration:none;font-size:13px;";a.onmouseover=function(){this.style.background="rgba(255,255,255,.07)";};a.onmouseout=function(){this.style.background="";};menu.appendChild(a);}
+  function sep(){var d=document.createElement("div");d.style.cssText="height:1px;background:rgba(255,255,255,.1);margin:4px 0;";menu.appendChild(d);}
+  var h=document.createElement("div");h.style.cssText="padding:9px 20px 3px;font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;";h.textContent=p.prenom+" "+p.nom;menu.appendChild(h);
+  var r=document.createElement("div");r.style.cssText="padding:2px 20px 8px;font-size:11px;color:rgba(255,255,255,.4);";r.textContent=RL[p.role]||p.role;menu.appendChild(r);
+  sep();row("profil.html","Mon profil");
+  if(isW)row("creer-article.html","Creer un article");
+  if(isMod){sep();row("moderation.html","Moderation");row("disposition.html","Disposition");}
+  if(isSA){sep();row("gestion-comptes.html","Comptes");row("auteurs.html","Auteurs");row("permissions.html","Permissions");}
+  sep();
+  var dBtn=document.createElement("button");dBtn.textContent="Deconnexion";dBtn.style.cssText="display:block;width:100%;text-align:left;padding:9px 20px;font-size:13px;color:rgba(255,255,255,.85);background:none;border:none;cursor:pointer;font-family:inherit;";
+  dBtn.onclick=function(){signOutFn(auth).then(function(){window.location.href="connexion.html";});};
+  menu.appendChild(dBtn);
+  var bBtn=document.createElement("button");bBtn.id="burger-btn";bBtn.onclick=window._toggleBurger;
+  bBtn.style.cssText="background:none;border:none;cursor:pointer;padding:4px 6px;display:inline-flex;flex-direction:column;gap:4px;vertical-align:middle;";
+  for(var i=0;i<3;i++){var bar=document.createElement("span");bar.style.cssText="display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;";bBtn.appendChild(bar);}
+  var ns=document.createElement("span");ns.style.cssText="color:rgba(255,255,255,.6);font-size:11px;margin-right:8px;";ns.textContent=p.prenom+" "+p.nom;
+  el.innerHTML="";el.appendChild(ns);el.appendChild(bBtn);el.appendChild(menu);
+};
 </script>
 </head>
 <body>
@@ -252,287 +287,10 @@ footer ul li a:hover{color:#fff;}
   </div>
 </footer>
 
-<script>
-// Date topbar
-document.getElementById("topbar-date").textContent = new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).replace(/^./,function(c){return c.toUpperCase();});
-
-// ── BASE D'ARTICLES STATIQUES ─────────────────────────────────────────
-var ARTICLES = {
-  'article1': {
-    id:'article1', rubrique:'Politique', cat:'Politique',
-    titre:"La réforme des retraites fragilise le dialogue social en France",
-    chapeau:"Les syndicats annoncent une mobilisation nationale après l'échec des négociations au ministère du Travail. Décryptage des enjeux d'une crise qui s'installe dans la durée.",
-    auteur:"Marie Dupont", institution:"Université de Lyon", date:"31 mars 2026", duree:"8 min",
-    img:"https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=1200&auto=format&fit=crop",
-    legende:"Manifestation devant l'Assemblée nationale, Paris, mars 2026.",
-    tags:["Retraites","Syndicats","Dialogue social"],
-    conflict:false,
-    contenu:[
-      {type:'p', texte:"La réforme des retraites adoptée en 2023 continue de diviser profondément la société française. Trois ans après son adoption, les effets concrets commencent à se faire sentir sur les travailleurs les plus exposés, et la mobilisation syndicale reprend de l'ampleur."},
-      {type:'h2', texte:"Un bras de fer qui dure"},
-      {type:'p', texte:"Les organisations syndicales ont annoncé une journée nationale d'action pour le mois d'avril. Cette mobilisation survient alors que les premières générations touchées par le report de l'âge de départ à la retraite arrivent à terme de leur carrière, révélant des situations personnelles souvent difficiles."},
-      {type:'quote', texte:"Nous ne pouvons pas accepter une réforme qui pénalise les travailleurs les plus fragiles sans aucune contrepartie sociale."},
-      {type:'h2', texte:"Les conséquences économiques"},
-      {type:'p', texte:"Au-delà du débat politique, les économistes s'interrogent sur l'impact réel de la réforme sur la productivité et le bien-être au travail. Plusieurs études montrent que le maintien en emploi de salariés âgés dans des conditions difficiles entraîne une hausse des arrêts maladie de longue durée."},
-      {type:'p', texte:"Le gouvernement, de son côté, défend un bilan positif sur les finances publiques, avec une économie projetée de plusieurs milliards d'euros à horizon 2030. Un chiffre contesté par les syndicats et plusieurs économistes indépendants."},
-    ]
-  },
-  'article2': {
-    id:'article2', rubrique:'Science', cat:'Science',
-    titre:"Un vaccin contre Alzheimer entre en phase III d'essai clinique",
-    chapeau:"Des résultats préliminaires laissent espérer un traitement préventif d'ici 2030, selon une équipe internationale de chercheurs.",
-    auteur:"Pr. Jean Lefebvre", institution:"INSERM", date:"31 mars 2026", duree:"9 min",
-    img:"https://images.unsplash.com/photo-1579165466741-7f35e4755660?w=1200&auto=format&fit=crop",
-    legende:"Laboratoire de recherche neurologique, INSERM Paris.",
-    tags:["Alzheimer","Vaccin","Neurosciences"],
-    conflict:false,
-    contenu:[
-      {type:'p', texte:"Une équipe internationale de chercheurs vient d'annoncer le lancement d'un essai clinique de phase III pour un vaccin thérapeutique contre la maladie d'Alzheimer. Cette étape représente un espoir considérable pour les quelque 50 millions de personnes atteintes dans le monde."},
-      {type:'h2', texte:"Un mécanisme innovant"},
-      {type:'p', texte:"Le vaccin cible les plaques amyloïdes, responsables de la dégénérescence neuronale caractéristique de la maladie. Les résultats des phases I et II ont montré une réduction significative de ces dépôts chez 78% des participants, sans effets secondaires graves majeurs."},
-      {type:'quote', texte:"Si les résultats de la phase III confirment nos observations, nous pourrions disposer d'un traitement préventif avant 2030."},
-      {type:'h2', texte:"Des défis qui restent entiers"},
-      {type:'p', texte:"La phase III implique 12 000 participants sur 4 continents et durera 3 ans. Les chercheurs espèrent démontrer non seulement l'efficacité du vaccin sur le déclin cognitif, mais aussi son innocuité à long terme pour une population principalement âgée."},
-    ]
-  },
-  'article3': {
-    id:'article3', rubrique:'Environnement', cat:'Environnement',
-    titre:"Sécheresse : l'Espagne perd 40 % de ses réserves d'eau en un an",
-    chapeau:"La crise hydrique s'intensifie sur le pourtour méditerranéen, avec des effets directs sur l'agriculture et l'approvisionnement des villes.",
-    auteur:"Carla Ramos", institution:"Universidad Complutense de Madrid", date:"30 mars 2026", duree:"7 min",
-    img:"https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&auto=format&fit=crop",
-    legende:"Réservoir de Sau en Catalogne, mars 2026. Niveau historiquement bas.",
-    tags:["Sécheresse","Espagne","Eau","Méditerranée"],
-    conflict:false,
-    contenu:[
-      {type:'p', texte:"Les données publiées par le ministère espagnol de la Transition écologique sont alarmantes : les réservoirs du pays ont perdu 40% de leur capacité en douze mois, atteignant un niveau historiquement bas."},
-      {type:'h2', texte:"Une situation critique pour l'agriculture"},
-      {type:'p', texte:"Les régions de Catalogne, d'Andalousie et de Murcie sont les plus touchées. Des mesures de restriction d'eau ont été imposées dans plusieurs provinces, affectant directement l'agriculture intensive de la région, qui représente 20% des exportations agroalimentaires européennes."},
-      {type:'quote', texte:"Nous sommes face à une crise structurelle, pas conjoncturelle. Le modèle agricole espagnol doit se réinventer."},
-      {type:'h2', texte:"Des solutions à long terme indispensables"},
-      {type:'p', texte:"Les experts s'accordent sur la nécessité d'investissements massifs dans la dessalinisation et la réutilisation des eaux usées. Plusieurs projets sont en cours, mais leur déploiement à l'échelle nationale prendra plusieurs années."},
-    ]
-  },
-  'article4': {
-    id:'article4', rubrique:'Économie', cat:'Économie & Entreprise',
-    titre:"La BCE maintient ses taux face à l'inflation persistante",
-    chapeau:"Les gouverneurs ont voté à l'unanimité pour le maintien des taux directeurs, malgré une pression croissante des États membres.",
-    auteur:"Pierre Vidal", institution:"Sciences Po Paris", date:"28 mars 2026", duree:"5 min",
-    img:"https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&auto=format&fit=crop",
-    legende:"Siège de la Banque centrale européenne, Francfort.",
-    tags:["BCE","Inflation","Taux directeurs","Économie européenne"],
-    conflict:false,
-    contenu:[
-      {type:'p', texte:"La Banque centrale européenne a annoncé lors de sa réunion mensuelle le maintien de ses taux directeurs à leur niveau actuel. Une décision attendue, mais qui illustre la difficulté de piloter la politique monétaire dans un contexte d'inflation persistante."},
-      {type:'h2', texte:"L'inflation résiste aux traitements"},
-      {type:'p', texte:"Malgré la série de hausses de taux opérées depuis 2022, l'inflation dans la zone euro reste supérieure à l'objectif de 2% fixé par la BCE. Les services, en particulier, affichent une inflation de 4,1%, alimentée par la hausse des salaires."},
-      {type:'h2', texte:"Les États sous pression"},
-      {type:'p', texte:"Plusieurs pays membres, dont la France et l'Italie, poussent pour un assouplissement monétaire afin de soutenir la croissance. Christine Lagarde a rappelé que la BCE n'agit qu'en fonction de son mandat de stabilité des prix, indépendamment des pressions politiques."},
-    ]
-  },
-  'article5': {
-    id:'article5', rubrique:'Société', cat:'Société',
-    titre:"Logement : les jeunes exclus des grandes villes",
-    chapeau:"La hausse des loyers repousse les jeunes actifs vers la périphérie, aggravant les fractures territoriales et professionnelles.",
-    auteur:"Camille Renard", institution:"Observatoire des inégalités", date:"28 mars 2026", duree:"6 min",
-    img:"https://images.unsplash.com/photo-1573497491765-dccce02b29df?w=1200&auto=format&fit=crop",
-    legende:"Vue aérienne d'un quartier résidentiel de banlieue parisienne.",
-    tags:["Logement","Jeunes","Inégalités","Villes"],
-    conflict:false,
-    contenu:[
-      {type:'p', texte:"Une étude publiée par l'Observatoire des inégalités révèle que 68% des jeunes de moins de 30 ans ont renoncé à s'installer dans une grande ville française en raison des coûts du logement. Ce chiffre, en hausse de 15 points en cinq ans, illustre une fracture territoriale profonde."},
-      {type:'h2', texte:"Des loyers hors de portée"},
-      {type:'p', texte:"À Paris, le loyer moyen pour un studio dépasse désormais 1 100 euros par mois, soit plus de 60% du salaire médian des 25-30 ans. Lyon, Bordeaux et Nantes affichent des tendances similaires, avec des hausses de 20 à 35% en trois ans."},
-      {type:'h2', texte:"Un impact sur le marché du travail"},
-      {type:'p', texte:"Ce phénomène a des conséquences directes sur l'économie : les entreprises des grandes métropoles peinent à recruter, tandis que les jeunes diplômés acceptent des postes moins qualifiés en région pour pouvoir se loger décemment."},
-    ]
-  },
-  'article6': {
-    id:'article6', rubrique:'Histoire', cat:'Histoire',
-    titre:"80 ans après, Nuremberg résonne encore dans le droit international",
-    chapeau:"Les principes établis lors du procès de Nuremberg continuent d'influencer profondément la justice pénale internationale contemporaine.",
-    auteur:"Prof. Hélène Bauer", institution:"Université Paris I Panthéon-Sorbonne", date:"27 mars 2026", duree:"10 min",
-    img:"https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=1200&auto=format&fit=crop",
-    legende:"Archives photographiques du procès de Nuremberg, 1945-1946.",
-    tags:["Nuremberg","Droit international","Justice","Histoire"],
-    conflict:false,
-    contenu:[
-      {type:'p', texte:"En 1945, le procès de Nuremberg inaugurait une nouvelle ère du droit international : pour la première fois, des dirigeants d'État étaient jugés pour crimes contre l'humanité et crimes de guerre. Quatre-vingts ans plus tard, son héritage reste plus vivant que jamais."},
-      {type:'h2', texte:"Une rupture fondatrice"},
-      {type:'p', texte:"Avant Nuremberg, le principe de souveraineté étatique constituait un bouclier quasi absolu contre toute poursuite internationale. Le tribunal a brisé ce tabou en affirmant que certains actes — génocide, crimes contre l'humanité — ne peuvent être couverts par aucune immunité nationale."},
-      {type:'quote', texte:"Nuremberg n'est pas un épisode clos de l'histoire. C'est le fondement sur lequel repose toute la justice internationale contemporaine."},
-      {type:'h2', texte:"Un héritage contesté mais vivant"},
-      {type:'p', texte:"La Cour pénale internationale, créée en 2002, s'inscrit directement dans la lignée de Nuremberg. Si son bilan reste modeste — une trentaine de condamnations en vingt ans — elle représente une avancée considérable dans la lutte contre l'impunité des dirigeants."},
-    ]
-  },
-  'article7': {
-    id:'article7', rubrique:'Culture', cat:'Culture',
-    titre:"IA et création littéraire : la frontière s'efface",
-    chapeau:"Les outils d'intelligence artificielle générative s'invitent dans l'écriture romanesque, soulevant des questions fondamentales sur la création et le droit d'auteur.",
-    auteur:"Nadia Korel", institution:"Université Paris VIII", date:"24 mars 2026", duree:"7 min",
-    img:"https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1200&auto=format&fit=crop",
-    legende:"Illustration symbolisant l'écriture assistée par intelligence artificielle.",
-    tags:["Intelligence artificielle","Littérature","Droit d'auteur","Création"],
-    conflict:false,
-    contenu:[
-      {type:'p', texte:"Plusieurs romanciers reconnus ont admis utiliser des outils d'IA générative dans leur processus de création. Ce mouvement soulève une question fondamentale : où commence et où s'arrête la créativité humaine dans un texte co-produit avec une machine ?"},
-      {type:'h2', texte:"Un débat qui divise le monde littéraire"},
-      {type:'p', texte:"D'un côté, des auteurs défendent l'IA comme un simple outil, au même titre que le traitement de texte ou la bibliothèque. De l'autre, des romanciers et éditeurs s'alarment d'une dévaluation de l'acte d'écrire, et de la concurrence déloyale que représentent les contenus générés automatiquement."},
-      {type:'h2', texte:"Le droit à la traîne"},
-      {type:'p', texte:"Les législateurs peinent à encadrer ces pratiques. La directive européenne sur l'IA, entrée en vigueur en 2025, impose une transparence sur l'utilisation des IA dans la création, mais les modalités concrètes restent floues pour l'industrie du livre."},
-    ]
-  },
-  'article8': {
-    id:'article8', rubrique:'International', cat:'International',
-    titre:"G20 : les pays du Sud réclament une réforme du FMI",
-    chapeau:"Lors du sommet de Johannesburg, les économies émergentes ont présenté un front uni pour exiger une refonte des droits de vote au sein des institutions financières internationales.",
-    auteur:"Amara Diop", institution:"Institut des relations internationales de Dakar", date:"25 mars 2026", duree:"8 min",
-    img:"https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=1200&auto=format&fit=crop",
-    legende:"Sommet du G20 à Johannesburg, mars 2026.",
-    tags:["G20","FMI","Pays du Sud","Réforme"],
-    conflict:false,
-    contenu:[
-      {type:'p', texte:"Le sommet du G20 à Johannesburg a été dominé par les revendications des pays du Sud global, qui réclament une refonte profonde des droits de vote au Fonds monétaire international. Une coalition de 47 pays a présenté un texte commun exigeant une redistribution du pouvoir de décision."},
-      {type:'h2', texte:"Un système jugé archaïque"},
-      {type:'p', texte:"La structure de gouvernance du FMI, héritée des accords de Bretton Woods de 1944, attribue les droits de vote en fonction des quotas de contribution financière. Ce système favorise massivement les États-Unis et les pays européens, au détriment des économies émergentes pourtant représentant aujourd'hui 60% du PIB mondial."},
-      {type:'h2', texte:"Des résistances occidentales"},
-      {type:'p', texte:"Les pays du G7 ont accueilli ces propositions avec prudence. Les États-Unis, qui disposent d'un droit de veto de facto au FMI, ont exprimé des réserves sur tout changement structurel. Le débat devrait se poursuivre lors de l'assemblée annuelle du FMI en octobre."},
-    ]
-  },
-};
-
-// Suggestion d'articles pour la sidebar
-var SUGGESTIONS = [
-  {id:'article2', cat:'Science', titre:"Un vaccin contre Alzheimer en phase III", date:"31 mars 2026"},
-  {id:'article3', cat:'Environnement', titre:"Sécheresse en Espagne : 40% des réserves perdues", date:"30 mars 2026"},
-  {id:'article4', cat:'Économie', titre:"La BCE maintient ses taux", date:"28 mars 2026"},
-  {id:'article5', cat:'Société', titre:"Logement : les jeunes exclus des grandes villes", date:"28 mars 2026"},
-  {id:'article6', cat:'Histoire', titre:"80 ans après, Nuremberg résonne encore", date:"27 mars 2026"},
-  {id:'article7', cat:'Culture', titre:"IA et création littéraire", date:"24 mars 2026"},
-  {id:'article1', cat:'Politique', titre:"La réforme des retraites", date:"31 mars 2026"},
-  {id:'article8', cat:'International', titre:"G20 : les pays du Sud réclament une réforme du FMI", date:"25 mars 2026"},
-];
-
-// ── CHARGEMENT ─────────────────────────────────────────────────────────
-function getParam(k){ var p = new URLSearchParams(window.location.search); return p.get(k); }
-
-function renderArticle(a) {
-  var html = '';
-  html += '<p class="breadcrumb"><a href="index.html">Accueil</a><span>›</span>'
-    + '<a href="categorie.html?cat=' + encodeURIComponent(a.cat||a.rubrique) + '">' + (a.rubrique||'—') + '</a>'
-    + '<span>›</span><span style="color:var(--text2)">' + (a.titre||'').substring(0,40) + '…</span></p>';
-  html += '<span class="rub-pill">' + (a.rubrique||'') + '</span>';
-  html += '<h1>' + (a.titre||'') + '</h1>';
-  // Image AVANT le chapeau pour éviter le saut
-  if (a.img) {
-    html += '<figure style="margin:0 0 24px;"><img class="img-hero" src="' + a.img + '" alt="' + (a.titre||'') + '" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:3px;display:block;"><figcaption style="font-size:11px;color:var(--text3);margin-top:8px;">' + (a.legende||'') + '</figcaption></figure>';
-  }
-  if (a.chapeau) html += '<p class="standfirst">' + a.chapeau + '</p>';
-  // Auteur — chercher dans tous les champs possibles
-  var auteurNom = a.auteur || a.auteurNom || '';
-  var institution = a.institution || a.auteurInstitution || '';
-  html += '<div class="art-meta"><span>Par <b>' + auteurNom + '</b></span>'
-    + (institution ? '<span>' + institution + '</span>' : '')
-    + (a.date ? '<span>' + a.date + '</span>' : '')
-    + (a.duree ? '<span>' + a.duree + ' de lecture</span>' : '')
-    + (a.id && !a.id.startsWith('article') ? '<span id="edit-btn-wrap"></span>' : '')
-    + '</div>';
-  if (!a.conflict) {
-    html += '<div class="conflict-banner no-conflict"><span class="conflict-icon">\u2713</span><div><strong>Aucun conflit d\'int\u00e9r\u00eat d\u00e9clar\u00e9</strong><p>L\'auteur(e) certifie n\'avoir aucun lien avec les organisations mentionn\u00e9es dans cet article.</p></div></div>';
-  }
-  (a.contenu||[]).forEach(function(b) {
-    if (b.type === 'p')     html += '<p>' + b.texte + '</p>';
-    if (b.type === 'h2')    html += '<h2>' + b.texte + '</h2>';
-    if (b.type === 'quote') html += '<blockquote><p>\u00ab ' + b.texte + ' \u00bb</p></blockquote>';
-  });
-  if (a.tags && a.tags.length) {
-    html += '<div class="tags"><span class="tags-label">Mots-cl\u00e9s</span>';
-    a.tags.forEach(function(t){ html += '<span class="tag">' + t + '</span>'; });
-    html += '</div>';
-  }
-  document.getElementById('article-content').innerHTML = html;
-  document.title = (a.titre||'Article') + ' — L\'Œil d\'Euclide';
-}
-
-function renderSidebar(currentId) {
-  var sugg = SUGGESTIONS.filter(function(s){ return s.id !== currentId; }).slice(0,5);
-  var html = sugg.map(function(s){
-    return '<div class="s-item"><div class="s-cat">' + s.cat + '</div>'
-      + '<h4><a href="article.html?id=' + s.id + '">' + s.titre + '</a></h4>'
-      + '<div class="s-date">' + s.date + '</div></div>';
-  }).join('');
-  document.getElementById('sidebar-articles').innerHTML = html;
-}
-
-function renderNotFound() {
-  document.getElementById('article-content').innerHTML =
-    '<h1 style="font-family:\'Cormorant Garamond\',serif;font-size:48px;font-weight:300;color:var(--violet);">Article introuvable</h1>'
-    + '<p style="font-size:17px;color:var(--text3);margin-top:16px;">Cet article n\'existe pas ou a été supprimé. <a href="index.html" style="color:var(--violet-m);">Retour à l\'accueil →</a></p>';
-}
-
-// Chargement : d'abord tenter Firebase, sinon DATA statique
-function loadArticle() {
-  var id = getParam('id') || 'article1';
-
-  // 1. Chercher dans le DATA statique
-  if (ARTICLES[id]) {
-    renderArticle(ARTICLES[id]);
-    renderSidebar(id);
-    return;
-  }
-
-  // 2. Tenter Firebase (articles soumis)
-  import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js").then(function(m) {
-    return Promise.all([
-      import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"),
-      Promise.resolve(m)
-    ]);
-  }).then(function(modules) {
-    var fb = modules[1]; var fs = modules[0];
-    var app = fb.getApps && fb.getApps().length ? fb.getApps()[0] : fb.initializeApp({
-      apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",
-      authDomain:"l-oeil-d-euclyde.firebaseapp.com",
-      projectId:"l-oeil-d-euclyde",
-      storageBucket:"l-oeil-d-euclyde.firebasestorage.app",
-      messagingSenderId:"179241004963",
-      appId:"1:179241004963:web:c7c7afa926e03032653416"
-    });
-    var db = fs.getFirestore(app);
-    return fs.getDoc(fs.doc(db, "articles", id));
-  }).then(function(snap) {
-    if (snap.exists()) {
-      var d = snap.data();
-      var a = {
-        id: snap.id,
-        rubrique: d.rubrique, cat: d.rubrique,
-        titre: d.titre || '',
-        chapeau: d.chapeau || '',
-        auteur: d.auteurNom || d.auteur || (d.coauteurs && d.coauteurs[0] && d.coauteurs[0].prenom ? d.coauteurs[0].prenom + ' ' + d.coauteurs[0].nom : '') || '',
-        institution: d.auteurInstitution || (d.coauteurs && d.coauteurs[0] && d.coauteurs[0].institutions ? d.coauteurs[0].institutions[0] : '') || '',
-        date: d.soumisLe ? new Date((d.soumisLe.seconds||0)*1000).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}) : (d.publieLe ? new Date((d.publieLe.seconds||0)*1000).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"}) : ''),
-        duree: d.duree || '',
-        img: d.imageTitre || '',
-        legende: d.imageLegende || '',
-        tags: d.tags || [],
-        conflict: d.conflict === 'declared',
-        contenu: (d.blocks||[]).map(function(b){
-          if (b.type==='text')  return {type:'p', texte:b.content||''};
-          if (b.type==='title') return {type:'h2', texte:b.content||''};
-          if (b.type==='quote') return {type:'quote', texte:b.content||''};
-          return null;
-        }).filter(Boolean)
-      };
-      renderArticle(a);
-      renderSidebar(id);
-    } else {
-      renderNotFound();
-    }
-  }).catch(function() { renderNotFound(); });
-}
-
-loadArticle();
-</script>
-
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, getDocs, addDoc, deleteDoc, collection, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 const _app = getApps().length ? getApps()[0] : initializeApp({
   apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",
   authDomain:"l-oeil-d-euclyde.firebaseapp.com",
@@ -632,57 +390,166 @@ onAuthStateChanged(_auth, async (user) => {
     document.getElementById('_deco').addEventListener('click', async e => {
       e.preventDefault(); await signOut(_auth); window.location.href = 'connexion.html';
     });
+
+    // Bouton Modifier si auteur ou modérateur
+    var articleId2 = new URLSearchParams(window.location.search).get('id');
+    if (articleId2 && !articleId2.startsWith('article')) {
+      var canEdit = p.role === 'super-admin' || p.role === 'moderateur-redaction';
+      if (!canEdit) {
+        try {
+          var artSnap = await getDoc(doc(_db, 'articles', articleId2));
+          if (artSnap.exists() && artSnap.data().auteurId === user.uid) canEdit = true;
+        } catch(e) {}
+      }
+      if (canEdit) {
+        setTimeout(function() {
+          var editWrap = document.getElementById('edit-btn-wrap');
+          if (editWrap) editWrap.innerHTML = '<a href="creer-article.html?edit=' + articleId2 + '" style="background:var(--violet-m);color:#fff;padding:3px 12px;border-radius:2px;font-size:11px;font-weight:500;text-decoration:none;margin-left:8px;">✏ Modifier</a>';
+        }, 600);
+      }
+    }
   } catch(e) { console.error(e); }
 });
-</script>
-<script type="module">
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-const _a = getApps().length ? getApps()[0] : initializeApp({apiKey:"AIzaSyCm5zSAJWQ6Le3-5Lb7b6DUmnGqYzBk0wk",authDomain:"l-oeil-d-euclyde.firebaseapp.com",projectId:"l-oeil-d-euclyde",storageBucket:"l-oeil-d-euclyde.firebasestorage.app",messagingSenderId:"179241004963",appId:"1:179241004963:web:c7c7afa926e03032653416"});
-const _au = getAuth(_a), _db2 = getFirestore(_a);
-window._db = _db2; window._auth = _au;
-const _dt = document.getElementById("topbar-date");
-if (_dt) _dt.textContent = new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).replace(/^./,function(c){return c.toUpperCase();});
-function L(href, txt) {
-  return "<a href=\"" + href + "\" style=\"display:block;padding:10px 20px;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;transition:background .15s;\" onmouseover=\"this.style.background='rgba(255,255,255,.07)'\" onmouseout=\"this.style.background=''\">" + txt + "</a>";
+
+// ── ARTICLES STATIQUES ──────────────────────────────────────────────
+var ARTICLES = {
+  'article1':{id:'article1',rubrique:'Politique',cat:'Politique',titre:"La réforme des retraites fragilise le dialogue social en France",chapeau:"Les syndicats annoncent une mobilisation nationale après l'échec des négociations au ministère du Travail.",auteur:"Marie Dupont",institution:"Université de Lyon",date:"31 mars 2026",duree:"8 min",img:"https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=1200&auto=format&fit=crop",tags:["Retraites","Syndicats"],conflict:false,contenu:[{type:'p',texte:"La réforme des retraites adoptée en 2023 continue de diviser profondément la société française."},{type:'h2',texte:"Un bras de fer qui dure"},{type:'p',texte:"Les organisations syndicales ont annoncé une journée nationale d'action pour le mois d'avril."},{type:'quote',texte:"Nous ne pouvons pas accepter une réforme qui pénalise les travailleurs les plus fragiles."}]},
+  'article2':{id:'article2',rubrique:'Science',cat:'Science',titre:"Un vaccin contre Alzheimer entre en phase III d'essai clinique",chapeau:"Des résultats préliminaires laissent espérer un traitement préventif d'ici 2030.",auteur:"Pr. Jean Lefebvre",institution:"INSERM",date:"31 mars 2026",duree:"9 min",img:"https://images.unsplash.com/photo-1579165466741-7f35e4755660?w=1200&auto=format&fit=crop",tags:["Alzheimer","Vaccin"],conflict:false,contenu:[{type:'p',texte:"Une équipe internationale vient d'annoncer le lancement d'un essai clinique de phase III."},{type:'h2',texte:"Un mécanisme innovant"},{type:'p',texte:"Le vaccin cible les plaques amyloïdes responsables de la dégénérescence neuronale."}]},
+  'article3':{id:'article3',rubrique:'Environnement',cat:'Environnement',titre:"Sécheresse : l'Espagne perd 40 % de ses réserves d'eau en un an",chapeau:"La crise hydrique s'intensifie sur le pourtour méditerranéen.",auteur:"Carla Ramos",institution:"Universidad Complutense",date:"30 mars 2026",duree:"7 min",img:"https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&auto=format&fit=crop",tags:["Sécheresse","Eau"],conflict:false,contenu:[{type:'p',texte:"Les réservoirs du pays ont perdu 40% de leur capacité en douze mois."},{type:'h2',texte:"Une situation critique"},{type:'p',texte:"Les régions de Catalogne et d'Andalousie sont les plus touchées."}]},
+  'article4':{id:'article4',rubrique:'Économie',cat:'Économie',titre:"La BCE maintient ses taux face à l'inflation persistante",chapeau:"Les gouverneurs ont voté à l'unanimité pour le maintien des taux directeurs.",auteur:"Pierre Vidal",institution:"Sciences Po Paris",date:"28 mars 2026",duree:"5 min",img:"https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&auto=format&fit=crop",tags:["BCE","Inflation"],conflict:false,contenu:[{type:'p',texte:"La BCE a annoncé le maintien de ses taux directeurs à leur niveau actuel."},{type:'h2',texte:"L'inflation résiste"},{type:'p',texte:"Malgré les hausses de taux depuis 2022, l'inflation reste supérieure à 2%."}]},
+  'article5':{id:'article5',rubrique:'Société',cat:'Société',titre:"Logement : les jeunes exclus des grandes villes",chapeau:"La hausse des loyers repousse les jeunes actifs vers la périphérie.",auteur:"Camille Renard",institution:"Observatoire des inégalités",date:"28 mars 2026",duree:"6 min",img:"https://images.unsplash.com/photo-1573497491765-dccce02b29df?w=1200&auto=format&fit=crop",tags:["Logement","Jeunes"],conflict:false,contenu:[{type:'p',texte:"68% des jeunes de moins de 30 ans ont renoncé à s'installer en grande ville."},{type:'h2',texte:"Des loyers hors de portée"},{type:'p',texte:"À Paris, le loyer moyen pour un studio dépasse 1 100 euros par mois."}]},
+  'article6':{id:'article6',rubrique:'Histoire',cat:'Histoire',titre:"80 ans après, Nuremberg résonne encore dans le droit international",chapeau:"Les principes établis lors du procès continuent d'influencer la justice pénale internationale.",auteur:"Prof. Hélène Bauer",institution:"Université Paris I",date:"27 mars 2026",duree:"10 min",img:"https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=1200&auto=format&fit=crop",tags:["Nuremberg","Justice"],conflict:false,contenu:[{type:'p',texte:"En 1945, le procès de Nuremberg inaugurait une nouvelle ère du droit international."},{type:'quote',texte:"Nuremberg est le fondement sur lequel repose toute la justice internationale contemporaine."},{type:'p',texte:"La CPI, créée en 2002, s'inscrit directement dans la lignée de Nuremberg."}]},
+  'article7':{id:'article7',rubrique:'Culture',cat:'Culture',titre:"IA et création littéraire : la frontière s'efface",chapeau:"Les outils d'IA générative s'invitent dans l'écriture romanesque.",auteur:"Nadia Korel",institution:"Université Paris VIII",date:"24 mars 2026",duree:"7 min",img:"https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1200&auto=format&fit=crop",tags:["IA","Littérature"],conflict:false,contenu:[{type:'p',texte:"Plusieurs romanciers reconnus ont admis utiliser des outils d'IA dans leur processus de création."},{type:'h2',texte:"Un débat qui divise"},{type:'p',texte:"D'un côté, des auteurs défendent l'IA comme un simple outil. De l'autre, des alarmes."}]},
+  'article8':{id:'article8',rubrique:'International',cat:'International',titre:"G20 : les pays du Sud réclament une réforme du FMI",chapeau:"Les économies émergentes dénoncent des règles de vote jugées archaïques.",auteur:"Amara Diop",institution:"Institut de Dakar",date:"25 mars 2026",duree:"8 min",img:"https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=1200&auto=format&fit=crop",tags:["G20","FMI"],conflict:false,contenu:[{type:'p',texte:"Le sommet du G20 a été dominé par les revendications des pays du Sud global."},{type:'h2',texte:"Un système jugé archaïque"},{type:'p',texte:"La structure du FMI, héritée de 1944, favorise massivement les pays occidentaux."}]}
+};
+
+function getParam(k) { return new URLSearchParams(window.location.search).get(k); }
+
+function renderArticle(a) {
+  var html = '';
+  html += '<p class="breadcrumb"><a href="index.html">Accueil</a><span> › </span><a href="categorie.html?cat=' + encodeURIComponent(a.rubrique||'') + '">' + (a.rubrique||'') + '</a><span> › </span><span style="color:var(--text2)">' + (a.titre||'').substring(0,40) + '…</span></p>';
+  html += '<span class="rub-pill">' + (a.rubrique||'') + '</span>';
+  html += '<h1>' + (a.titre||'') + '</h1>';
+  if (a.img) html += '<figure style="margin:0 0 24px;"><img class="img-hero" src="' + a.img + '" alt="' + (a.titre||'') + '" style="aspect-ratio:16/9;"><figcaption>' + (a.legende||'') + '</figcaption></figure>';
+  if (a.chapeau) html += '<p class="standfirst">' + a.chapeau + '</p>';
+  var auteurNom = a.auteur || a.auteurNom || '';
+  html += '<div class="art-meta"><span>Par <b>' + auteurNom + '</b></span>' + (a.institution ? '<span>' + a.institution + '</span>' : '') + (a.date ? '<span>' + a.date + '</span>' : '') + (a.duree ? '<span>' + a.duree + ' de lecture</span>' : '') + '<span id="edit-btn-wrap"></span></div>';
+  if (!a.conflict) html += '<div class="conflict-banner no-conflict"><span>✓</span><div><strong>Aucun conflit d\'intérêt déclaré</strong><p>L\'auteur certifie n\'avoir aucun lien avec les organisations mentionnées.</p></div></div>';
+  (a.contenu||[]).forEach(function(b) {
+    if (b.type === 'p')     html += '<p>' + b.texte + '</p>';
+    if (b.type === 'h2')    html += '<h2>' + b.texte + '</h2>';
+    if (b.type === 'quote') html += '<blockquote><p>« ' + b.texte + ' »</p></blockquote>';
+  });
+  if (a.tags && a.tags.length) {
+    html += '<div class="tags"><span class="tags-label">Mots-clés</span>';
+    a.tags.forEach(function(t) { html += '<span class="tag">' + t + '</span>'; });
+    html += '</div>';
+  }
+  document.getElementById('article-content').innerHTML = html;
+  document.title = (a.titre||'Article') + " — L'Œil d'Euclide";
 }
-function SEP() { return "<div style=\"height:1px;background:rgba(255,255,255,.08);margin:6px 0;\"></div>"; }
-onAuthStateChanged(_au, async function(user) {
-  var el = document.getElementById("topbar-right");
-  if (!el) return;
-  if (!user) { el.innerHTML = "<a href=\"connexion.html\" style=\"color:#EDE0CC;font-size:11px;\">Connexion</a>"; return; }
+
+function renderNotFound() {
+  document.getElementById('article-content').innerHTML = '<h1 style="font-family:Cormorant Garamond,serif;font-size:48px;font-weight:300;">Article introuvable</h1><p style="margin-top:16px;color:var(--text3);">Cet article n\'existe pas. <a href="index.html" style="color:var(--violet-m);">Retour à l\'accueil →</a></p>';
+}
+
+function renderSidebar(currentId) {
+  var sugg = Object.values(ARTICLES).filter(function(a) { return a.id !== currentId; }).slice(0,5);
+  var html = sugg.map(function(a) {
+    return '<div class="s-item"><div class="s-cat">' + a.rubrique + '</div><h4><a href="article.html?id=' + a.id + '">' + a.titre + '</a></h4><div class="s-date">' + a.date + '</div></div>';
+  }).join('');
+  var el = document.getElementById('sidebar-articles');
+  if (el) el.innerHTML = html;
+}
+
+async function loadArticle() {
+  var id = getParam('id') || 'article1';
+  // 1. Article statique
+  if (ARTICLES[id]) { renderArticle(ARTICLES[id]); renderSidebar(id); loadComments(id); return; }
+  // 2. Article Firebase
   try {
-    var snap = await getDoc(doc(_db2, "users", user.uid));
-    if (!snap.exists()) return;
-    buildBurger(snap.data(), _auth, signOut);
-    var p = snap.data();
-    var RL = {"super-admin":"Super-administrateur","moderateur-redaction":"Moderateur de redaction","redacteur":"Redacteur","moderateur-comments":"Moderateur commentaires","lecteur-commentateur":"Lecteur-commentateur","lecteur":"Lecteur"};
-    var isSA = p.role === "super-admin";
-    var isMod = p.role === "super-admin" || p.role === "moderateur-redaction";
-    var isWriter = isMod || p.role === "redacteur";
-    var mi = "";
-    mi += "<div style=\"padding:10px 20px 4px;font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.1em;font-weight:500;\">" + p.prenom + " " + p.nom + "</div>";
-    mi += "<div style=\"padding:2px 20px 8px;font-size:11px;color:rgba(255,255,255,.4);\">" + (RL[p.role]||p.role) + "</div>";
-    mi += SEP();
-    mi += L("profil.html", "Mon profil");
-    if (isWriter) mi += L("creer-article.html", "Creer un article");
-    if (isMod) { mi += SEP(); mi += L("moderation.html", "Moderation"); mi += L("disposition.html", "Disposition"); }
-    if (isSA) { mi += SEP(); mi += L("gestion-comptes.html", "Gestion des comptes"); mi += L("auteurs.html", "Base auteurs"); mi += L("permissions.html", "Permissions"); }
-    mi += SEP();
-    mi += "<button id=\"_deco_btn\" style=\"display:block;width:100%;text-align:left;padding:10px 20px;font-size:13px;color:rgba(255,255,255,.8);background:none;border:none;cursor:pointer;font-family:inherit;\">Deconnexion</button>";
-    el.innerHTML = "<span style=\"color:rgba(255,255,255,.6);font-size:11px;margin-right:10px;\">" + p.prenom + " " + p.nom + "</span>"
-      + "<button id=\"burger-btn\" onclick=\"window._toggleBurger()\" style=\"background:none;border:none;cursor:pointer;padding:4px 6px;display:inline-flex;flex-direction:column;gap:4px;vertical-align:middle;\">"
-      + "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>"
-      + "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>"
-      + "<span style=\"display:block;width:18px;height:1.5px;background:#EDE0CC;border-radius:1px;\"></span>"
-      + "</button>"
-      + "<div id=\"burger-menu\" style=\"position:absolute;top:100%;right:0;min-width:220px;background:#2A2A3E;border:1px solid rgba(255,255,255,.08);border-radius:0 0 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.35);z-index:300;padding:8px 0;\">" + mi + "</div>";
-    document.getElementById("_deco_btn").addEventListener("click", async function() {
-      await signOut(_au); window.location.href = "connexion.html";
-    });
+    var snap = await getDoc(doc(_db, 'articles', id));
+    if (snap.exists()) {
+      var d = snap.data();
+      var a = {
+        id: snap.id, rubrique: d.rubrique, cat: d.rubrique,
+        titre: d.titre||'', chapeau: d.chapeau||'',
+        auteur: d.auteurNom||d.auteur||'', institution: d.auteurInstitution||'',
+        date: d.dateDisplay || (d.publieLe ? new Date((d.publieLe.seconds||0)*1000).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}) : d.soumisLe ? new Date((d.soumisLe.seconds||0)*1000).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}) : ''),
+        duree: d.duree||'', img: d.imageTitre||'', legende: d.imageLegende||'',
+        tags: d.tags||[], conflict: d.conflict==='declared',
+        contenu: (d.blocks||[]).map(function(b) {
+          if (b.type==='text')  return {type:'p',  texte:b.content||''};
+          if (b.type==='title') return {type:'h2', texte:b.content||''};
+          if (b.type==='quote') return {type:'quote',texte:b.content||''};
+          return null;
+        }).filter(Boolean)
+      };
+      renderArticle(a); renderSidebar(id); loadComments(id);
+    } else { renderNotFound(); }
+  } catch(e) { renderNotFound(); console.error(e); }
+}
+
+async function loadComments(articleId) {
+  var list = document.getElementById('comment-list');
+  var countEl = document.getElementById('comments-count');
+  if (!list) return;
+  try {
+    var snap = await getDocs(query(collection(_db, 'comments'), where('articleId', '==', articleId)));
+    var comments = snap.docs.map(function(d) { return {id:d.id,...d.data()}; });
+    comments.sort(function(a,b) { return (a.createdAt&&a.createdAt.seconds||0)-(b.createdAt&&b.createdAt.seconds||0); });
+    if (countEl) countEl.textContent = '(' + comments.length + ')';
+    if (!comments.length) { list.innerHTML = '<div class="comments-empty">Aucun commentaire. Soyez le premier !</div>'; return; }
+    list.innerHTML = comments.map(function(c) {
+      var init = ((c.prenom||'?')[0]+(c.nom||'?')[0]).toUpperCase();
+      var date = c.createdAt ? new Date(c.createdAt.seconds*1000).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}) : '';
+      var canDel = currentUser && (currentUser.uid===c.uid || ['super-admin','moderateur-redaction','moderateur-comments'].includes(currentUser.role));
+      return '<div class="comment-item"><div class="comment-header"><div class="comment-avatar">' + init + '</div><div><div class="comment-author">' + (c.prenom||'') + ' ' + (c.nom||'') + '</div><div class="comment-date">' + date + '</div></div></div><p class="comment-text">' + (c.texte||'').replace(/</g,'&lt;') + '</p>' + (canDel ? '<div class="comment-actions"><button class="comment-action" onclick="window.deleteComment(\'' + c.id + '\',\'' + articleId + '\')">Supprimer</button></div>' : '') + '</div>';
+    }).join('');
+  } catch(e) { list.innerHTML = '<div class="comments-empty">Commentaires indisponibles.</div>'; }
+}
+
+window.deleteComment = async function(cid, articleId) {
+  if (!confirm('Supprimer ce commentaire ?')) return;
+  try { await deleteDoc(doc(_db,'comments',cid)); await loadComments(articleId); } catch(e) {}
+};
+
+window.sendComment = async function() {
+  if (!currentUser) return;
+  var articleId = getParam('id') || 'article1';
+  var txt = (document.getElementById('comment-text')||{}).value;
+  if (!txt || !txt.trim()) return;
+  var btn = document.getElementById('btn-send-comment');
+  if (btn) { btn.disabled=true; btn.textContent='Publication…'; }
+  try {
+    await addDoc(collection(_db,'comments'), {articleId, uid:currentUser.uid, prenom:currentUser.prenom, nom:currentUser.nom, texte:txt.trim(), createdAt:new Date()});
+    document.getElementById('comment-text').value = '';
+    await loadComments(articleId);
   } catch(e) { console.error(e); }
-});
+  finally { if(btn){btn.disabled=false;btn.textContent='Publier →';} }
+};
+
+window.updateCharCount = function() {
+  var txt = document.getElementById('comment-text');
+  var cc = document.getElementById('char-count');
+  if (txt && cc) cc.textContent = txt.value.length + ' / 1000';
+};
+
+// Recherche
+window.openSearch = function() { document.getElementById('search-overlay').classList.add('show'); document.getElementById('search-input').focus(); document.body.style.overflow='hidden'; };
+window.closeSearch = function() { document.getElementById('search-overlay').classList.remove('show'); document.body.style.overflow=''; };
+window.closeSearchOutside = function(e) { if(e.target.id==='search-overlay') window.closeSearch(); };
+window.doSearch = function() {
+  var q = (document.getElementById('search-input').value||'').trim().toLowerCase();
+  var res = document.getElementById('search-results');
+  if (!q || q.length < 2) { res.innerHTML='<div class="search-empty">Tapez pour rechercher</div>'; return; }
+  var matches = Object.values(ARTICLES).filter(function(a) { return (a.titre+' '+a.rubrique+' '+(a.chapeau||'')).toLowerCase().includes(q); }).slice(0,8);
+  if (!matches.length) { res.innerHTML='<div class="search-empty">Aucun résultat pour "'+q+'"</div>'; return; }
+  res.innerHTML = matches.map(function(a) { return '<a class="search-result-item" href="article.html?id='+a.id+'"><div class="sri-cat">'+a.rubrique+'</div><div class="sri-title">'+a.titre+'</div><div class="sri-excerpt">'+(a.chapeau||'').substring(0,100)+'…</div></a>'; }).join('');
+};
+document.addEventListener('keydown', function(e) { if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();window.openSearch();} if(e.key==='Escape')window.closeSearch(); });
+
+loadArticle();
 </script>
 </body>
 </html>
